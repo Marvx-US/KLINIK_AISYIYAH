@@ -1,6 +1,7 @@
 'use server';
 
-import { login as setSessionCookie, comparePassword } from '@/lib/auth';
+import { login as setSessionCookie } from '@/lib/auth';
+import { comparePassword } from '@/lib/hash';
 import { db } from '@/lib/db';
 import { cookies } from 'next/headers';
 

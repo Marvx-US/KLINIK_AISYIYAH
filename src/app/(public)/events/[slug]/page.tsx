@@ -23,10 +23,10 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
 
   return {
     title: event.title,
-    description: event.summary || `Ikuti kegiatan ${event.title} di Klinik Aisyiyah.`,
+    description: `Ikuti kegiatan ${event.title} di Klinik Aisyiyah. Temukan informasi lengkap seputar jadwal, lokasi, dan detail acara.`,
     openGraph: {
       title: event.title,
-      description: event.summary || `Ikuti kegiatan ${event.title} di Klinik Aisyiyah.`,
+      description: `Ikuti kegiatan ${event.title} di Klinik Aisyiyah. Temukan informasi lengkap seputar jadwal, lokasi, dan detail acara.`,
       url: `/events/${slug}`,
       siteName: KLINIK_INFO.name,
       images: event.coverImage ? [
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
     twitter: {
       card: 'summary_large_image',
       title: event.title,
-      description: event.summary || '',
+      description: `Ikuti kegiatan ${event.title} di Klinik Aisyiyah.`,
       images: event.coverImage ? [event.coverImage] : [],
     },
   };

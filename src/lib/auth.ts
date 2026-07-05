@@ -1,7 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 
 const rawSecret = process.env.NEXTAUTH_SECRET;
 if (!rawSecret) {
@@ -16,14 +15,6 @@ export interface SessionUser {
   username: string;
   name: string;
   role: string;
-}
-
-export function hashPassword(password: string): string {
-  return bcrypt.hashSync(password, 10);
-}
-
-export function comparePassword(password: string, hash: string): boolean {
-  return bcrypt.compareSync(password, hash);
 }
 
 export async function encrypt(payload: SessionUser) {
