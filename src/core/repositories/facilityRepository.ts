@@ -1,23 +1,23 @@
-﻿/**
+/**
  * LAYER 1 - REPOSITORY
  * Hanya berisi operasi database mentah (CRUD).
  */
 
-const prisma = (await import('@/lib/db')).db as any;
+import { db } from '@/lib/db';
 
 export async function findAllFacilities() {
-  return prisma.facility.findMany({ orderBy: { createdAt: 'desc' } });
+  return (db as any).facility.findMany({ orderBy: { createdAt: 'desc' } });
 }
 
 export async function findActiveFacilities() {
-  return prisma.facility.findMany({
+  return (db as any).facility.findMany({
     where: { isActive: true },
     orderBy: { createdAt: 'desc' },
   });
 }
 
 export async function findFacilityById(id: number) {
-  return prisma.facility.findUnique({ where: { id } });
+  return (db as any).facility.findUnique({ where: { id } });
 }
 
 export async function createFacility(data: {
@@ -26,7 +26,7 @@ export async function createFacility(data: {
   imageUrl: string;
   isActive: boolean;
 }) {
-  return prisma.facility.create({ data });
+  return (db as any).facility.create({ data });
 }
 
 export async function updateFacility(
@@ -38,9 +38,9 @@ export async function updateFacility(
     isActive?: boolean;
   }
 ) {
-  return prisma.facility.update({ where: { id }, data });
+  return (db as any).facility.update({ where: { id }, data });
 }
 
 export async function deleteFacility(id: number) {
-  return prisma.facility.delete({ where: { id } });
+  return (db as any).facility.delete({ where: { id } });
 }

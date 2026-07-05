@@ -1,22 +1,22 @@
-﻿/**
+/**
  * LAYER 1 - REPOSITORY
  */
 
-const prisma = (await import('@/lib/db')).db as any;
+import { db } from '@/lib/db';
 
 export async function findAllPartners() {
-  return prisma.partner.findMany({ orderBy: { createdAt: 'desc' } });
+  return (db as any).partner.findMany({ orderBy: { createdAt: 'desc' } });
 }
 
 export async function findActivePartners() {
-  return prisma.partner.findMany({
+  return (db as any).partner.findMany({
     where: { isActive: true },
     orderBy: { createdAt: 'asc' },
   });
 }
 
 export async function findPartnerById(id: number) {
-  return prisma.partner.findUnique({ where: { id } });
+  return (db as any).partner.findUnique({ where: { id } });
 }
 
 export async function createPartner(data: {
@@ -24,16 +24,16 @@ export async function createPartner(data: {
   logoUrl: string;
   isActive: boolean;
 }) {
-  return prisma.partner.create({ data });
+  return (db as any).partner.create({ data });
 }
 
 export async function updatePartner(
   id: number,
   data: { name?: string; logoUrl?: string; isActive?: boolean }
 ) {
-  return prisma.partner.update({ where: { id }, data });
+  return (db as any).partner.update({ where: { id }, data });
 }
 
 export async function deletePartner(id: number) {
-  return prisma.partner.delete({ where: { id } });
+  return (db as any).partner.delete({ where: { id } });
 }

@@ -1,9 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { db } from '@/lib/db';
-import { type Prisma } from '@prisma/client';
+import { getPublishedArticles } from '@/core/services/articleService';
 import { FALLBACK_ARTICLES, ARTICLE_CATEGORIES_FILTER } from '@/lib/constants';
 import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EmptyState from '@/components/ui/EmptyState';
@@ -14,34 +12,37 @@ interface PageProps {
   searchParams: Promise<{ q?: string; category?: string }>;
 }
 
-/** Mengambil artikel dari DB dengan filter opsional, fallback jika DB kosong */
+/** Mengambil artikel dari DB via Service, fallback jika DB kosong */
 async function getFilteredArticles(
   searchQuery: string,
   selectedCategory: string,
 ): Promise<ArticleCardData[]> {
   try {
-    const whereClause: Prisma.ArticleWhereInput = {
-      status: 'PUBLISHED',
-      AND: [],
-    };
+    const all = await getPublishedArticles();
 
-    if (searchQuery) {
-      (whereClause.AND as Prisma.ArticleWhereInput[]).push({
-        OR: [{ title: { contains: searchQuery } }, { summary: { contains: searchQuery } }],
-      });
-    }
-
-    if (selectedCategory && selectedCategory !== 'Semua') {
-      (whereClause.AND as Prisma.ArticleWhereInput[]).push({ category: selectedCategory });
-    }
-
-    const articles = await db.article.findMany({
-      where: whereClause,
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, title: true, slug: true, summary: true, category: true, coverImage: true, createdAt: true },
+    const filtered = all.filter((art) => {
+      const matchSearch = searchQuery
+        ? art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          art.summary.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+      const matchCategory =
+        selectedCategory && selectedCategory !== 'Semua'
+          ? art.category === selectedCategory
+          : true;
+      return matchSearch && matchCategory;
     });
 
-    if (articles.length > 0) return articles;
+    if (filtered.length > 0) {
+      return filtered.map((a) => ({
+        id: a.id,
+        title: a.title,
+        slug: a.slug,
+        summary: a.summary,
+        category: a.category,
+        coverImage: a.coverImage ?? null,
+        createdAt: a.createdAt,
+      }));
+    }
 
     // Fallback dengan filter lokal
     return FALLBACK_ARTICLES.filter((art) => {
@@ -55,21 +56,12 @@ async function getFilteredArticles(
       return matchSearch && matchCategory;
     });
   } catch {
-    return FALLBACK_ARTICLES.filter((art) => {
-      const matchSearch = searchQuery
-        ? art.title.toLowerCase().includes(searchQuery.toLowerCase())
-        : true;
-      const matchCategory =
-        selectedCategory && selectedCategory !== 'Semua'
-          ? art.category === selectedCategory
-          : true;
-      return matchSearch && matchCategory;
-    });
+    return FALLBACK_ARTICLES;
   }
 }
 
 /**
- * ArticlesPage — Halaman daftar artikel kesehatan dengan filter kategori dan pencarian.
+ * ArticlesPage — Halaman daftar artikel kesehatan.
  */
 export default async function ArticlesPage({ searchParams }: PageProps) {
   const params = await searchParams;

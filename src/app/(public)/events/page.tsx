@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
-import { db } from '@/lib/db';
+import { getPublishedEvents } from '@/core/services/eventService';
 import { FALLBACK_EVENTS } from '@/lib/constants';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
 import EmptyState from '@/components/ui/EmptyState';
@@ -11,47 +11,40 @@ interface PageProps {
   searchParams: Promise<{ q?: string }>;
 }
 
-/** Mengambil event dari DB dengan filter pencarian, fallback jika DB kosong */
+/** Mengambil event dari DB via Service, fallback jika DB kosong */
 async function getFilteredEvents(searchQuery: string): Promise<EventCardData[]> {
   try {
-    const events = await db.event.findMany({
-      where: {
-        status: 'PUBLISHED',
-        ...(searchQuery
-          ? {
-              OR: [
-                { title: { contains: searchQuery } },
-                { location: { contains: searchQuery } },
-              ],
-            }
-          : {}),
-      },
-      orderBy: { eventDate: 'asc' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        content: true,
-        eventDate: true,
-        location: true,
-        coverImage: true,
-      },
-    });
+    const all = await getPublishedEvents();
 
-    if (events.length > 0) return events;
+    const filtered = all.filter((evt) =>
+      searchQuery
+        ? evt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (evt.location ?? '').toLowerCase().includes(searchQuery.toLowerCase())
+        : true,
+    );
+
+    if (filtered.length > 0) {
+      return filtered.map((e) => ({
+        id: e.id,
+        title: e.title,
+        slug: e.slug,
+        content: e.content,
+        eventDate: e.eventDate ?? null,
+        location: e.location ?? null,
+        coverImage: e.coverImage ?? null,
+      }));
+    }
 
     return FALLBACK_EVENTS.filter((evt) =>
       searchQuery ? evt.title.toLowerCase().includes(searchQuery.toLowerCase()) : true,
     );
   } catch {
-    return FALLBACK_EVENTS.filter((evt) =>
-      searchQuery ? evt.title.toLowerCase().includes(searchQuery.toLowerCase()) : true,
-    );
+    return FALLBACK_EVENTS;
   }
 }
 
 /**
- * EventsPage — Halaman daftar event/kegiatan klinik dengan pencarian.
+ * EventsPage — Halaman daftar event/kegiatan klinik.
  */
 export default async function EventsPage({ searchParams }: PageProps) {
   const params = await searchParams;

@@ -6,7 +6,16 @@ import { saveScheduleAction, deleteScheduleAction, toggleScheduleStatusAction } 
 import { Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, Clock } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 
-import { type DoctorSchedule } from '@prisma/client';
+// Local interface — akan diganti dengan type dari @prisma/client setelah `npx prisma generate`
+export interface DoctorSchedule {
+  id: number;
+  poli: string;
+  doctorName: string;
+  scheduleInfo: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface SchedulesManagerProps {
   initialSchedules: DoctorSchedule[];

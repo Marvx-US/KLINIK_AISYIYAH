@@ -1,5 +1,10 @@
 import React from 'react';
-import { db } from '@/lib/db';
+import { getActiveBanners } from '@/core/services/bannerService';
+import { getActiveSchedules } from '@/core/services/scheduleService';
+import { getActiveFacilities } from '@/core/services/facilityService';
+import { getActivePartners } from '@/core/services/partnerService';
+import { getPublishedArticles } from '@/core/services/articleService';
+import { getPublishedEvents } from '@/core/services/eventService';
 import { FALLBACK_ARTICLES, FALLBACK_EVENTS } from '@/lib/constants';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
@@ -11,111 +16,51 @@ import PartnersCarouselSection from '@/components/sections/PartnersCarouselSecti
 
 export const revalidate = 0;
 
-/** Mengambil artikel terbaru dari database, fallback ke data statis jika DB kosong */
-async function getLatestArticles(): Promise<ArticleCardData[]> {
-  try {
-    const articles = await db.article.findMany({
-      where: { status: 'PUBLISHED' },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-      select: { id: true, title: true, slug: true, summary: true, category: true, coverImage: true, createdAt: true },
-    });
-    return articles.length > 0 ? articles : FALLBACK_ARTICLES;
-  } catch {
-    return FALLBACK_ARTICLES;
-  }
-}
-
-/** Mengambil event/berita terbaru dari database, fallback ke data statis jika DB kosong */
-async function getUpcomingEvents(): Promise<EventCardData[]> {
-  try {
-    const events = await db.event.findMany({
-      where: { status: 'PUBLISHED' },
-      orderBy: { eventDate: 'asc' },
-      take: 2,
-      select: { id: true, title: true, slug: true, content: true, eventDate: true, location: true, coverImage: true },
-    });
-    return events.length > 0 ? events : FALLBACK_EVENTS;
-  } catch {
-    return FALLBACK_EVENTS;
-  }
-}
-
-/** Mengambil daftar banner aktif dari database */
-async function getActiveBanners() {
-  try {
-    return await (db as any).banner.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, title: true, imageUrl: true },
-    });
-  } catch (error) {
-    console.error('Error fetching banners:', error);
-    return [];
-  }
-}
-
-/** Mengambil daftar jadwal dokter aktif dari database */
-async function getActiveSchedules() {
-  try {
-    return await (db as any).doctorSchedule.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: 'asc' },
-      select: { id: true, poli: true, doctorName: true, scheduleInfo: true },
-    });
-  } catch (error) {
-    console.error('Error fetching schedules:', error);
-    return [];
-  }
-}
-
-/** Mengambil daftar fasilitas aktif dari database */
-async function getActiveFacilities() {
-  try {
-    return await (db as any).facility.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, name: true, description: true, imageUrl: true },
-    });
-  } catch (error) {
-    console.error('Error fetching facilities:', error);
-    return [];
-  }
-}
-
-/** Mengambil daftar logo mitra kerjasama aktif */
-async function getActivePartners() {
-  try {
-    return await (db as any).partner.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, name: true, logoUrl: true },
-    });
-  } catch (error) {
-    console.error('Error fetching partners:', error);
-    return [];
-  }
-}
-
 /**
  * HomePage — Halaman utama website Klinik Aisyiyah.
- * Menggunakan komponen section yang terpisah agar mudah dikelola.
+ * Semua data diambil via Service Layer (bukan langsung ke DB).
  */
 export default async function HomePage() {
   // Fetch data secara paralel untuk performa optimal
-  const [articles, events, banners, schedules, facilities, partners] = await Promise.all([
-    getLatestArticles(), 
-    getUpcomingEvents(), 
-    getActiveBanners(), 
-    getActiveSchedules(),
-    getActiveFacilities(),
-    getActivePartners()
+  const [rawArticles, rawEvents, banners, schedules, facilities, partners] = await Promise.all([
+    getPublishedArticles().catch(() => []),
+    getPublishedEvents().catch(() => []),
+    getActiveBanners().catch(() => []),
+    getActiveSchedules().catch(() => []),
+    getActiveFacilities().catch(() => []),
+    getActivePartners().catch(() => []),
   ]);
+
+  // Fallback jika database kosong
+  const articles: ArticleCardData[] = rawArticles.length > 0
+    ? rawArticles.slice(0, 3).map((a) => ({
+        id: a.id,
+        title: a.title,
+        slug: a.slug,
+        summary: a.summary,
+        category: a.category,
+        coverImage: a.coverImage ?? null,
+        createdAt: a.createdAt,
+      }))
+    : FALLBACK_ARTICLES;
+
+  const events: EventCardData[] = rawEvents.length > 0
+    ? rawEvents.slice(0, 2).map((e) => ({
+        id: e.id,
+        title: e.title,
+        slug: e.slug,
+        content: e.content,
+        eventDate: e.eventDate ?? null,
+        location: e.location ?? null,
+        coverImage: e.coverImage ?? null,
+      }))
+    : FALLBACK_EVENTS;
 
   return (
     <div className="relative pb-24">
       <HeroSection banners={banners} schedules={schedules} />
       <ServicesSection />
+
       {/* Section Event & Berita */}
       <section className="py-24 w-full px-6 sm:px-8 lg:px-12 border-fine-b bg-bg-snow">
         <SectionHeader

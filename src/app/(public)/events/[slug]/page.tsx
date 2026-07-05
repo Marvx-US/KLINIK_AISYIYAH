@@ -1,104 +1,26 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { db } from '@/lib/db';
-import { type Event } from '@prisma/client';
+import { getEventBySlug, getPublishedEvents } from '@/core/services/eventService';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
 import { ArrowLeft, Calendar, MapPin, Tag, Share2, Info } from 'lucide-react';
 
 export const revalidate = 0;
-
-const fallbackEvents = [
-  {
-    id: 1,
-    title: "Program Imunisasi Polio Gratis Anak Usia 0-7 Tahun",
-    slug: "program-imunisasi-polio-gratis-anak-usia-0-7-tahun",
-    content: `
-      <p>Dalam rangka mensukseskan PIN Polio nasional dan melindungi anak-anak dari ancaman kelumpuhan permanen akibat virus Polio, Klinik Aisyiyah menyelenggarakan program pemberian tetes imunisasi polio gratis bagi semua anak usia 0 sampai dengan 7 tahun.</p>
-      
-      <h3>Mengapa Polio Berbahaya?</h3>
-      <p>Polio adalah penyakit menular yang sangat berbahaya, menyerang sistem saraf, dan dapat menyebabkan kelumpuhan permanen dalam hitungan jam. Penyakit ini tidak dapat diobati, namun dapat dicegah 100% dengan imunisasi tetes (OPV) maupun suntik (IPV).</p>
-      
-      <h3>Detail Pelaksanaan Program</h3>
-      <p>Pemberian imunisasi akan dilaksanakan secara massal bertempat di Aula Utama Klinik Aisyiyah. Anda cukup membawa Kartu Keluarga (KK) atau Buku KIA (KMS) sang buah hati untuk proses pencatatan data imunisasi.</p>
-      
-      <p>Mari bersama-sama wujudkan generasi sehat bebas polio di lingkungan kita. Silakan datang ke klinik sesuai dengan waktu pelaksanaan untuk mendapatkan pelayanan terbaik dari perawat dan bidan kami secara gratis tanpa dipungut biaya apapun.</p>
-    `,
-    eventDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-    location: "Aula Pertemuan Utama Klinik Aisyiyah",
-    createdAt: new Date(),
-  },
-  {
-    id: 2,
-    title: "Seminar Edukasi Pencegahan Stunting bersama Ahli Gizi",
-    slug: "seminar-edukasi-pencegahan-stunting-bersama-ahli-gizi",
-    content: `
-      <p>Masalah stunting masih menjadi tantangan besar dalam tumbuh kembang anak di Indonesia. Stunting tidak hanya berdampak pada tinggi badan anak, tetapi juga perkembangan otak dan produktivitas mereka di masa depan.</p>
-      
-      <h3>Apa yang Akan Dibahas?</h3>
-      <p>Dalam seminar interaktif ini, kita akan mengupas tuntas bersama ahli gizi dan dokter spesialis anak mengenai:</p>
-      <ul>
-        <li>Pemberian MPASI kaya protein hewani untuk pencegahan stunting.</li>
-        <li>Cara membaca grafik tumbuh kembang anak di buku KIA.</li>
-        <li>Tanda-tanda red flags keterlambatan tumbuh kembang balita.</li>
-        <li>Peran pola asuh dan sanitasi lingkungan yang sehat.</li>
-      </ul>
-      
-      <h3>Fasilitas Peserta</h3>
-      <p>Setiap peserta seminar yang terdaftar secara resmi akan mendapatkan handout materi edukasi, suplemen vitamin anak gratis, kudapan sehat, serta sesi tanya jawab langsung bersama narasumber ahli gizi.</p>
-      
-      <p>Karena kapasitas ruangan terbatas untuk 50 peserta guna kenyamanan diskusi, segera daftarkan diri Anda dengan menghubungi WhatsApp admin klinik.</p>
-    `,
-    eventDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-    location: "Ruang Edukasi Lt. 2 Klinik Aisyiyah",
-    createdAt: new Date(),
-  }
-];
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
 export default async function EventDetailPage({ params }: PageProps) {
-  const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  const { slug } = await params;
 
-  let event = null;
+  const event = await getEventBySlug(slug).catch(() => null);
+  if (!event) notFound();
 
-  try {
-    event = await db.event.findUnique({
-      where: { slug },
-    });
-  } catch (error) {
-    // fallback
-  }
-
-  if (!event) {
-    event = fallbackEvents.find((evt) => evt.slug === slug) as unknown as Event;
-  }
-
-  if (!event) {
-    notFound();
-  }
-
-  // Fetch upcoming events as recommendations, excluding current event
-  let upcomingEvents: Event[] = [];
-  try {
-    upcomingEvents = await db.event.findMany({
-      where: {
-        status: 'PUBLISHED',
-        slug: { not: slug },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-    });
-  } catch (error) {
-    // fallback
-  }
-
-  if (upcomingEvents.length === 0) {
-    upcomingEvents = fallbackEvents.filter((evt) => evt.slug !== slug) as unknown as Event[];
-  }
+  // Event rekomendasi lainnya
+  const upcomingEvents = await getPublishedEvents()
+    .then((all) => all.filter((e) => e.slug !== slug).slice(0, 3))
+    .catch(() => []);
 
   return (
     <div className="pt-32 pb-16 md:pt-40 md:pb-24 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow min-h-screen">
@@ -135,7 +57,7 @@ export default async function EventDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Event Cover Image (Optional/Placeholder) */}
+          {/* Event Cover Image */}
           {event.coverImage && (
             <div className="aspect-video w-full rounded-2xl overflow-hidden border-fine mb-12">
               <img
@@ -200,25 +122,27 @@ export default async function EventDetailPage({ params }: PageProps) {
           </div>
 
           {/* Agenda Lainnya */}
-          <div className="bg-white p-8 rounded-2xl border-fine shadow-sm">
-            <h3 className="font-heading font-bold text-sm tracking-widest uppercase text-text-dark mb-6 flex items-center gap-2">
-              <Share2 className="h-4.5 w-4.5 text-primary" />
-              Agenda Lainnya
-            </h3>
-            <div className="flex flex-col gap-6">
-              {upcomingEvents.map((rec) => (
-                <div key={rec.title} className="border-fine-b pb-6 last:border-b-0 last:pb-0">
-                  <h4 className="font-heading font-bold text-sm text-text-dark hover:text-primary transition-colors leading-snug">
-                    <Link href={`/events/${rec.slug}`}>{rec.title}</Link>
-                  </h4>
-                  <span className="text-[10px] text-text-muted mt-2 block flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {rec.eventDate ? new Date(rec.eventDate).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' }) : 'Info'}
-                  </span>
-                </div>
-              ))}
+          {upcomingEvents.length > 0 && (
+            <div className="bg-white p-8 rounded-2xl border-fine shadow-sm">
+              <h3 className="font-heading font-bold text-sm tracking-widest uppercase text-text-dark mb-6 flex items-center gap-2">
+                <Share2 className="h-4.5 w-4.5 text-primary" />
+                Agenda Lainnya
+              </h3>
+              <div className="flex flex-col gap-6">
+                {upcomingEvents.map((rec) => (
+                  <div key={rec.slug} className="border-fine-b pb-6 last:border-b-0 last:pb-0">
+                    <h4 className="font-heading font-bold text-sm text-text-dark hover:text-primary transition-colors leading-snug">
+                      <Link href={`/events/${rec.slug}`}>{rec.title}</Link>
+                    </h4>
+                    <span className="text-[10px] text-text-muted mt-2 block flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {rec.eventDate ? new Date(rec.eventDate).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' }) : 'Info'}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </aside>
       </div>
     </div>

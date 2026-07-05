@@ -6,7 +6,15 @@ import { saveBannerAction, deleteBannerAction, toggleBannerStatusAction } from '
 import { Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Image as ImageIcon, Power } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 
-import { type Banner } from '@prisma/client';
+// Local interface — akan diganti dengan type dari @prisma/client setelah `npx prisma generate`
+export interface Banner {
+  id: number;
+  title: string;
+  imageUrl: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface BannersManagerProps {
   initialBanners: Banner[];

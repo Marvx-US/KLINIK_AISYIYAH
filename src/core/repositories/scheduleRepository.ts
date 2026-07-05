@@ -1,22 +1,22 @@
-﻿/**
+/**
  * LAYER 1 - REPOSITORY
  */
 
-const prisma = (await import('@/lib/db')).db as any;
+import { db } from '@/lib/db';
 
 export async function findAllSchedules() {
-  return prisma.doctorSchedule.findMany({ orderBy: { poli: 'asc' } });
+  return (db as any).doctorSchedule.findMany({ orderBy: { poli: 'asc' } });
 }
 
 export async function findActiveSchedules() {
-  return prisma.doctorSchedule.findMany({
+  return (db as any).doctorSchedule.findMany({
     where: { isActive: true },
     orderBy: { poli: 'asc' },
   });
 }
 
 export async function findScheduleById(id: number) {
-  return prisma.doctorSchedule.findUnique({ where: { id } });
+  return (db as any).doctorSchedule.findUnique({ where: { id } });
 }
 
 export async function createSchedule(data: {
@@ -24,7 +24,7 @@ export async function createSchedule(data: {
   doctorName: string;
   scheduleInfo: string;
 }) {
-  return prisma.doctorSchedule.create({ data });
+  return (db as any).doctorSchedule.create({ data });
 }
 
 export async function updateSchedule(
@@ -36,9 +36,9 @@ export async function updateSchedule(
     isActive?: boolean;
   }
 ) {
-  return prisma.doctorSchedule.update({ where: { id }, data });
+  return (db as any).doctorSchedule.update({ where: { id }, data });
 }
 
 export async function deleteSchedule(id: number) {
-  return prisma.doctorSchedule.delete({ where: { id } });
+  return (db as any).doctorSchedule.delete({ where: { id } });
 }

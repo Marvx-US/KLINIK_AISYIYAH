@@ -1,22 +1,22 @@
-﻿/**
+/**
  * LAYER 1 - REPOSITORY
  */
 
-const prisma = (await import('@/lib/db')).db as any;
+import { db } from '@/lib/db';
 
 export async function findAllBanners() {
-  return prisma.banner.findMany({ orderBy: { createdAt: 'desc' } });
+  return (db as any).banner.findMany({ orderBy: { createdAt: 'desc' } });
 }
 
 export async function findActiveBanners() {
-  return prisma.banner.findMany({
+  return (db as any).banner.findMany({
     where: { isActive: true },
     orderBy: { createdAt: 'desc' },
   });
 }
 
 export async function findBannerById(id: number) {
-  return prisma.banner.findUnique({ where: { id } });
+  return (db as any).banner.findUnique({ where: { id } });
 }
 
 export async function createBanner(data: {
@@ -24,16 +24,16 @@ export async function createBanner(data: {
   imageUrl: string;
   isActive: boolean;
 }) {
-  return prisma.banner.create({ data });
+  return (db as any).banner.create({ data });
 }
 
 export async function updateBanner(
   id: number,
   data: { title?: string; imageUrl?: string; isActive?: boolean }
 ) {
-  return prisma.banner.update({ where: { id }, data });
+  return (db as any).banner.update({ where: { id }, data });
 }
 
 export async function deleteBanner(id: number) {
-  return prisma.banner.delete({ where: { id } });
+  return (db as any).banner.delete({ where: { id } });
 }
