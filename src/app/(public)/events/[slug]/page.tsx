@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getEventBySlug, getPublishedEvents } from '@/core/services/eventService';
@@ -9,6 +10,44 @@ export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+import type { Metadata, ResolvingMetadata } from 'next';
+import { KLINIK_INFO } from '@/lib/constants';
+
+export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
+  const { slug } = await params;
+  const event = await getEventBySlug(slug).catch(() => null);
+  
+  if (!event) return { title: 'Event Tidak Ditemukan' };
+
+  return {
+    title: event.title,
+    description: event.summary || `Ikuti kegiatan ${event.title} di Klinik Aisyiyah.`,
+    openGraph: {
+      title: event.title,
+      description: event.summary || `Ikuti kegiatan ${event.title} di Klinik Aisyiyah.`,
+      url: `/events/${slug}`,
+      siteName: KLINIK_INFO.name,
+      images: event.coverImage ? [
+        {
+          url: event.coverImage,
+          width: 1200,
+          height: 630,
+          alt: event.title,
+        }
+      ] : [],
+      locale: 'id_ID',
+      type: 'article',
+      authors: ['Klinik Aisyiyah'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: event.title,
+      description: event.summary || '',
+      images: event.coverImage ? [event.coverImage] : [],
+    },
+  };
 }
 
 export default async function EventDetailPage({ params }: PageProps) {
@@ -59,11 +98,14 @@ export default async function EventDetailPage({ params }: PageProps) {
 
           {/* Event Cover Image */}
           {event.coverImage && (
-            <div className="aspect-video w-full rounded-2xl overflow-hidden border-fine mb-12">
-              <img
+            <div className="relative aspect-video w-full rounded-2xl overflow-hidden border-fine mb-12">
+              <Image
                 src={event.coverImage}
                 alt={event.title}
-                className="w-full h-full object-cover"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 66vw"
+                className="object-cover"
               />
             </div>
           )}

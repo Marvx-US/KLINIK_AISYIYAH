@@ -102,10 +102,13 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ${
-          isOpen ? 'max-h-96 opacity-100 border-t border-border-fine' : 'max-h-0 opacity-0'
-        }`}>
-          <div className={`flex flex-col space-y-2 p-4 ${isScrolled ? 'rounded-b-3xl' : 'rounded-b-3xl'}`}>
+        <div 
+          className={`md:hidden overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+            isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="mx-4 border-t border-border-fine/40"></div>
+          <div className="flex flex-col space-y-2 p-4 pt-4 rounded-b-3xl">
             {NAVIGATION_ITEMS.map((item) => {
               const isActive = pathname === item.href;
               return (

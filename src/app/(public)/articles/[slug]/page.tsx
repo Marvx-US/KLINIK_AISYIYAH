@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getArticleBySlug, getPublishedArticles } from '@/core/services/articleService';
@@ -9,6 +10,45 @@ export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+import type { Metadata, ResolvingMetadata } from 'next';
+import { KLINIK_INFO } from '@/lib/constants';
+
+export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug).catch(() => null);
+  
+  if (!article) return { title: 'Artikel Tidak Ditemukan' };
+
+  return {
+    title: article.title,
+    description: article.summary || `Baca artikel tentang ${article.title} di Klinik Aisyiyah.`,
+    openGraph: {
+      title: article.title,
+      description: article.summary || `Baca artikel tentang ${article.title} di Klinik Aisyiyah.`,
+      url: `/articles/${slug}`,
+      siteName: KLINIK_INFO.name,
+      images: article.coverImage ? [
+        {
+          url: article.coverImage,
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        }
+      ] : [],
+      locale: 'id_ID',
+      type: 'article',
+      publishedTime: article.createdAt.toISOString(),
+      authors: ['Klinik Aisyiyah'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.summary || '',
+      images: article.coverImage ? [article.coverImage] : [],
+    },
+  };
 }
 
 export default async function ArticleDetailPage({ params }: PageProps) {
@@ -59,11 +99,14 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
           {/* Article Cover Image */}
           {article.coverImage && (
-            <div className="aspect-video w-full rounded-2xl overflow-hidden border-fine mb-12">
-              <img
+            <div className="relative aspect-video w-full rounded-2xl overflow-hidden border-fine mb-12">
+              <Image
                 src={article.coverImage}
                 alt={article.title}
-                className="w-full h-full object-cover"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 66vw"
+                className="object-cover"
               />
             </div>
           )}

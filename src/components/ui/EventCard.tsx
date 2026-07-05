@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 
 export interface EventCardData {
@@ -35,10 +36,12 @@ export default function EventCard({ event }: EventCardProps) {
     <div className="group flex flex-col bg-white rounded-[2rem] border border-border-fine/60 shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgb(13,148,136,0.08)] hover:-translate-y-1 transition-all duration-500 h-full overflow-hidden">
       {event.coverImage && (
         <div className="relative h-56 w-full overflow-hidden shrink-0">
-          <img 
+          <Image 
             src={event.coverImage} 
             alt={event.title} 
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-1000 group-hover:scale-105"
           />
           {/* Floating Date Badge over Image */}
           <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl flex flex-col items-center justify-center shadow-sm border border-white/20 z-10">

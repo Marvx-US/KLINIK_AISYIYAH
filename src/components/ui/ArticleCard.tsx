@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 
 export interface ArticleCardData {
@@ -23,11 +24,13 @@ export default function ArticleCard({ article }: ArticleCardProps) {
   return (
     <article className="bg-white rounded-2xl border-fine overflow-hidden transition-editorial hover-glow flex flex-col h-full group">
       {article.coverImage && (
-        <div className="w-full h-48 overflow-hidden bg-gray-100 border-b border-border-fine">
-          <img 
+        <div className="relative w-full h-48 overflow-hidden bg-gray-100 border-b border-border-fine">
+          <Image 
             src={article.coverImage} 
             alt={article.title} 
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </div>
       )}

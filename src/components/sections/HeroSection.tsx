@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, ArrowRight, Clock } from 'lucide-react';
 
 interface Banner {
@@ -45,8 +46,14 @@ export default function HeroSection({
           key={banner.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+          {/* Menggunakan Next.js Image Component dengan prioritas tinggi untuk hero section */}
+          <Image 
+            src={banner.imageUrl} 
+            alt={banner.title} 
+            fill
+            priority={idx === 0}
+            className="object-cover" 
+          />
           {/* Overlay gradien gelap agar teks tetap terbaca */}
           <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/40" />
         </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 export interface FacilityData {
@@ -30,12 +31,13 @@ export default function FacilityGallerySection({ facilities }: FacilityGallerySe
             key={facility.id} 
             className="break-inside-avoid relative group rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
+            <Image 
               src={facility.imageUrl} 
               alt={facility.name} 
+              width={600}
+              height={450}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-              loading="lazy"
             />
             
             {/* Glassmorphism Hover Overlay */}

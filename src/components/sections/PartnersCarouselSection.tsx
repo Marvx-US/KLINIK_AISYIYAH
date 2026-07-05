@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 export interface PartnerData {
   id: number;
@@ -43,12 +44,12 @@ export default function PartnersCarouselSection({ partners }: PartnersCarouselSe
               className="flex shrink-0 items-center justify-center h-20 w-32 md:w-48 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-110"
               title={partner.name}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
+              <Image 
                 src={partner.logoUrl} 
                 alt={partner.name} 
+                width={192}
+                height={80}
                 className="max-h-full max-w-full object-contain filter drop-shadow-sm"
-                loading="lazy"
               />
             </div>
           ))}
@@ -62,12 +63,12 @@ export default function PartnersCarouselSection({ partners }: PartnersCarouselSe
               className="flex shrink-0 items-center justify-center h-20 w-32 md:w-48 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-110"
               title={partner.name}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
+              <Image 
                 src={partner.logoUrl} 
                 alt={partner.name} 
+                width={192}
+                height={80}
                 className="max-h-full max-w-full object-contain filter drop-shadow-sm"
-                loading="lazy"
               />
             </div>
           ))}
