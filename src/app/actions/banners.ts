@@ -1,19 +1,20 @@
 'use server';
 
-import { db } from '@/lib/db';
+/**
+ * LAYER 3 - ACTION (Controller)
+ */
+
 import { getSession } from '@/lib/auth';
-import { uploadFile } from '@/lib/upload';
 import { revalidatePath } from 'next/cache';
 import { z, parseForm } from '@/lib/validations';
+import * as bannerService from '@/core/services/bannerService';
 
-const prisma = db as any;
+export type ActionResult = { success?: boolean; error?: string };
 
-export interface ActionResult {
-  error?: string;
-  success?: boolean;
-}
-
-export async function saveBannerAction(prevState: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function saveBannerAction(
+  prevState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized. Harap login kembali.' };
 
@@ -27,80 +28,56 @@ export async function saveBannerAction(prevState: ActionResult | null, formData:
     };
   });
 
-  if (!validation.success) {
-    return { error: validation.error };
-  }
+  if (!validation.success) return { error: validation.error };
 
   const { id, title, imageFile, isActive } = validation.data;
 
   try {
     if (id) {
-      // UPDATE
-      const existing = await prisma.banner.findUnique({ where: { id } });
-      if (!existing) return { error: 'Banner tidak ditemukan.' };
-
-      let imageUrl = existing.imageUrl;
-      if (imageFile) {
-        const uploaded = await uploadFile(imageFile);
-        if (uploaded) imageUrl = uploaded;
-      }
-
-      await prisma.banner.update({
-        where: { id },
-        data: { title, isActive, imageUrl },
-      });
+      await bannerService.updateBanner(id, { title, imageFile, isActive });
     } else {
-      // CREATE
-      const imageUrl = await uploadFile(imageFile);
-      if (!imageUrl) {
-        return { error: 'Gagal mengunggah gambar.' };
-      }
-
-      await prisma.banner.create({
-        data: { title, imageUrl, isActive },
-      });
+      await bannerService.createBanner({ title, imageFile, isActive });
     }
-
     revalidatePath('/');
     revalidatePath('/admin/banners');
     return { success: true };
   } catch (error: unknown) {
-    console.error('Save Banner Error:', error);
-    return { error: 'Terjadi kesalahan saat menyimpan banner.' };
+    const msg = error instanceof Error ? error.message : 'Gagal menyimpan banner.';
+    return { error: msg };
   }
 }
 
 export async function deleteBannerAction(id: number): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
 
   try {
-    if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid' };
-    await prisma.banner.delete({ where: { id } });
+    await bannerService.deleteBanner(id);
     revalidatePath('/');
     revalidatePath('/admin/banners');
     return { success: true };
   } catch (error: unknown) {
-    console.error('Delete Banner Error:', error);
-    return { error: 'Gagal menghapus banner.' };
+    const msg = error instanceof Error ? error.message : 'Gagal menghapus banner.';
+    return { error: msg };
   }
 }
 
-export async function toggleBannerStatusAction(id: number, currentStatus: boolean): Promise<ActionResult> {
+export async function toggleBannerStatusAction(
+  id: number,
+  currentStatus: boolean
+): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
 
   try {
-    if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid' };
-    await prisma.banner.update({
-      where: { id },
-      data: { isActive: !currentStatus },
-    });
+    await bannerService.toggleBannerStatus(id, currentStatus);
     revalidatePath('/');
     revalidatePath('/admin/banners');
     return { success: true };
   } catch (error: unknown) {
-    console.error('Toggle Banner Error:', error);
-    return { error: 'Gagal mengubah status banner.' };
+    const msg = error instanceof Error ? error.message : 'Gagal mengubah status banner.';
+    return { error: msg };
   }
 }

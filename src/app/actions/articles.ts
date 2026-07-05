@@ -1,27 +1,23 @@
 'use server';
 
-import { db } from '@/lib/db';
+/**
+ * LAYER 3 - ACTION (Controller)
+ * Tanggung jawab: Autentikasi, validasi input, lalu panggil Service.
+ * TIDAK BOLEH ada logika bisnis atau akses database langsung di sini.
+ */
+
 import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { ARTICLE_CATEGORIES } from '@/lib/constants';
-import { uploadFile } from '@/lib/upload';
 import { z, parseForm } from '@/lib/validations';
+import * as articleService from '@/core/services/articleService';
 
 export type ActionResult = { success?: boolean; error?: string };
 
-// Helper: generate slug unik dari judul
-function generateSlug(title: string): string {
-  const base = title
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  const suffix = Math.floor(Math.random() * 10000);
-  return `${base}-${suffix}`;
-}
-
-export async function saveArticleAction(prevState: ActionResult | null, formData: FormData): Promise<ActionResult> {
+export async function saveArticleAction(
+  prevState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Sesi habis. Silakan login kembali.' };
 
@@ -38,81 +34,39 @@ export async function saveArticleAction(prevState: ActionResult | null, formData
     };
   });
 
-  if (!validation.success) {
-    return { error: validation.error };
-  }
+  if (!validation.success) return { error: validation.error };
 
   const { id, title, summary, content, category, status, coverImageFile } = validation.data;
 
   try {
     if (id !== null) {
-      // UPDATE
-      const existing = await db.article.findUnique({ where: { id } });
-      if (!existing) return { error: 'Artikel tidak ditemukan.' };
-
-      let coverImageUrl = existing.coverImage;
-      if (coverImageFile) {
-        const uploaded = await uploadFile(coverImageFile);
-        if (uploaded) coverImageUrl = uploaded;
-      }
-
-      await db.article.update({
-        where: { id },
-        data: {
-          title,
-          summary,
-          content,
-          category,
-          status,
-          coverImage: coverImageUrl,
-        },
-      });
+      await articleService.updateArticle(id, { title, summary, content, category, status, coverImageFile });
     } else {
-      // CREATE
-      const slug = generateSlug(title);
-      const coverImageUrl = await uploadFile(coverImageFile);
-
-      await db.article.create({
-        data: {
-          title,
-          slug,
-          summary,
-          content,
-          category,
-          status,
-          coverImage: coverImageUrl,
-        },
-      });
+      await articleService.createArticle({ title, summary, content, category, status, coverImageFile });
     }
-
     revalidatePath('/admin/articles');
     revalidatePath('/articles');
     revalidatePath('/');
     return { success: true };
-  } catch (error) {
-    console.error('Save article error:', error);
-    return { error: 'Gagal menyimpan artikel. Pastikan koneksi database aktif.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal menyimpan artikel.';
+    return { error: msg };
   }
 }
 
 export async function deleteArticleAction(id: number): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Sesi habis. Silakan login kembali.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID artikel tidak valid.' };
 
   try {
-    if (!id || isNaN(id) || id <= 0) return { error: 'ID artikel tidak valid.' };
-
-    const existing = await db.article.findUnique({ where: { id } });
-    if (!existing) return { error: 'Artikel tidak ditemukan.' };
-
-    await db.article.delete({ where: { id } });
-
+    await articleService.deleteArticle(id);
     revalidatePath('/admin/articles');
     revalidatePath('/articles');
     revalidatePath('/');
     return { success: true };
-  } catch (error) {
-    console.error('Delete article error:', error);
-    return { error: 'Gagal menghapus artikel.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal menghapus artikel.';
+    return { error: msg };
   }
 }

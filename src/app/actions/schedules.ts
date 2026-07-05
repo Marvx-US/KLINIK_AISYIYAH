@@ -1,13 +1,20 @@
 'use server';
 
-import { db } from '@/lib/db';
-import { revalidatePath } from 'next/cache';
+/**
+ * LAYER 3 - ACTION (Controller)
+ */
+
 import { getSession } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 import { z, parseForm } from '@/lib/validations';
+import * as scheduleService from '@/core/services/scheduleService';
 
-const prisma = db as any;
+export type ActionResult = { success?: boolean; error?: string };
 
-export async function saveScheduleAction(prevState: any, formData: FormData) {
+export async function saveScheduleAction(
+  prevState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized. Sesi telah habis.' };
 
@@ -17,73 +24,64 @@ export async function saveScheduleAction(prevState: any, formData: FormData) {
       id: id ? z.number(id, 'ID Jadwal') : null,
       poli: z.maxLength(z.string(formData.get('poli'), 'Poli'), 100, 'Poli'),
       doctorName: z.maxLength(z.string(formData.get('doctorName'), 'Nama Dokter'), 100, 'Nama Dokter'),
-      scheduleInfo: z.maxLength(z.string(formData.get('scheduleInfo'), 'Informasi Jadwal'), 500, 'Informasi Jadwal'),
+      scheduleInfo: z.maxLength(
+        z.string(formData.get('scheduleInfo'), 'Informasi Jadwal'),
+        500,
+        'Informasi Jadwal'
+      ),
     };
   });
 
-  if (!validation.success) {
-    return { error: validation.error };
-  }
+  if (!validation.success) return { error: validation.error };
 
   const { id, poli, doctorName, scheduleInfo } = validation.data;
 
   try {
     if (id) {
-      // UPDATE
-      const existing = await prisma.doctorSchedule.findUnique({ where: { id } });
-      if (!existing) return { error: 'Jadwal tidak ditemukan.' };
-
-      await prisma.doctorSchedule.update({
-        where: { id },
-        data: { poli, doctorName, scheduleInfo },
-      });
+      await scheduleService.updateSchedule(id, { poli, doctorName, scheduleInfo });
     } else {
-      // CREATE
-      await prisma.doctorSchedule.create({
-        data: { poli, doctorName, scheduleInfo },
-      });
+      await scheduleService.createSchedule({ poli, doctorName, scheduleInfo });
     }
-
     revalidatePath('/');
     revalidatePath('/admin/schedules');
     return { success: true };
-  } catch (error: any) {
-    console.error('saveScheduleAction error:', error);
-    return { error: 'Terjadi kesalahan sistem saat menyimpan jadwal.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal menyimpan jadwal.';
+    return { error: msg };
   }
 }
 
-export async function deleteScheduleAction(id: number) {
+export async function deleteScheduleAction(id: number): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
 
   try {
-    if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid' };
-    await prisma.doctorSchedule.delete({ where: { id } });
+    await scheduleService.deleteSchedule(id);
     revalidatePath('/');
     revalidatePath('/admin/schedules');
     return { success: true };
-  } catch (error: any) {
-    console.error('deleteScheduleAction error:', error);
-    return { error: 'Gagal menghapus jadwal.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal menghapus jadwal.';
+    return { error: msg };
   }
 }
 
-export async function toggleScheduleStatusAction(id: number, currentStatus: boolean) {
+export async function toggleScheduleStatusAction(
+  id: number,
+  currentStatus: boolean
+): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
 
   try {
-    if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid' };
-    await prisma.doctorSchedule.update({
-      where: { id },
-      data: { isActive: !currentStatus },
-    });
+    await scheduleService.toggleScheduleStatus(id, currentStatus);
     revalidatePath('/');
     revalidatePath('/admin/schedules');
     return { success: true };
-  } catch (error: any) {
-    console.error('toggleScheduleStatusAction error:', error);
-    return { error: 'Gagal mengubah status.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal mengubah status jadwal.';
+    return { error: msg };
   }
 }

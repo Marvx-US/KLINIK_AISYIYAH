@@ -1,17 +1,14 @@
 import React from 'react';
-import { db } from '@/lib/db';
-import { type Event } from '@prisma/client';
-import EventsManager from './EventsManager';
+import { getAllEvents } from '@/core/services/eventService';
+import EventsManager from '@/features/events/components/EventsManager';
 
 export const revalidate = 0;
 
 export default async function AdminEventsPage() {
-  let events: Event[] = [];
+  let events: Awaited<ReturnType<typeof getAllEvents>> = [];
 
   try {
-    events = await db.event.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+    events = await getAllEvents();
   } catch (error) {
     console.error('Error fetching events for admin:', error);
   }

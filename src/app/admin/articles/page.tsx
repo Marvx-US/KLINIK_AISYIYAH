@@ -1,17 +1,14 @@
 import React from 'react';
-import { db } from '@/lib/db';
-import { type Article } from '@prisma/client';
-import ArticlesManager from './ArticlesManager';
+import { getAllArticles } from '@/core/services/articleService';
+import ArticlesManager from '@/features/articles/components/ArticlesManager';
 
 export const revalidate = 0;
 
 export default async function AdminArticlesPage() {
-  let articles: Article[] = [];
+  let articles: Awaited<ReturnType<typeof getAllArticles>> = [];
 
   try {
-    articles = await db.article.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+    articles = await getAllArticles();
   } catch (error) {
     console.error('Error fetching articles for admin:', error);
   }

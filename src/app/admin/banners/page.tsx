@@ -1,15 +1,19 @@
 import React from 'react';
-import { db } from '@/lib/db';
-import BannersManager from './BannersManager';
+import { getAllBanners } from '@/core/services/bannerService';
+import BannersManager from '@/features/banners/components/BannersManager';
 
 export const metadata = {
   title: 'Kelola Banner - Admin Klinik Aisyiyah',
 };
 
 export default async function AdminBannersPage() {
-  const banners = await (db as any).banner.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
+  let banners: Awaited<ReturnType<typeof getAllBanners>> = [];
+
+  try {
+    banners = await getAllBanners();
+  } catch (error) {
+    console.error('Error fetching banners for admin:', error);
+  }
 
   return (
     <div className="max-w-5xl mx-auto">

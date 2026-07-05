@@ -1,103 +1,81 @@
 'use server';
 
-import { db } from '@/lib/db';
-import { revalidatePath } from 'next/cache';
+/**
+ * LAYER 3 - ACTION (Controller)
+ */
+
 import { getSession } from '@/lib/auth';
-import { uploadFile } from '@/lib/upload';
+import { revalidatePath } from 'next/cache';
 import { z, parseForm } from '@/lib/validations';
+import * as facilityService from '@/core/services/facilityService';
 
-const prisma = db as any;
+export type ActionResult = { success?: boolean; error?: string };
 
-export async function saveFacilityAction(formData: FormData) {
+export async function saveFacilityAction(formData: FormData): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized. Sesi telah habis.' };
 
-  // Strict Validation
   const validation = parseForm(() => {
     const id = formData.get('id') as string | null;
     return {
       id: id ? z.number(id, 'ID Fasilitas') : null,
       name: z.maxLength(z.string(formData.get('name'), 'Nama Fasilitas'), 100, 'Nama Fasilitas'),
       description: z.maxLength(z.string(formData.get('description'), 'Deskripsi'), 500, 'Deskripsi'),
-      imageFile: z.file(formData.get('image'), 'Gambar', !id), // Required if NEW (!id)
+      imageFile: z.file(formData.get('image'), 'Gambar', !id),
       isActive: z.boolean(formData.get('isActive')),
     };
   });
 
-  if (!validation.success) {
-    return { error: validation.error };
-  }
+  if (!validation.success) return { error: validation.error };
 
   const { id, name, description, imageFile, isActive } = validation.data;
 
   try {
     if (id) {
-      // UPDATE
-      const existing = await prisma.facility.findUnique({ where: { id } });
-      if (!existing) return { error: 'Fasilitas tidak ditemukan.' };
-
-      let imageUrl = existing.imageUrl;
-      if (imageFile) {
-        const uploaded = await uploadFile(imageFile);
-        if (uploaded) imageUrl = uploaded;
-      }
-
-      await prisma.facility.update({
-        where: { id },
-        data: { name, description, imageUrl, isActive },
-      });
+      await facilityService.updateFacility(id, { name, description, imageFile, isActive });
     } else {
-      // CREATE
-      const imageUrl = await uploadFile(imageFile);
-      if (!imageUrl) {
-        return { error: 'Gagal mengunggah gambar.' };
-      }
-
-      await prisma.facility.create({
-        data: { name, description, imageUrl, isActive },
-      });
+      await facilityService.createFacility({ name, description, imageFile, isActive });
     }
-
     revalidatePath('/');
     revalidatePath('/admin/facilities');
     return { success: true };
-  } catch (error: any) {
-    console.error('Error saving facility:', error);
-    return { error: 'Terjadi kesalahan sistem saat menyimpan fasilitas.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal menyimpan fasilitas.';
+    return { error: msg };
   }
 }
 
-export async function deleteFacilityAction(id: number) {
+export async function deleteFacilityAction(id: number): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
 
   try {
-    if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid' };
-    await prisma.facility.delete({ where: { id } });
+    await facilityService.deleteFacility(id);
     revalidatePath('/');
     revalidatePath('/admin/facilities');
     return { success: true };
-  } catch (error: any) {
-    console.error('Error deleting facility:', error);
-    return { error: 'Gagal menghapus fasilitas.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal menghapus fasilitas.';
+    return { error: msg };
   }
 }
 
-export async function toggleFacilityStatusAction(id: number, currentStatus: boolean) {
+export async function toggleFacilityStatusAction(
+  id: number,
+  currentStatus: boolean
+): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
 
   try {
-    if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid' };
-    await prisma.facility.update({
-      where: { id },
-      data: { isActive: !currentStatus },
-    });
+    await facilityService.toggleFacilityStatus(id, currentStatus);
     revalidatePath('/');
     revalidatePath('/admin/facilities');
     return { success: true };
-  } catch (error: any) {
-    console.error('Error toggling facility status:', error);
-    return { error: 'Gagal mengubah status.' };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Gagal mengubah status.';
+    return { error: msg };
   }
 }
