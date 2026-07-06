@@ -83,7 +83,7 @@ export default function HeroSection({
               hasBanners ? 'text-gray-200 font-medium' : 'text-text-muted'
             }`}>
               Klinik Aisyiyah berkomitmen memberikan layanan kesehatan bermutu tinggi, mudah
-              diakses, serta ramah bagi seluruh anggota masyarakat Yogyakarta.
+              diakses, serta ramah bagi seluruh anggota masyarakat Sidenreng Rappang.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <Link

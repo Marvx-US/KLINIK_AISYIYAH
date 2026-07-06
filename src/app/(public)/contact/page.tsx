@@ -31,7 +31,7 @@ const CONTACT_ITEMS: ContactItem[] = [
   },
   {
     title: 'Alamat Fisik',
-    desc: 'Gedung Klinik Utama Aisyiyah di Yogyakarta.',
+    desc: 'Gedung Klinik Utama Aisyiyah di Pangkajene.',
     detail: KLINIK_INFO.address,
     icon: MapPin,
     actionText: 'Buka Google Maps',

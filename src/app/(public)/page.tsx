@@ -21,7 +21,7 @@ export const revalidate = 0;
  * Semua data diambil via Service Layer (bukan langsung ke DB).
  */
 export default async function HomePage() {
-  // Fetch data secara paralel untuk performa optimal
+  
   const [rawArticles, rawEvents, banners, schedules, facilities, partners] = await Promise.all([
     getPublishedArticles().catch(() => []),
     getPublishedEvents().catch(() => []),
