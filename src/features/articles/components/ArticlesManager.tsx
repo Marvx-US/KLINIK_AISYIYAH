@@ -5,9 +5,13 @@ import { useRouter } from 'next/navigation';
 import { saveArticleAction, deleteArticleAction } from '@/app/actions/articles';
 
 import { ARTICLE_CATEGORIES } from '@/lib/constants';
-import { Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, FileText, Image as ImageIcon } from 'lucide-react';
+import { 
+  Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, 
+  FileText, Image as ImageIcon, Tag, Calendar 
+} from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import RichTextEditor from '@/components/ui/RichTextEditor';
+import { sanitizeHtml } from '@/lib/sanitizeHtml';
 
 import { type Article } from '@prisma/client';
 
@@ -22,7 +26,17 @@ export default function ArticlesManager({ initialArticles }: ArticlesManagerProp
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(saveArticleAction, null);
   const [deletePendingId, setDeletePendingId] = useState<number | null>(null);
+  
+  // Controlled inputs states for previewing
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  const [category, setCategory] = useState('');
+  const [status, setStatus] = useState('DRAFT');
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
   const [editorContent, setEditorContent] = useState('');
+  
+  // Navigation tabs state
+  const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -38,21 +52,53 @@ export default function ArticlesManager({ initialArticles }: ArticlesManagerProp
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsFormOpen(false);
       setEditingArticle(null);
-      // Proper Next.js pattern: refresh server component data tanpa full page reload
       router.refresh();
     }
   }, [state, router]);
 
+  // Clean up Object URL to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (coverImagePreview && coverImagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImagePreview);
+      }
+    };
+  }, [coverImagePreview]);
+
   const handleEdit = (article: Article) => {
     setEditingArticle(article);
     setEditorContent(article.content);
+    setTitle(article.title);
+    setSummary(article.summary);
+    setCategory(article.category);
+    setStatus(article.status);
+    setCoverImagePreview(article.coverImage || null);
+    setActiveTab('edit');
     setIsFormOpen(true);
   };
 
   const handleCreateNew = () => {
     setEditingArticle(null);
     setEditorContent('');
+    setTitle('');
+    setSummary('');
+    setCategory('');
+    setStatus('DRAFT');
+    setCoverImagePreview(null);
+    setActiveTab('edit');
     setIsFormOpen(true);
+  };
+
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Revoke previous blob URL if exists
+      if (coverImagePreview && coverImagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImagePreview);
+      }
+      const objectUrl = URL.createObjectURL(file);
+      setCoverImagePreview(objectUrl);
+    }
   };
 
   const requestDelete = (id: number) => {
@@ -88,7 +134,6 @@ export default function ArticlesManager({ initialArticles }: ArticlesManagerProp
     setDeletePendingId(null);
   };
 
-
   return (
     <div className="space-y-8">
       {/* Top Header */}
@@ -123,123 +168,214 @@ export default function ArticlesManager({ initialArticles }: ArticlesManagerProp
       {/* Form Editor View */}
       {isFormOpen ? (
         <div className="bg-white rounded-3xl border-fine p-8 shadow-sm">
+          {/* Back button */}
           <button
             onClick={() => setIsFormOpen(false)}
-            className="inline-flex items-center gap-1.5 text-text-muted hover:text-text-dark text-xs font-semibold mb-8"
+            className="inline-flex items-center gap-1.5 text-text-muted hover:text-text-dark text-xs font-semibold mb-6"
           >
             <ArrowLeft className="h-4 w-4" />
             Kembali ke Daftar
           </button>
+
+          {/* Navigation Tabs */}
+          <div className="flex border-b border-border-fine mb-8">
+            <button
+              type="button"
+              onClick={() => setActiveTab('edit')}
+              className={`py-3 px-6 text-sm font-semibold border-b-2 transition-all ${
+                activeTab === 'edit'
+                  ? 'border-primary text-primary font-bold'
+                  : 'border-transparent text-text-muted hover:text-text-dark'
+              }`}
+            >
+              Tulis Artikel
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('preview')}
+              className={`py-3 px-6 text-sm font-semibold border-b-2 transition-all ${
+                activeTab === 'preview'
+                  ? 'border-primary text-primary font-bold'
+                  : 'border-transparent text-text-muted hover:text-text-dark'
+              }`}
+            >
+              Pratinjau (Live Preview)
+            </button>
+          </div>
 
           <form action={formAction} className="space-y-6">
             {editingArticle && (
               <input type="hidden" name="id" value={editingArticle.id} />
             )}
 
-            {/* Title */}
-            <div>
-              <label htmlFor="title" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
-                Judul Artikel
-              </label>
-              <input
-                id="title"
-                name="title"
-                type="text"
-                required
-                defaultValue={editingArticle?.title || ''}
-                placeholder="Masukkan judul artikel..."
-                className="w-full bg-white border border-border-fine rounded-full py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all"
-              />
-            </div>
-
-            {/* Kategori & Status */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* EDIT TAB CONTENT */}
+            <div className={activeTab === 'edit' ? 'space-y-6' : 'hidden'}>
+              {/* Title */}
               <div>
-                <label htmlFor="category" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
-                  Kategori
+                <label htmlFor="title" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
+                  Judul Artikel
                 </label>
-                <select
-                  id="category"
-                  name="category"
-                  required
-                  defaultValue={editingArticle?.category || ''}
-                  className="w-full bg-white border border-border-fine rounded-2xl py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all"
-                >
-                  <option value="" disabled>Pilih Kategori</option>
-                  {ARTICLE_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="status" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
-                  Status
-                </label>
-                <select
-                  id="status"
-                  name="status"
-                  required
-                  defaultValue={editingArticle?.status || 'DRAFT'}
-                  className="w-full bg-white border border-border-fine rounded-2xl py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all"
-                >
-                  <option value="DRAFT">Draf (Sembunyikan)</option>
-                  <option value="PUBLISHED">Publikasikan</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Foto Sampul */}
-            <div>
-              <label htmlFor="coverImage" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
-                Foto Sampul (Opsional)
-              </label>
-              {editingArticle?.coverImage && (
-                <div className="mb-3">
-                  <span className="text-xs text-text-muted block mb-1">Foto saat ini:</span>
-                  <img src={editingArticle.coverImage} alt="Cover" className="w-48 h-auto rounded-lg border border-border-fine object-cover" />
-                </div>
-              )}
-              <div className="flex items-center gap-3 w-full bg-white border border-border-fine rounded-2xl py-2 px-4 focus-within:border-primary transition-all">
-                <ImageIcon className="w-5 h-5 text-text-muted flex-shrink-0" />
                 <input
-                  type="file"
-                  id="coverImage"
-                  name="coverImage"
-                  accept="image/*"
-                  className="w-full text-sm font-sans text-text-dark file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all cursor-pointer"
+                  id="title"
+                  name="title"
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Masukkan judul artikel..."
+                  className="w-full bg-white border border-border-fine rounded-full py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all"
                 />
               </div>
-              <p className="text-xs text-text-muted mt-2">Format: JPG, PNG. Rekomendasi ukuran 1200x630px.</p>
+
+              {/* Kategori & Status */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="category" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
+                    Kategori
+                  </label>
+                  <select
+                    id="category"
+                    name="category"
+                    required
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-white border border-border-fine rounded-2xl py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all"
+                  >
+                    <option value="" disabled>Pilih Kategori</option>
+                    {ARTICLE_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="status" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
+                    Status
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    required
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full bg-white border border-border-fine rounded-2xl py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all"
+                  >
+                    <option value="DRAFT">Draf (Sembunyikan)</option>
+                    <option value="PUBLISHED">Publikasikan</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Foto Sampul */}
+              <div>
+                <label htmlFor="coverImage" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
+                  Foto Sampul (Opsional)
+                </label>
+                {coverImagePreview && (
+                  <div className="mb-3">
+                    <span className="text-xs text-text-muted block mb-1">Foto Sampul Saat Ini / Terpilih:</span>
+                    <img 
+                      src={coverImagePreview} 
+                      alt="Cover Preview" 
+                      className="w-48 h-auto rounded-lg border border-border-fine object-cover" 
+                    />
+                  </div>
+                )}
+                <div className="flex items-center gap-3 w-full bg-white border border-border-fine rounded-2xl py-2 px-4 focus-within:border-primary transition-all">
+                  <ImageIcon className="w-5 h-5 text-text-muted flex-shrink-0" />
+                  <input
+                    type="file"
+                    id="coverImage"
+                    name="coverImage"
+                    accept="image/*"
+                    onChange={handleCoverImageChange}
+                    className="w-full text-sm font-sans text-text-dark file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all cursor-pointer"
+                  />
+                </div>
+                <p className="text-xs text-text-muted mt-2">Format: JPG, PNG. Rekomendasi ukuran 1200x630px.</p>
+              </div>
+
+              {/* Summary */}
+              <div>
+                <label htmlFor="summary" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
+                  Ringkasan Singkat (Summary)
+                </label>
+                <textarea
+                  id="summary"
+                  name="summary"
+                  required
+                  rows={3}
+                  value={summary}
+                  onChange={(e) => setSummary(e.target.value)}
+                  placeholder="Masukkan ringkasan singkat 2-3 kalimat untuk card depan..."
+                  className="w-full bg-white border border-border-fine rounded-2xl py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all resize-none"
+                />
+              </div>
+
+              {/* Content (HTML Editor area) */}
+              <div>
+                <label className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
+                  Isi Artikel
+                </label>
+                <input type="hidden" name="content" value={editorContent} />
+                <RichTextEditor value={editorContent} onChange={setEditorContent} />
+              </div>
             </div>
 
-            {/* Summary */}
-            <div>
-              <label htmlFor="summary" className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
-                Ringkasan Singkat (Summary)
-              </label>
-              <textarea
-                id="summary"
-                name="summary"
-                required
-                rows={3}
-                defaultValue={editingArticle?.summary || ''}
-                placeholder="Masukkan ringkasan singkat 2-3 kalimat untuk card depan..."
-                className="w-full bg-white border border-border-fine rounded-2xl py-3 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all resize-none"
-              />
+            {/* PREVIEW TAB CONTENT */}
+            <div className={activeTab === 'preview' ? 'block space-y-8 bg-bg-snow/40 p-6 sm:p-8 rounded-3xl border border-border-fine' : 'hidden'}>
+              {/* Alert status preview */}
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-light text-primary text-xs font-semibold border border-primary/10 mb-4">
+                <AlertCircle className="w-4 h-4" />
+                <span>Mode Pratinjau: Artikel ini akan ditampilkan dengan status <strong>{status}</strong>.</span>
+              </div>
+
+              {/* Mock Detail Page */}
+              <div className="max-w-4xl mx-auto bg-white p-8 sm:p-12 rounded-2xl border border-border-fine shadow-sm">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light text-primary text-xs font-semibold tracking-wide uppercase mb-6 border border-primary/10">
+                  <Tag className="h-3.5 w-3.5" />
+                  {category || 'Kategori Artikel'}
+                </span>
+                
+                <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-dark tracking-tight leading-[1.2] mb-6 font-editorial-serif">
+                  {title || 'Judul Artikel Anda Akan Tampil di Sini'}
+                </h1>
+
+                <div className="flex flex-wrap items-center gap-4 text-text-muted text-xs mb-8 border-b border-border-fine pb-6">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5 text-primary" />
+                    <span>{new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  </div>
+                  <span>•</span>
+                  <span>Ditulis oleh: <strong>Klinik Aisyiyah (Admin)</strong></span>
+                </div>
+
+                {summary && (
+                  <div className="bg-bg-snow p-5 rounded-xl border-l-4 border-primary text-text-muted text-sm italic mb-8">
+                    {summary}
+                  </div>
+                )}
+
+                {coverImagePreview && (
+                  <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-border-fine mb-8">
+                    <img 
+                      src={coverImagePreview} 
+                      alt="Cover Preview" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                )}
+
+                {/* HTML content render */}
+                <div 
+                  className="prose prose-neutral max-w-none font-sans text-text-dark/95 leading-relaxed text-base"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(editorContent || '<p className="text-text-muted italic">Isi konten masih kosong. Tulis artikel pada tab Tulis Artikel.</p>') }}
+                />
+              </div>
             </div>
 
-            {/* Content (HTML Editor area) */}
-            <div>
-              <label className="block text-xs font-bold text-text-dark uppercase tracking-wider mb-2">
-                Isi Artikel
-              </label>
-              <input type="hidden" name="content" value={editorContent} />
-              <RichTextEditor value={editorContent} onChange={setEditorContent} />
-            </div>
-
-            {/* Submit */}
-            <div className="flex gap-4">
+            {/* Submit & Cancel Buttons */}
+            <div className="flex gap-4 pt-4 border-t border-border-fine">
               <button
                 type="submit"
                 disabled={isPending}

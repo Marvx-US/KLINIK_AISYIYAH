@@ -6,7 +6,7 @@
 export const KLINIK_INFO = {
   name: 'Klinik Aisyiyah',
   tagline: 'Kesehatan Masyarakat',
-  address: 'Jl. Jenderal Sudirman No. 45, Yogyakarta, Indonesia',
+  address: 'Jl. Jenderal Sudirman No. 45, Pangkajene, Indonesia',
   phone: '+62 812-3456-7890',
   whatsapp: '6281234567890',
   email: 'info@klinikaisyiyah.com',

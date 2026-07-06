@@ -21,7 +21,7 @@ export default function PartnersCarouselSection({ partners }: PartnersCarouselSe
     <section className="py-16 md:py-24 w-full bg-transparent overflow-hidden flex flex-col justify-center items-center">
       <div className="max-w-7xl mx-auto px-6 mb-12 text-center w-full flex flex-col items-center">
         <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-border-fine shadow-sm text-xs font-bold tracking-widest uppercase text-primary mb-3">
-          Jaringan Kemitraan
+          Kerja Sama Kemitraan
         </span>
         <h3 className="font-heading font-extrabold text-2xl md:text-3xl text-text-dark tracking-tight">
           Telah Dipercaya Oleh
