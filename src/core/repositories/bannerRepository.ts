@@ -3,18 +3,25 @@
  */
 
 import { db } from '@/lib/db';
+import { unstable_cache } from 'next/cache';
 
-export async function findAllBanners() {
-  return (db as any).banner.findMany({ orderBy: { createdAt: 'desc' } });
-}
+export const findAllBanners = unstable_cache(
+  async () => (db as any).banner.findMany({ orderBy: { createdAt: 'desc' } }),
+  ['banners-all'],
+  { revalidate: 60, tags: ['banners'] }
+);
 
-export async function findActiveBanners() {
-  return (db as any).banner.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: 'desc' },
-  });
-}
+export const findActiveBanners = unstable_cache(
+  async () =>
+    (db as any).banner.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+    }),
+  ['banners-active'],
+  { revalidate: 60, tags: ['banners'] }
+);
 
+// Fungsi WRITE — tidak di-cache
 export async function findBannerById(id: number) {
   return (db as any).banner.findUnique({ where: { id } });
 }

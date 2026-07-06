@@ -1,29 +1,40 @@
-﻿/**
+/**
  * LAYER 1 - REPOSITORY
  * Hanya berisi operasi database mentah (CRUD).
  * Tidak ada validasi, tidak ada logika bisnis.
  */
 
 import { db } from '@/lib/db';
+import { unstable_cache } from 'next/cache';
 
-export async function findAllArticles() {
-  return db.article.findMany({ orderBy: { createdAt: 'desc' } });
-}
+export const findAllArticles = unstable_cache(
+  async () => db.article.findMany({ orderBy: { createdAt: 'desc' } }),
+  ['articles-all'],
+  { revalidate: 60, tags: ['articles'] }
+);
 
-export async function findPublishedArticles() {
-  return db.article.findMany({
-    where: { status: 'PUBLISHED' },
-    orderBy: { createdAt: 'desc' },
-  });
-}
+export const findPublishedArticles = unstable_cache(
+  async () =>
+    db.article.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { createdAt: 'desc' },
+    }),
+  ['articles-published'],
+  { revalidate: 60, tags: ['articles'] }
+);
 
+export const findArticleBySlug = unstable_cache(
+  async (slug: string) => db.article.findUnique({ where: { slug } }),
+  ['article-by-slug'],
+  { revalidate: 60, tags: ['articles'] }
+);
+
+
+// Fungsi WRITE — tidak di-cache
 export async function findArticleById(id: number) {
   return db.article.findUnique({ where: { id } });
 }
 
-export async function findArticleBySlug(slug: string) {
-  return db.article.findUnique({ where: { slug } });
-}
 
 export async function createArticle(data: {
   title: string;

@@ -6,7 +6,16 @@ import { getArticleBySlug, getPublishedArticles } from '@/core/services/articleS
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
 import { ArrowLeft, Calendar, User, Tag, Heart } from 'lucide-react';
 
-export const revalidate = 0;
+export const revalidate = 60; // ISR: re-generate tiap 1 menit
+
+export async function generateStaticParams() {
+  try {
+    const articles = await getPublishedArticles();
+    return articles.map((a) => ({ slug: a.slug }));
+  } catch {
+    return [];
+  }
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -14,6 +23,7 @@ interface PageProps {
 
 import type { Metadata, ResolvingMetadata } from 'next';
 import { KLINIK_INFO } from '@/lib/constants';
+
 
 export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { slug } = await params;

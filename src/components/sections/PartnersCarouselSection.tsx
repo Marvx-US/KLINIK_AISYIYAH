@@ -49,6 +49,7 @@ export default function PartnersCarouselSection({ partners }: PartnersCarouselSe
                 alt={partner.name} 
                 width={192}
                 height={80}
+                loading="lazy"
                 className="max-h-full max-w-full object-contain filter drop-shadow-sm"
               />
             </div>
@@ -68,6 +69,7 @@ export default function PartnersCarouselSection({ partners }: PartnersCarouselSe
                 alt={partner.name} 
                 width={192}
                 height={80}
+                loading="lazy"
                 className="max-h-full max-w-full object-contain filter drop-shadow-sm"
               />
             </div>

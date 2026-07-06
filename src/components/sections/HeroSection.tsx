@@ -52,6 +52,8 @@ export default function HeroSection({
             alt={banner.title} 
             fill
             priority={idx === 0}
+            fetchPriority={idx === 0 ? 'high' : 'low'}
+            sizes="(max-width: 768px) 100vw, 100vw"
             className="object-cover" 
           />
           {/* Overlay gradien gelap agar teks tetap terbaca */}

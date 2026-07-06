@@ -6,7 +6,16 @@ import { getEventBySlug, getPublishedEvents } from '@/core/services/eventService
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
 import { ArrowLeft, Calendar, MapPin, Tag, Share2, Info } from 'lucide-react';
 
-export const revalidate = 0;
+export const revalidate = 60; // ISR: re-generate tiap 1 menit
+
+export async function generateStaticParams() {
+  try {
+    const events = await getPublishedEvents();
+    return events.map((e) => ({ slug: e.slug }));
+  } catch {
+    return [];
+  }
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;

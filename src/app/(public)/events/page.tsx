@@ -5,7 +5,7 @@ import { FALLBACK_EVENTS } from '@/lib/constants';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
 import EmptyState from '@/components/ui/EmptyState';
 
-export const revalidate = 0;
+export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
 interface PageProps {
   searchParams: Promise<{ q?: string }>;

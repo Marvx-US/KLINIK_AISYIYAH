@@ -3,18 +3,25 @@
  */
 
 import { db } from '@/lib/db';
+import { unstable_cache } from 'next/cache';
 
-export async function findAllPartners() {
-  return (db as any).partner.findMany({ orderBy: { createdAt: 'desc' } });
-}
+export const findAllPartners = unstable_cache(
+  async () => (db as any).partner.findMany({ orderBy: { createdAt: 'desc' } }),
+  ['partners-all'],
+  { revalidate: 60, tags: ['partners'] }
+);
 
-export async function findActivePartners() {
-  return (db as any).partner.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: 'asc' },
-  });
-}
+export const findActivePartners = unstable_cache(
+  async () =>
+    (db as any).partner.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'asc' },
+    }),
+  ['partners-active'],
+  { revalidate: 60, tags: ['partners'] }
+);
 
+// Fungsi WRITE — tidak di-cache
 export async function findPartnerById(id: number) {
   return (db as any).partner.findUnique({ where: { id } });
 }

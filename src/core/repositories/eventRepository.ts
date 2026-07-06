@@ -1,27 +1,39 @@
-﻿/**
+/**
  * LAYER 1 - REPOSITORY
  * Hanya berisi operasi database mentah (CRUD).
  */
 
 import { db } from '@/lib/db';
+import { unstable_cache } from 'next/cache';
 
-export async function findAllEvents() {
-  return db.event.findMany({ orderBy: { createdAt: 'desc' } });
-}
+// ── READ (di-cache) ─────────────────────────────────────────────────────────
 
-export async function findPublishedEvents() {
-  return db.event.findMany({
-    where: { status: 'PUBLISHED' },
-    orderBy: { eventDate: 'desc' },
-  });
-}
+export const findAllEvents = unstable_cache(
+  async () => db.event.findMany({ orderBy: { createdAt: 'desc' } }),
+  ['events-all'],
+  { revalidate: 60, tags: ['events'] }
+);
+
+export const findPublishedEvents = unstable_cache(
+  async () =>
+    db.event.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { eventDate: 'desc' },
+    }),
+  ['events-published'],
+  { revalidate: 60, tags: ['events'] }
+);
+
+export const findEventBySlug = unstable_cache(
+  async (slug: string) => db.event.findUnique({ where: { slug } }),
+  ['event-by-slug'],
+  { revalidate: 60, tags: ['events'] }
+);
+
+// ── WRITE (tidak di-cache) ───────────────────────────────────────────────────
 
 export async function findEventById(id: number) {
   return db.event.findUnique({ where: { id } });
-}
-
-export async function findEventBySlug(slug: string) {
-  return db.event.findUnique({ where: { slug } });
 }
 
 export async function createEvent(data: {

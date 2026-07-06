@@ -3,18 +3,25 @@
  */
 
 import { db } from '@/lib/db';
+import { unstable_cache } from 'next/cache';
 
-export async function findAllSchedules() {
-  return (db as any).doctorSchedule.findMany({ orderBy: { poli: 'asc' } });
-}
+export const findAllSchedules = unstable_cache(
+  async () => (db as any).doctorSchedule.findMany({ orderBy: { poli: 'asc' } }),
+  ['schedules-all'],
+  { revalidate: 60, tags: ['schedules'] }
+);
 
-export async function findActiveSchedules() {
-  return (db as any).doctorSchedule.findMany({
-    where: { isActive: true },
-    orderBy: { poli: 'asc' },
-  });
-}
+export const findActiveSchedules = unstable_cache(
+  async () =>
+    (db as any).doctorSchedule.findMany({
+      where: { isActive: true },
+      orderBy: { poli: 'asc' },
+    }),
+  ['schedules-active'],
+  { revalidate: 60, tags: ['schedules'] }
+);
 
+// Fungsi WRITE — tidak di-cache
 export async function findScheduleById(id: number) {
   return (db as any).doctorSchedule.findUnique({ where: { id } });
 }

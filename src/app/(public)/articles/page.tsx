@@ -6,7 +6,7 @@ import { FALLBACK_ARTICLES, ARTICLE_CATEGORIES_FILTER } from '@/lib/constants';
 import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EmptyState from '@/components/ui/EmptyState';
 
-export const revalidate = 0;
+export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
 interface PageProps {
   searchParams: Promise<{ q?: string; category?: string }>;

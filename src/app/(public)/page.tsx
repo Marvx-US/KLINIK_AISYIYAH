@@ -11,10 +11,18 @@ import ServicesSection from '@/components/sections/ServicesSection';
 import SectionHeader from '@/components/ui/SectionHeader';
 import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
-import FacilityGallerySection from '@/components/sections/FacilityGallerySection';
-import PartnersCarouselSection from '@/components/sections/PartnersCarouselSection';
+import dynamic from 'next/dynamic';
 
-export const revalidate = 0;
+const FacilityGallerySection = dynamic(
+  () => import('@/components/sections/FacilityGallerySection'),
+  { ssr: true }
+);
+const PartnersCarouselSection = dynamic(
+  () => import('@/components/sections/PartnersCarouselSection'),
+  { ssr: true }
+);
+
+export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
 /**
  * HomePage — Halaman utama website Klinik Aisyiyah.

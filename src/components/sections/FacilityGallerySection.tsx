@@ -37,6 +37,7 @@ export default function FacilityGallerySection({ facilities }: FacilityGallerySe
               width={600}
               height={450}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              loading="lazy"
               className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
             />
             
