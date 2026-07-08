@@ -30,6 +30,16 @@ export async function saveFacilityAction(formData: FormData): Promise<ActionResu
 
   const { id, name, description, imageFile, isActive } = validation.data;
 
+  // Validasi file gambar jika ada
+  if (imageFile) {
+    if (!imageFile.type.startsWith('image/')) {
+      return { error: 'File yang diunggah harus berupa gambar.' };
+    }
+    if (imageFile.size > 5 * 1024 * 1024) {
+      return { error: 'Ukuran gambar tidak boleh melebihi 5 MB.' };
+    }
+  }
+
   try {
     if (id) {
       await facilityService.updateFacility(id, { name, description, imageFile, isActive });

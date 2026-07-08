@@ -32,6 +32,16 @@ export async function saveBannerAction(
 
   const { id, title, imageFile, isActive } = validation.data;
 
+  // Validasi file gambar jika ada
+  if (imageFile) {
+    if (!imageFile.type.startsWith('image/')) {
+      return { error: 'File yang diunggah harus berupa gambar.' };
+    }
+    if (imageFile.size > 5 * 1024 * 1024) {
+      return { error: 'Ukuran gambar tidak boleh melebihi 5 MB.' };
+    }
+  }
+
   try {
     if (id) {
       await bannerService.updateBanner(id, { title, imageFile, isActive });

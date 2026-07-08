@@ -43,6 +43,16 @@ export async function saveEventAction(
 
   const { id, title, content, location, coverImageFile, status, eventDate } = validation.data;
 
+  // Validasi file gambar cover jika ada
+  if (coverImageFile) {
+    if (!coverImageFile.type.startsWith('image/')) {
+      return { error: 'File yang diunggah harus berupa gambar.' };
+    }
+    if (coverImageFile.size > 5 * 1024 * 1024) {
+      return { error: 'Ukuran gambar tidak boleh melebihi 5 MB.' };
+    }
+  }
+
   try {
     if (id !== null) {
       await eventService.updateEvent(id, { title, content, location, eventDate, status, coverImageFile });

@@ -1,5 +1,54 @@
 import type { NextConfig } from "next";
 
+// ============================================================
+// HTTP Security Headers
+// Diterapkan ke semua route di aplikasi.
+// ============================================================
+const securityHeaders = [
+  // Cegah Clickjacking: halaman tidak boleh di-embed dalam iframe dari origin lain
+  {
+    key: 'X-Frame-Options',
+    value: 'SAMEORIGIN',
+  },
+  // Cegah MIME sniffing: browser harus menghormati Content-Type yang dikirim server
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  // Kontrol informasi referrer yang dikirim saat navigasi lintas origin
+  {
+    key: 'Referrer-Policy',
+    value: 'strict-origin-when-cross-origin',
+  },
+  // Batasi akses ke API browser sensitif (kamera, mikrofon, geolokasi, dll.)
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+  },
+  // HSTS: Paksa HTTPS di production (diabaikan oleh browser untuk HTTP/localhost)
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains; preload',
+  },
+  // Content Security Policy
+  // 'unsafe-inline' diperlukan untuk Tailwind CSS & rich-text editor.
+  // Sesuaikan jika menggunakan CDN atau library pihak ketiga tambahan.
+  {
+    key: 'Content-Security-Policy',
+    value: [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // unsafe-eval diperlukan oleh Next.js dev mode
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: blob: https://images.unsplash.com",
+      "connect-src 'self'",
+      "frame-ancestors 'self'", // Sama seperti X-Frame-Options SAMEORIGIN
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; '),
+  },
+];
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -18,9 +67,18 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '10mb',
     },
   },
-  // HTTP Cache Headers untuk asset statis
   async headers() {
     return [
+      // --------------------------------------------------------
+      // Security Headers — berlaku untuk semua route
+      // --------------------------------------------------------
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
+      },
+      // --------------------------------------------------------
+      // HTTP Cache Headers untuk asset statis
+      // --------------------------------------------------------
       {
         // JS & CSS build artifacts (selalu punya hash unik — aman di-cache permanen)
         source: '/_next/static/:path*',
@@ -56,3 +114,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

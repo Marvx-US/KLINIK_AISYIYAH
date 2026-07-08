@@ -49,7 +49,7 @@ export async function login(user: SessionUser) {
   cookieStore.set('session', encryptedSession, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: 'strict', // 'strict' mencegah CSRF via top-level navigation
     path: '/',
     maxAge: 2 * 60 * 60, // 2 hours
   });
