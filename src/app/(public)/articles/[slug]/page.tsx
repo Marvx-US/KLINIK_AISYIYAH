@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
       ] : [],
       locale: 'id_ID',
       type: 'article',
-      publishedTime: article.createdAt.toISOString(),
+      publishedTime: new Date(article.createdAt).toISOString(),
       authors: ['Klinik Aisyiyah'],
     },
     twitter: {

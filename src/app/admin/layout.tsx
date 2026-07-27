@@ -86,13 +86,6 @@ export default async function AdminLayout({
             Kelola Banner Latar
           </Link>
           <Link
-            href="/admin/schedules"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
-          >
-            <CalendarRange className="h-4.5 w-4.5" />
-            Kelola Jadwal Dokter
-          </Link>
-          <Link
             href="/admin/facilities"
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >

@@ -1,6 +1,5 @@
 import React from 'react';
 import { getActiveBanners } from '@/core/services/bannerService';
-import { getActiveSchedules } from '@/core/services/scheduleService';
 import { getActiveFacilities } from '@/core/services/facilityService';
 import { getActivePartners } from '@/core/services/partnerService';
 import { getPublishedArticles } from '@/core/services/articleService';
@@ -29,12 +28,11 @@ export const revalidate = 60; // ISR: re-generate tiap 1 menit
  * Semua data diambil via Service Layer (bukan langsung ke DB).
  */
 export default async function HomePage() {
-  
-  const [rawArticles, rawEvents, banners, schedules, facilities, partners] = await Promise.all([
+
+  const [rawArticles, rawEvents, banners, facilities, partners] = await Promise.all([
     getPublishedArticles().catch(() => []),
     getPublishedEvents().catch(() => []),
     getActiveBanners().catch(() => []),
-    getActiveSchedules().catch(() => []),
     getActiveFacilities().catch(() => []),
     getActivePartners().catch(() => []),
   ]);
@@ -42,31 +40,31 @@ export default async function HomePage() {
   // Fallback jika database kosong
   const articles: ArticleCardData[] = rawArticles.length > 0
     ? rawArticles.slice(0, 3).map((a) => ({
-        id: a.id,
-        title: a.title,
-        slug: a.slug,
-        summary: a.summary,
-        category: a.category,
-        coverImage: a.coverImage ?? null,
-        createdAt: a.createdAt,
-      }))
+      id: a.id,
+      title: a.title,
+      slug: a.slug,
+      summary: a.summary,
+      category: a.category,
+      coverImage: a.coverImage ?? null,
+      createdAt: a.createdAt,
+    }))
     : FALLBACK_ARTICLES;
 
   const events: EventCardData[] = rawEvents.length > 0
     ? rawEvents.slice(0, 2).map((e) => ({
-        id: e.id,
-        title: e.title,
-        slug: e.slug,
-        content: e.content,
-        eventDate: e.eventDate ?? null,
-        location: e.location ?? null,
-        coverImage: e.coverImage ?? null,
-      }))
+      id: e.id,
+      title: e.title,
+      slug: e.slug,
+      content: e.content,
+      eventDate: e.eventDate ?? null,
+      location: e.location ?? null,
+      coverImage: e.coverImage ?? null,
+    }))
     : FALLBACK_EVENTS;
 
   return (
     <div className="relative pb-24">
-      <HeroSection banners={banners} schedules={schedules} />
+      <HeroSection banners={banners} />
       <ServicesSection />
 
       {/* Section Event & Berita */}

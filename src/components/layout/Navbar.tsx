@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Heart } from 'lucide-react';
+import Image from 'next/image';
+import { Menu, X, Phone } from 'lucide-react';
 import { KLINIK_INFO, NAVIGATION_ITEMS } from '@/lib/constants';
 
 /**
@@ -16,6 +17,11 @@ export default function Navbar() {
   const pathname = usePathname();
   const whatsappUrl = `https://wa.me/${KLINIK_INFO.whatsapp}`;
 
+  // Hanya homepage yang punya hero gelap di belakang navbar
+  const isHeroPage = pathname === '/';
+  // isDark: true = pakai teks gelap; false = teks putih (di atas hero)
+  const isDark = isScrolled || !isHeroPage;
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -26,13 +32,13 @@ export default function Navbar() {
 
   return (
     <header className={`fixed top-0 z-50 flex justify-center w-full transition-all duration-500 ${
-      isScrolled ? 'pt-4 px-4 sm:px-6' : 'pt-6 px-4 sm:px-8'
-    } pb-4`}>
+      isScrolled ? 'pt-3 px-4 sm:px-6' : 'pt-5 px-4 sm:px-8'
+    } pb-3`}>
       <div 
         className={`w-full max-w-6xl transition-all duration-500 flex flex-col ${
-          isScrolled 
-            ? 'bg-white/80 backdrop-blur-2xl border border-white/50 shadow-md rounded-[2rem]'
-            : 'bg-white/95 backdrop-blur-md border border-border-fine shadow-sm rounded-[2rem]'
+          isDark 
+            ? 'bg-white/30 backdrop-blur-[28px] border border-white/40 shadow-[0_8px_32px_0_rgba(13,148,136,0.10),0_2px_8px_0_rgba(0,0,0,0.08)] rounded-[2rem]'
+            : 'bg-transparent border border-transparent'
         }`}
       >
         <div className={`flex justify-between items-center px-6 transition-all duration-500 ${
@@ -41,15 +47,26 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white transition-transform group-hover:scale-105 duration-300 shadow-sm">
-                <Heart className="h-5 w-5 fill-current" />
+              <div className="h-10 w-10 rounded-full overflow-hidden flex-shrink-0 transition-transform group-hover:scale-105 duration-300">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Klinik Pratama Aisyiyah"
+                  width={40}
+                  height={40}
+                  className="object-cover w-full h-full"
+                  priority
+                />
               </div>
-              <div>
-                <span className="font-heading font-extrabold text-xl tracking-tight text-text-dark">
+            <div>
+                <span className={`font-heading font-extrabold text-xl tracking-tight drop-shadow-sm transition-colors duration-300 ${
+                  isDark ? 'text-text-dark' : 'text-white'
+                }`}>
                   {KLINIK_INFO.name.split(' ')[0]}{' '}
                   <span className="text-primary">{KLINIK_INFO.name.split(' ')[1]}</span>
                 </span>
-                <p className="text-[10px] text-text-muted font-sans tracking-widest uppercase -mt-1 hidden sm:block">
+                <p className={`text-[10px] font-sans tracking-widest uppercase -mt-1 hidden sm:block transition-colors duration-300 ${
+                  isDark ? 'text-text-muted' : 'text-white/70'
+                }`}>
                   {KLINIK_INFO.tagline}
                 </p>
               </div>
@@ -66,8 +83,8 @@ export default function Navbar() {
                   href={item.href}
                   className={`font-sans text-sm font-bold tracking-wide transition-all duration-300 px-4 py-2 rounded-full ${
                     isActive 
-                      ? 'bg-primary-light/50 text-primary' 
-                      : 'text-text-muted hover:text-text-dark hover:bg-bg-snow'
+                      ? isDark ? 'bg-primary-light/50 text-primary' : 'bg-white/20 text-white'
+                      : isDark ? 'text-text-muted hover:text-text-dark hover:bg-black/5' : 'text-white/80 hover:text-white hover:bg-white/15'
                   }`}
                 >
                   {item.name}
@@ -94,7 +111,9 @@ export default function Navbar() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               aria-label={isOpen ? 'Tutup menu' : 'Buka menu'}
-              className="text-text-muted hover:text-primary p-2 focus:outline-none bg-bg-snow rounded-full transition-colors"
+              className={`p-2 focus:outline-none rounded-full transition-colors ${
+                isDark ? 'text-text-muted hover:text-primary bg-bg-snow' : 'text-white hover:text-white/70 bg-white/15'
+              }`}
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -107,8 +126,8 @@ export default function Navbar() {
             isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className="mx-4 border-t border-border-fine/40"></div>
-          <div className="flex flex-col space-y-2 p-4 pt-4 rounded-b-3xl">
+          <div className="mx-4 border-t border-white/30"></div>
+          <div className="flex flex-col space-y-1.5 p-4 pt-4 rounded-b-3xl">
             {NAVIGATION_ITEMS.map((item) => {
               const isActive = pathname === item.href;
               return (

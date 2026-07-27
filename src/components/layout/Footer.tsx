@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { Heart, Clock, MapPin, Phone } from 'lucide-react';
+import Image from 'next/image';
+import { Clock, MapPin, Phone } from 'lucide-react';
 import { KLINIK_INFO, KLINIK_HOURS } from '@/lib/constants';
 
 /**
@@ -18,8 +19,14 @@ export default function Footer() {
           {/* Kolom 1: Info Klinik */}
           <div className="md:col-span-5 flex flex-col gap-4">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white">
-                <Heart className="h-4 w-4 fill-current" />
+              <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Klinik Pratama Aisyiyah"
+                  width={32}
+                  height={32}
+                  className="object-cover w-full h-full"
+                />
               </div>
               <span className="font-heading font-extrabold text-lg text-text-dark">
                 {KLINIK_INFO.name.split(' ')[0]}{' '}
