@@ -258,7 +258,7 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
             <div className="space-y-6">
               <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden border border-border-fine/60 shadow-sm bg-slate-900/5 group flex items-center justify-center p-2">
                 <img 
-                  src={service.gallery[0] || service.heroImage} 
+                  src={service.heroImage || service.gallery[0]} 
                   alt="Ilustrasi Ruangan"
                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />

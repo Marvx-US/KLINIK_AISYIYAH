@@ -199,20 +199,23 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     }
   }
 
-  // Tentukan gallery & heroImage final:
-  // Jika admin mengunggah galeri foto, gunakan foto galeri admin sebagai prioritas utama!
+  // Tentukan finalHeroImage & finalGallery:
+  // Foto Utama yang dipilih admin (dbService.roomImage) adalah PRIORITAS #1 untuk Tampilan Publik!
+  const finalHeroImage = dbService?.roomImage 
+    || (dbGallery && dbGallery.length > 0 ? dbGallery[0] : resolvedStatic.heroImage);
+
   let finalGallery: string[] = [];
   if (dbGallery && dbGallery.length > 0) {
-    finalGallery = dbGallery;
+    if (dbService?.roomImage && !dbGallery.includes(dbService.roomImage)) {
+      finalGallery = [dbService.roomImage, ...dbGallery];
+    } else {
+      finalGallery = dbGallery;
+    }
   } else if (dbService?.roomImage) {
     finalGallery = [dbService.roomImage, ...(resolvedStatic.gallery || [])];
   } else {
     finalGallery = resolvedStatic.gallery || [];
   }
-
-  const finalHeroImage = (dbGallery && dbGallery.length > 0) 
-    ? dbGallery[0] 
-    : (dbService?.roomImage || resolvedStatic.heroImage);
 
   const mergedData = {
     ...resolvedStatic,
