@@ -44,6 +44,30 @@ export async function findServiceBySlug(slug: string) {
   return (db as any).service.findUnique({ where: { slug } });
 }
 
+async function ensureServiceColumnsExist() {
+  const columns = [
+    'gallery TEXT NULL',
+    'priceList TEXT NULL',
+    'purpose TEXT NULL',
+    'benefits TEXT NULL',
+    'facilities TEXT NULL',
+    'operationalHours TEXT NULL',
+    'preparation TEXT NULL',
+    'procedures TEXT NULL',
+    'faq TEXT NULL',
+  ];
+
+  for (const colDef of columns) {
+    const colName = colDef.split(' ')[0];
+    try {
+      await (db as any).$executeRawUnsafe(`ALTER TABLE Service ADD COLUMN ${colDef}`);
+      console.log(`[REPOSITORY] Column "${colName}" successfully added to Service table.`);
+    } catch (e) {
+      // Column already exists (Error 1060: Duplicate column name) -> ignore
+    }
+  }
+}
+
 export async function createService(data: {
   name: string;
   slug: string;
@@ -64,26 +88,62 @@ export async function createService(data: {
   try {
     return await (db as any).service.create({ data });
   } catch (err: any) {
-    if (err.message && (err.message.includes("Unknown argument") || err.message.includes("gallery"))) {
-      await (db as any).$executeRawUnsafe(
-        `INSERT INTO Service (name, slug, description, iconName, isActive, roomImage, gallery, priceList, purpose, benefits, facilities, operationalHours, preparation, procedures, faq, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-        data.name,
-        data.slug,
-        data.description,
-        data.iconName,
-        data.isActive ? 1 : 0,
-        data.roomImage || null,
-        data.gallery || null,
-        data.priceList || null,
-        data.purpose || null,
-        data.benefits || null,
-        data.facilities || null,
-        data.operationalHours || null,
-        data.preparation || null,
-        data.procedures || null,
-        data.faq || null
-      );
-      return findServiceBySlug(data.slug);
+    if (
+      err.message &&
+      (err.message.includes('Unknown argument') ||
+        err.message.includes('gallery') ||
+        err.message.includes('1054') ||
+        err.message.includes('Unknown column'))
+    ) {
+      try {
+        await (db as any).$executeRawUnsafe(
+          `INSERT INTO Service (name, slug, description, iconName, isActive, roomImage, gallery, priceList, purpose, benefits, facilities, operationalHours, preparation, procedures, faq, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          data.name,
+          data.slug,
+          data.description,
+          data.iconName,
+          data.isActive ? 1 : 0,
+          data.roomImage || null,
+          data.gallery || null,
+          data.priceList || null,
+          data.purpose || null,
+          data.benefits || null,
+          data.facilities || null,
+          data.operationalHours || null,
+          data.preparation || null,
+          data.procedures || null,
+          data.faq || null
+        );
+        return findServiceBySlug(data.slug);
+      } catch (rawErr: any) {
+        if (
+          rawErr.message &&
+          (rawErr.message.includes('1054') || rawErr.message.includes('Unknown column'))
+        ) {
+          console.log('[REPOSITORY] Missing columns detected in MySQL table. Running auto-migration...');
+          await ensureServiceColumnsExist();
+          await (db as any).$executeRawUnsafe(
+            `INSERT INTO Service (name, slug, description, iconName, isActive, roomImage, gallery, priceList, purpose, benefits, facilities, operationalHours, preparation, procedures, faq, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            data.name,
+            data.slug,
+            data.description,
+            data.iconName,
+            data.isActive ? 1 : 0,
+            data.roomImage || null,
+            data.gallery || null,
+            data.priceList || null,
+            data.purpose || null,
+            data.benefits || null,
+            data.facilities || null,
+            data.operationalHours || null,
+            data.preparation || null,
+            data.procedures || null,
+            data.faq || null
+          );
+          return findServiceBySlug(data.slug);
+        }
+        throw rawErr;
+      }
     }
     throw err;
   }
@@ -112,7 +172,13 @@ export async function updateService(
   try {
     return await (db as any).service.update({ where: { id }, data });
   } catch (err: any) {
-    if (err.message && (err.message.includes("Unknown argument") || err.message.includes("gallery"))) {
+    if (
+      err.message &&
+      (err.message.includes('Unknown argument') ||
+        err.message.includes('gallery') ||
+        err.message.includes('1054') ||
+        err.message.includes('Unknown column'))
+    ) {
       const existing = await findServiceById(id);
       const name = data.name !== undefined ? data.name : existing.name;
       const slug = data.slug !== undefined ? data.slug : existing.slug;
@@ -130,26 +196,57 @@ export async function updateService(
       const procedures = data.procedures !== undefined ? data.procedures : existing.procedures;
       const faq = data.faq !== undefined ? data.faq : existing.faq;
 
-      await (db as any).$executeRawUnsafe(
-        `UPDATE Service SET name = ?, slug = ?, description = ?, iconName = ?, isActive = ?, roomImage = ?, gallery = ?, priceList = ?, purpose = ?, benefits = ?, facilities = ?, operationalHours = ?, preparation = ?, procedures = ?, faq = ?, updatedAt = NOW() WHERE id = ?`,
-        name,
-        slug,
-        description,
-        iconName,
-        isActive,
-        roomImage,
-        gallery,
-        priceList,
-        purpose,
-        benefits,
-        facilities,
-        operationalHours,
-        preparation,
-        procedures,
-        faq,
-        id
-      );
-      return findServiceById(id);
+      try {
+        await (db as any).$executeRawUnsafe(
+          `UPDATE Service SET name = ?, slug = ?, description = ?, iconName = ?, isActive = ?, roomImage = ?, gallery = ?, priceList = ?, purpose = ?, benefits = ?, facilities = ?, operationalHours = ?, preparation = ?, procedures = ?, faq = ?, updatedAt = NOW() WHERE id = ?`,
+          name,
+          slug,
+          description,
+          iconName,
+          isActive,
+          roomImage,
+          gallery,
+          priceList,
+          purpose,
+          benefits,
+          facilities,
+          operationalHours,
+          preparation,
+          procedures,
+          faq,
+          id
+        );
+        return findServiceById(id);
+      } catch (rawErr: any) {
+        if (
+          rawErr.message &&
+          (rawErr.message.includes('1054') || rawErr.message.includes('Unknown column'))
+        ) {
+          console.log('[REPOSITORY] Missing columns detected in MySQL table. Running auto-migration...');
+          await ensureServiceColumnsExist();
+          await (db as any).$executeRawUnsafe(
+            `UPDATE Service SET name = ?, slug = ?, description = ?, iconName = ?, isActive = ?, roomImage = ?, gallery = ?, priceList = ?, purpose = ?, benefits = ?, facilities = ?, operationalHours = ?, preparation = ?, procedures = ?, faq = ?, updatedAt = NOW() WHERE id = ?`,
+            name,
+            slug,
+            description,
+            iconName,
+            isActive,
+            roomImage,
+            gallery,
+            priceList,
+            purpose,
+            benefits,
+            facilities,
+            operationalHours,
+            preparation,
+            procedures,
+            faq,
+            id
+          );
+          return findServiceById(id);
+        }
+        throw rawErr;
+      }
     }
     throw err;
   }
