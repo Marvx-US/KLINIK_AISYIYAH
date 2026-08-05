@@ -32,7 +32,25 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
 
   const { id, name, description, iconName, isActive, imageFile, priceList } = validation.data;
 
-  // Validasi file gambar jika ada
+  // Extract gallery files and existing gallery array
+  const rawGalleryFiles = formData.getAll('galleryFiles');
+  const galleryFiles: File[] = [];
+  for (const item of rawGalleryFiles) {
+    if (item instanceof File && item.size > 0) {
+      if (!item.type.startsWith('image/')) {
+        return { error: 'File galeri yang diunggah harus berupa gambar.' };
+      }
+      if (item.size > 5 * 1024 * 1024) {
+        return { error: 'Ukuran foto galeri tidak boleh melebihi 5 MB.' };
+      }
+      galleryFiles.push(item);
+    }
+  }
+
+  const rawExisting = formData.getAll('existingGallery');
+  const existingGallery: string[] = rawExisting.map((item) => String(item)).filter(Boolean);
+
+  // Validasi file gambar utama jika ada
   if (imageFile) {
     if (!imageFile.type.startsWith('image/')) {
       return { error: 'File yang diunggah harus berupa gambar.' };
@@ -44,9 +62,13 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
 
   try {
     if (id) {
-      await serviceService.updateService(id, { name, description, iconName, isActive, imageFile, priceList });
+      await serviceService.updateService(id, { 
+        name, description, iconName, isActive, imageFile, galleryFiles, existingGallery, priceList 
+      });
     } else {
-      await serviceService.createService({ name, description, iconName, isActive, imageFile, priceList });
+      await serviceService.createService({ 
+        name, description, iconName, isActive, imageFile, galleryFiles, priceList 
+      });
     }
     revalidatePath('/');
     revalidatePath('/services');

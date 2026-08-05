@@ -80,14 +80,31 @@ export default async function ServiceDetailPage({ params }: PageProps) {
 
   const dbPrices = parsePriceList(dbService?.priceList);
 
+  // Parse dbService.gallery jika ada
+  let dbGallery: string[] | null = null;
+  if (dbService?.gallery) {
+    try {
+      const parsed = JSON.parse(dbService.gallery);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        dbGallery = parsed.filter((url) => typeof url === 'string' && url.trim() !== '');
+      }
+    } catch {
+      dbGallery = null;
+    }
+  }
+
+  // Tentukan gallery final
+  let finalGallery: string[] = dbGallery || resolvedStatic.gallery || [];
+  if (dbService?.roomImage && !finalGallery.includes(dbService.roomImage)) {
+    finalGallery = [dbService.roomImage, ...finalGallery];
+  }
+
   const mergedData = {
     ...resolvedStatic,
     title: dbService?.name || resolvedStatic.title,
     fullDescription: dbService?.description || resolvedStatic.fullDescription,
     heroImage: dbService?.roomImage || resolvedStatic.heroImage,
-    gallery: dbService?.roomImage 
-      ? [dbService.roomImage, ...(resolvedStatic.gallery || []).filter(img => img !== dbService.roomImage)]
-      : resolvedStatic.gallery,
+    gallery: finalGallery,
     vaccinePrices: dbPrices || resolvedStatic.vaccinePrices || null
   };
 

@@ -89,6 +89,7 @@ model Service {
   iconName    String
   isActive    Boolean  @default(true)
   roomImage   String?  @db.Text
+  gallery     String?  @db.Text
   priceList   String?  @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

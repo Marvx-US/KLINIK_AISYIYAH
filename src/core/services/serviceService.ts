@@ -22,6 +22,7 @@ export async function createService(data: {
   iconName: string;
   isActive: boolean;
   imageFile?: File | null;
+  galleryFiles?: File[] | null;
   priceList?: string | null;
 }) {
   const slug = generateSlug(data.name);
@@ -40,6 +41,14 @@ export async function createService(data: {
     if (uploaded) roomImage = uploaded;
   }
 
+  const galleryList: string[] = [];
+  if (data.galleryFiles && data.galleryFiles.length > 0) {
+    for (const file of data.galleryFiles) {
+      const uploaded = await uploadFile(file);
+      if (uploaded) galleryList.push(uploaded);
+    }
+  }
+
   return serviceRepo.createService({
     name: data.name,
     slug: finalSlug,
@@ -47,6 +56,7 @@ export async function createService(data: {
     iconName: data.iconName,
     isActive: data.isActive,
     roomImage,
+    gallery: galleryList.length > 0 ? JSON.stringify(galleryList) : null,
     priceList: data.priceList,
   });
 }
@@ -59,6 +69,8 @@ export async function updateService(
     iconName: string;
     isActive: boolean;
     imageFile?: File | null;
+    galleryFiles?: File[] | null;
+    existingGallery?: string[] | null;
     priceList?: string | null;
   }
 ) {
@@ -79,6 +91,14 @@ export async function updateService(
     if (uploaded) roomImage = uploaded;
   }
 
+  const galleryList: string[] = data.existingGallery ? [...data.existingGallery] : [];
+  if (data.galleryFiles && data.galleryFiles.length > 0) {
+    for (const file of data.galleryFiles) {
+      const uploaded = await uploadFile(file);
+      if (uploaded) galleryList.push(uploaded);
+    }
+  }
+
   return serviceRepo.updateService(id, {
     name: data.name,
     slug,
@@ -86,6 +106,7 @@ export async function updateService(
     iconName: data.iconName,
     isActive: data.isActive,
     roomImage,
+    gallery: JSON.stringify(galleryList),
     priceList: data.priceList,
   });
 }

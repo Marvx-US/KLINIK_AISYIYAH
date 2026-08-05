@@ -51,6 +51,7 @@ export async function createService(data: {
   iconName: string;
   isActive: boolean;
   roomImage?: string | null;
+  gallery?: string | null;
   priceList?: string | null;
 }) {
   return (db as any).service.create({ data });
@@ -65,6 +66,7 @@ export async function updateService(
     iconName?: string;
     isActive?: boolean;
     roomImage?: string | null;
+    gallery?: string | null;
     priceList?: string | null;
   }
 ) {

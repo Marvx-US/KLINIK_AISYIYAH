@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveServiceAction, deleteServiceAction, toggleServiceStatusAction } from '@/app/actions/services';
 import { 
-  Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, 
+  Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, X, ImageIcon,
   HeartPulse, Smile, Baby, Syringe, Activity, ShieldAlert, Stethoscope, Heart, Award, ShieldCheck, HelpCircle
 } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
@@ -44,6 +44,7 @@ export interface Service {
   iconName: string;
   isActive: boolean;
   roomImage?: string | null;
+  gallery?: string | null;
   priceList?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -67,6 +68,8 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedIcon, setSelectedIcon] = useState('Activity');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingGallery, setExistingGallery] = useState<string[]>([]);
+  const [newGalleryPreviews, setNewGalleryPreviews] = useState<string[]>([]);
 
   // Action states for inline toggle status
   const [togglePendingId, setTogglePendingId] = useState<number | null>(null);
@@ -76,13 +79,30 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
     setServices(initialServices);
   }, [initialServices]);
 
-  // Sync selected icon & image preview state when entering editing mode
+  // Sync selected icon, room image & gallery state when entering editing mode
   useEffect(() => {
     if (editingService) {
       setSelectedIcon(editingService.iconName || 'Activity');
       setImagePreview(editingService.roomImage || null);
+      if (editingService.gallery) {
+        try {
+          const parsed = JSON.parse(editingService.gallery);
+          if (Array.isArray(parsed)) {
+            setExistingGallery(parsed.filter(url => typeof url === 'string' && url.trim() !== ''));
+          } else {
+            setExistingGallery([]);
+          }
+        } catch {
+          setExistingGallery([]);
+        }
+      } else {
+        setExistingGallery([]);
+      }
+      setNewGalleryPreviews([]);
     } else {
       setImagePreview(null);
+      setExistingGallery([]);
+      setNewGalleryPreviews([]);
     }
   }, [editingService]);
 
@@ -242,7 +262,72 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   }}
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium cursor-pointer"
                 />
-                <p className="text-xs text-text-muted">Upload foto baru untuk mengganti gambar utama & galeri ruangan pada halaman detail layanan (Maksimal 5MB. JPG, PNG, WebP).</p>
+                <p className="text-xs text-text-muted">Upload foto baru untuk mengganti gambar utama pada halaman detail layanan (Maksimal 5MB. JPG, PNG, WebP).</p>
+              </div>
+
+              {/* Gallery Photos Field */}
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-bold text-text-dark flex items-center justify-between">
+                  <span>Galeri Foto Ruangan & Fasilitas</span>
+                  <span className="text-xs font-normal text-text-muted">Dapat upload beberapa foto sekaligus</span>
+                </label>
+
+                {/* Render Existing Gallery Photos */}
+                {existingGallery.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-semibold text-text-muted">Foto Galeri Saat Ini:</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      {existingGallery.map((url, idx) => (
+                        <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-bg-snow">
+                          <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setExistingGallery(prev => prev.filter((_, i) => i !== idx))}
+                            className="absolute top-1.5 right-1.5 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 hover:scale-110 transition-all shadow-md"
+                            title="Hapus foto dari galeri"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                          <input type="hidden" name="existingGallery" value={url} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Render New Upload Previews */}
+                {newGalleryPreviews.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-semibold text-primary">Foto Baru yang Dipilih:</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      {newGalleryPreviews.map((url, idx) => (
+                        <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40 bg-bg-snow">
+                          <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* File input for adding new gallery photos */}
+                <input
+                  id="galleryFiles"
+                  name="galleryFiles"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                      const urls = Array.from(files).map(f => URL.createObjectURL(f));
+                      setNewGalleryPreviews(urls);
+                    } else {
+                      setNewGalleryPreviews([]);
+                    }
+                  }}
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium cursor-pointer"
+                />
+                <p className="text-xs text-text-muted">Pilih satu atau beberapa foto ruangan/fasilitas untuk menambahkan koleksi galeri foto layanan.</p>
               </div>
             </div>
 
