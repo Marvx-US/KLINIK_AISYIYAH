@@ -287,7 +287,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} encType="multipart/form-data" className="p-6 md:p-8 flex flex-col gap-8">
+        <form key={editingService.id} onSubmit={handleSubmit} encType="multipart/form-data" className="p-6 md:p-8 flex flex-col gap-8">
           {isEdit && <input type="hidden" name="id" value={editingService.id} />}
           {removeRoomImage && <input type="hidden" name="removeRoomImage" value="true" />}
           

@@ -32,10 +32,16 @@ function getPossibleDbSlugs(slug: string): string[] {
   return Array.from(new Set(result));
 }
 
-function parsePriceList(raw: string | null | undefined): { name: string; price: number }[] | null {
+function cleanRaw(raw: string | null | undefined): string | null {
   if (!raw || !raw.trim()) return null;
+  return raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+}
+
+function parsePriceList(rawPrices: string | null | undefined): { name: string; price: number }[] | null {
+  const cleaned = cleanRaw(rawPrices);
+  if (!cleaned) return null;
   const list: { name: string; price: number }[] = [];
-  const lines = raw.split('\n');
+  const lines = cleaned.split('\n');
   for (const line of lines) {
     if (!line.trim()) continue;
     const parts = line.split(':');
@@ -51,9 +57,10 @@ function parsePriceList(raw: string | null | undefined): { name: string; price: 
 }
 
 function parseOperationalHours(raw: string | null | undefined): Record<string, string> | null {
-  if (!raw || !raw.trim()) return null;
+  const cleaned = cleanRaw(raw);
+  if (!cleaned) return null;
   const hours: Record<string, string> = {};
-  const lines = raw.split('\n');
+  const lines = cleaned.split('\n');
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed) continue;
@@ -61,19 +68,20 @@ function parseOperationalHours(raw: string | null | undefined): Record<string, s
     if (parts.length >= 2) {
       const key = parts[0].trim();
       const val = parts.slice(1).join(':').trim();
-      if (key && val) {
+      if (key) {
         hours[key] = val;
       }
     } else {
-      hours[trimmed] = 'Buka';
+      hours[trimmed] = '';
     }
   }
   return Object.keys(hours).length > 0 ? hours : null;
 }
 
 function parseList(raw: string | null | undefined): string[] | null {
-  if (!raw || !raw.trim()) return null;
-  const list = raw
+  const cleaned = cleanRaw(raw);
+  if (!cleaned) return null;
+  const list = cleaned
     .split('\n')
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
@@ -81,16 +89,17 @@ function parseList(raw: string | null | undefined): string[] | null {
 }
 
 function parseProcedures(raw: string | null | undefined): { title: string; description: string; iconName: string }[] | null {
-  if (!raw || !raw.trim()) return null;
+  const cleaned = cleanRaw(raw);
+  if (!cleaned) return null;
   const list: { title: string; description: string; iconName: string }[] = [];
-  const lines = raw.split('\n');
+  const lines = cleaned.split('\n');
   for (const line of lines) {
     if (!line.trim()) continue;
     const parts = line.split('|');
     if (parts.length >= 2) {
       const title = parts[0].trim();
       const description = parts[1].trim();
-      if (title && description) {
+      if (title) {
         list.push({ title, description, iconName: 'Activity' });
       }
     } else {
@@ -101,9 +110,10 @@ function parseProcedures(raw: string | null | undefined): { title: string; descr
 }
 
 function parseFAQ(raw: string | null | undefined): { question: string; answer: string }[] | null {
-  if (!raw || !raw.trim()) return null;
+  const cleaned = cleanRaw(raw);
+  if (!cleaned) return null;
   const list: { question: string; answer: string }[] = [];
-  const lines = raw.split('\n');
+  const lines = cleaned.split('\n');
   for (const line of lines) {
     if (!line.trim()) continue;
     const parts = line.split('|');
