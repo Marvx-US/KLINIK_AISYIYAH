@@ -298,14 +298,14 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
             </div>
           )}
 
-          {/* BAGIAN 1: INFORMASI UTAMA & MEDIA */}
+          {/* BAGIAN 1: INFORMASI UTAMA */}
           <div className="border-b border-border-fine pb-6">
             <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
-              <Activity className="w-5 h-5" /> 1. Informasi Utama & Media Layanan
+              <Activity className="w-5 h-5" /> 1. Informasi Utama Layanan
             </h4>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              <div className="flex flex-col gap-4">
                 {/* Name Field */}
                 <div className="flex flex-col gap-2">
                   <label htmlFor="name" className="text-sm font-bold text-text-dark">
@@ -322,6 +322,53 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   />
                 </div>
 
+                {/* Icon Selector Field */}
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="iconName" className="text-sm font-bold text-text-dark">
+                    Pilih Ikon Layanan <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-light border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                      {renderIconPreview(selectedIcon, "w-6 h-6")}
+                    </div>
+                    <div className="flex-grow">
+                      <select
+                        id="iconName"
+                        name="iconName"
+                        value={selectedIcon}
+                        onChange={(e) => setSelectedIcon(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-semibold text-text-dark cursor-pointer"
+                      >
+                        {AVAILABLE_ICONS.map((icon) => (
+                          <option key={icon.name} value={icon.name}>
+                            {icon.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Field */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-text-dark">Status Visibilitas</label>
+                  <label className="flex items-center gap-3 cursor-pointer p-3 border border-border-fine rounded-2xl hover:bg-bg-snow transition-colors">
+                    <input
+                      type="checkbox"
+                      name="isActive"
+                      value="true"
+                      defaultChecked={editingService.isActive}
+                      className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="font-semibold text-sm text-text-dark">Aktifkan Layanan</p>
+                      <p className="text-xs text-text-muted">Layanan ini akan tampil pada halaman publik.</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
                 {/* Description Field */}
                 <div className="flex flex-col gap-2">
                   <label htmlFor="description" className="text-sm font-bold text-text-dark">
@@ -331,10 +378,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     id="description"
                     name="description"
                     required
-                    rows={4}
+                    rows={3}
                     defaultValue={editingService.description}
                     placeholder="Deskripsikan layanan secara lengkap, fasilitas utama, dan info penting lainnya..."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                   />
                 </div>
 
@@ -349,163 +396,142 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     rows={3}
                     defaultValue={initialForm.purpose}
                     placeholder="Tujuan utama pelayanan ini, contoh: Memberikan perawatan medis darurat segera..."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                   />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-6">
-                {/* Icon Selector Field */}
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="iconName" className="text-sm font-bold text-text-dark">
-                    Pilih Ikon Layanan <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-primary-light border border-primary/20 flex items-center justify-center text-primary shrink-0">
-                      {renderIconPreview(selectedIcon, "w-7 h-7")}
-                    </div>
-                    <div className="flex-grow">
-                      <select
-                        id="iconName"
-                        name="iconName"
-                        value={selectedIcon}
-                        onChange={(e) => setSelectedIcon(e.target.value)}
-                        className="w-full px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-semibold text-text-dark cursor-pointer"
-                      >
-                        {AVAILABLE_ICONS.map((icon) => (
-                          <option key={icon.name} value={icon.name}>
-                            {icon.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Room Image Field */}
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="roomImage" className="text-sm font-bold text-text-dark flex items-center justify-between">
-                    <span>Foto Utama Layanan</span>
-                    {imagePreview && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImagePreview(null);
-                          setRemoveRoomImage(true);
-                        }}
-                        className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Hapus Foto Utama
-                      </button>
-                    )}
-                  </label>
-
-                  {imagePreview ? (
-                    <div className="relative w-full h-36 rounded-2xl overflow-hidden border border-border-fine shadow-sm bg-slate-900/5 flex items-center justify-center p-2 group">
-                      <img 
-                        src={imagePreview} 
-                        alt="Preview Foto Utama" 
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-full h-28 rounded-2xl border-2 border-dashed border-border-fine bg-bg-snow flex flex-col items-center justify-center gap-1 text-text-muted">
-                      <ImageIcon className="w-6 h-6 text-border-fine" />
-                      <p className="text-xs font-semibold">Belum ada foto utama yang dipilih</p>
-                    </div>
-                  )}
-
-                  <input
-                    id="roomImage"
-                    name="roomImage"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setImagePreview(URL.createObjectURL(file));
-                        setRemoveRoomImage(false);
-                      }
-                    }}
-                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
-                  />
-                </div>
-
-                {/* Gallery Photos Field */}
-                <div className="flex flex-col gap-3">
-                  <label className="text-sm font-bold text-text-dark flex items-center justify-between">
-                    <span>Galeri Foto Ruangan & Fasilitas</span>
-                    <span className="text-xs font-normal text-text-muted">Multiple upload</span>
-                  </label>
-
-                  {/* Existing Gallery */}
-                  {existingGallery.length > 0 && (
-                    <div className="flex flex-col gap-2">
-                      <p className="text-xs font-bold text-text-dark">Foto Galeri Aktif ({existingGallery.length}):</p>
-                      <div className="grid grid-cols-4 gap-2">
-                        {existingGallery.map((url, idx) => (
-                          <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-1">
-                            <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-contain" />
-                            <button
-                              type="button"
-                              onClick={() => setExistingGallery(prev => prev.filter((_, i) => i !== idx))}
-                              className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 hover:scale-110 transition-all shadow-md z-10"
-                              title="Hapus foto dari galeri"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                            <input type="hidden" name="existingGallery" value={url} />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* New Previews */}
-                  {newGalleryPreviews.length > 0 && (
-                    <div className="flex flex-col gap-2">
-                      <p className="text-xs font-bold text-primary">Foto Baru yang Akan Diunggah ({newGalleryPreviews.length}):</p>
-                      <div className="grid grid-cols-4 gap-2">
-                        {newGalleryPreviews.map((url, idx) => (
-                          <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/50 bg-slate-900/5 flex items-center justify-center p-1">
-                            <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-contain" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <input
-                    id="galleryFiles"
-                    name="galleryFiles"
-                    type="file"
-                    multiple
-                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
-                    onChange={(e) => {
-                      const files = e.target.files;
-                      if (files && files.length > 0) {
-                        const urls = Array.from(files).map(f => URL.createObjectURL(f));
-                        setNewGalleryPreviews(urls);
-                      } else {
-                        setNewGalleryPreviews([]);
-                      }
-                    }}
-                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
-                  />
-                  <p className="text-xs text-text-muted">Upload beberapa foto ruangan untuk ditampilkan di galeri publik.</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* BAGIAN 2: JADWAL OPERASIONAL & FASILITAS PENDUKUNG */}
+          {/* BAGIAN 2: FOTO UTAMA & GALERI RUANGAN */}
           <div className="border-b border-border-fine pb-6">
             <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
-              <Upload className="w-5 h-5" /> 2. Jadwal Operasional & Fasilitas Pendukung
+              <ImageIcon className="w-5 h-5" /> 2. Foto Utama & Galeri Ruangan
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {/* Room Image Field */}
+              <div className="flex flex-col gap-2">
+                <label htmlFor="roomImage" className="text-sm font-bold text-text-dark flex items-center justify-between">
+                  <span>Foto Utama Layanan</span>
+                  {imagePreview && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setRemoveRoomImage(true);
+                      }}
+                      className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Hapus Foto Utama
+                    </button>
+                  )}
+                </label>
+
+                {imagePreview ? (
+                  <div className="relative w-full h-40 rounded-2xl overflow-hidden border border-border-fine shadow-sm bg-slate-900/5 flex items-center justify-center p-2 group">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview Foto Utama" 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-28 rounded-2xl border-2 border-dashed border-border-fine bg-bg-snow flex flex-col items-center justify-center gap-1 text-text-muted">
+                    <ImageIcon className="w-6 h-6 text-border-fine" />
+                    <p className="text-xs font-semibold">Belum ada foto utama yang dipilih</p>
+                  </div>
+                )}
+
+                <input
+                  id="roomImage"
+                  name="roomImage"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setImagePreview(URL.createObjectURL(file));
+                      setRemoveRoomImage(false);
+                    }
+                  }}
+                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
+                />
+              </div>
+
+              {/* Gallery Photos Field */}
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-bold text-text-dark flex items-center justify-between">
+                  <span>Galeri Foto Ruangan & Fasilitas</span>
+                  <span className="text-xs font-normal text-text-muted">Multiple upload</span>
+                </label>
+
+                {/* Existing Gallery */}
+                {existingGallery.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-bold text-text-dark">Foto Galeri Aktif ({existingGallery.length}):</p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {existingGallery.map((url, idx) => (
+                        <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-1">
+                          <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-contain" />
+                          <button
+                            type="button"
+                            onClick={() => setExistingGallery(prev => prev.filter((_, i) => i !== idx))}
+                            className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 hover:scale-110 transition-all shadow-md z-10"
+                            title="Hapus foto dari galeri"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <input type="hidden" name="existingGallery" value={url} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* New Previews */}
+                {newGalleryPreviews.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-bold text-primary">Foto Baru yang Akan Diunggah ({newGalleryPreviews.length}):</p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {newGalleryPreviews.map((url, idx) => (
+                        <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/50 bg-slate-900/5 flex items-center justify-center p-1">
+                          <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-contain" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <input
+                  id="galleryFiles"
+                  name="galleryFiles"
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                      const urls = Array.from(files).map(f => URL.createObjectURL(f));
+                      setNewGalleryPreviews(urls);
+                    } else {
+                      setNewGalleryPreviews([]);
+                    }
+                  }}
+                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* BAGIAN 3: JADWAL OPERASIONAL & FASILITAS PENDUKUNG */}
+          <div className="border-b border-border-fine pb-6">
+            <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
+              <Upload className="w-5 h-5" /> 3. Jadwal Operasional & Fasilitas Pendukung
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
               {/* Operational Hours */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="operationalHours" className="text-sm font-bold text-text-dark">
@@ -514,10 +540,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="operationalHours"
                   name="operationalHours"
-                  rows={6}
+                  rows={5}
                   defaultValue={initialForm.operationalHours}
-                  placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam&#10;Kamis: 24 Jam&#10;Jumat: 24 Jam&#10;Sabtu: 24 Jam&#10;Minggu: 24 Jam"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono resize-none"
+                  placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam..."
+                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono resize-none"
                 />
                 <p className="text-xs text-text-muted">Masukkan jam operasional per hari (format `Hari: Jam`).</p>
               </div>
@@ -530,23 +556,23 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="facilities"
                   name="facilities"
-                  rows={6}
+                  rows={5}
                   defaultValue={initialForm.facilities}
-                  placeholder="Tulis 1 nama fasilitas per baris:&#10;Ruang Resusitasi Jantung-Paru&#10;Ruang Tindakan Bedah Minor&#10;Ambulans Gawat Darurat 24 Jam&#10;Ruang Tunggu Ber-AC&#10;Wi-Fi Kecepatan Tinggi"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  placeholder="Tulis 1 nama fasilitas per baris:&#10;Ruang Resusitasi Jantung-Paru&#10;Ruang Bedah Minor&#10;Ambulans 24 Jam"
+                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
-                <p className="text-xs text-text-muted">Tulis 1 fasilitas per baris. Ikon akan disesuaikan secara otomatis.</p>
+                <p className="text-xs text-text-muted">Tulis 1 fasilitas per baris. Ikon disesuaikan otomatis.</p>
               </div>
             </div>
           </div>
 
-          {/* BAGIAN 3: DETAIL PELAYANAN & PERSIAPAN */}
+          {/* BAGIAN 4: DETAIL PELAYANAN & PERSIAPAN */}
           <div className="border-b border-border-fine pb-6">
             <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5" /> 3. Detail Pelayanan, Keunggulan & Persiapan
+              <FileText className="w-5 h-5" /> 4. Detail Pelayanan, Keunggulan & Persiapan
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
               {/* Benefits */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="benefits" className="text-sm font-bold text-text-dark">
@@ -555,12 +581,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="benefits"
                   name="benefits"
-                  rows={5}
+                  rows={4}
                   defaultValue={initialForm.benefits}
-                  placeholder="Tulis 1 manfaat per baris:&#10;Pelayanan non-stop 24 jam sehari&#10;Tim medis bersertifikat (ACLS/ATLS)&#10;Akses ambulans cepat tanggap"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  placeholder="Tulis 1 manfaat per baris:&#10;Pelayanan non-stop 24 jam&#10;Tim medis bersertifikat"
+                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
-                <p className="text-xs text-text-muted">Tuliskan poin-poin keunggulan layanan, satu per baris.</p>
+                <p className="text-xs text-text-muted">Poin keunggulan layanan, 1 per baris.</p>
               </div>
 
               {/* Preparation */}
@@ -571,23 +597,23 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="preparation"
                   name="preparation"
-                  rows={5}
+                  rows={4}
                   defaultValue={initialForm.preparation}
-                  placeholder="Tulis 1 instruksi per baris:&#10;Membawa KTP asli / Kartu Keluarga&#10;Membawa kartu asuransi atau BPJS Kesehatan&#10;Menginformasikan obat yang sedang dikonsumsi"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  placeholder="Tulis 1 instruksi per baris:&#10;Membawa KTP asli / Kartu Keluarga&#10;Membawa kartu BPJS"
+                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
-                <p className="text-xs text-text-muted">Tuliskan hal-hal yang perlu disiapkan pasien sebelum berkunjung.</p>
+                <p className="text-xs text-text-muted">Petunjuk persiapan pasien sebelum berkunjung.</p>
               </div>
             </div>
           </div>
 
-          {/* BAGIAN 4: TINDAKAN MEDIS, FAQ, DAN HARGA */}
+          {/* BAGIAN 5: TINDAKAN MEDIS, FAQ, DAN HARGA */}
           <div className="pb-4">
             <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5" /> 4. Pelayanan & Tindakan Medis, FAQ, & Harga
+              <CheckCircle2 className="w-5 h-5" /> 5. Pelayanan & Tindakan Medis, FAQ, & Harga
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
               {/* Procedures */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="procedures" className="text-sm font-bold text-text-dark">
@@ -596,62 +622,45 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="procedures"
                   name="procedures"
-                  rows={5}
-                  defaultValue={initialForm.procedures}
-                  placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Tindakan penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka robek...&#10;Tindakan EKG | Perekaman kelistrikan jantung..."
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
-                />
-                <p className="text-xs text-text-muted">Tulis `Judul | Deskripsi` satu tindakan per baris.</p>
-              </div>
-
-              {/* FAQ */}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="faq" className="text-sm font-bold text-text-dark">
-                  Tanya Jawab Layanan (FAQ)
-                </label>
-                <textarea
-                  id="faq"
-                  name="faq"
-                  rows={5}
-                  defaultValue={initialForm.faq}
-                  placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD melayani 24 jam? | Ya, IGD beroperasi 24 jam nonstop.&#10;Berapa estimasi biaya? | Biaya penanganan sesuai tindakan yang diberikan."
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
-                />
-                <p className="text-xs text-text-muted">Tulis `Pertanyaan | Jawaban` satu FAQ per baris.</p>
-              </div>
-
-              {/* Price List Field */}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="priceList" className="text-sm font-bold text-text-dark">
-                  Daftar Harga (Khusus Vaksin / Layanan Terkait)
-                </label>
-                <textarea
-                  id="priceList"
-                  name="priceList"
                   rows={4}
-                  defaultValue={editingService.priceList || ''}
-                  placeholder="Format: Nama Vaksin: Harga&#10;Vaksin Influenza: 250000&#10;Vaksin Tifoid: 300000"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  defaultValue={initialForm.procedures}
+                  placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka..."
+                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
-                <p className="text-xs text-text-muted">Format `Nama: Harga` per baris (otomatis diurutkan dari termurah).</p>
+                <p className="text-xs text-text-muted">Tulis `Judul | Deskripsi` 1 tindakan per baris.</p>
               </div>
 
-              {/* Status Field */}
-              <div className="flex flex-col gap-2 justify-center">
-                <label className="text-sm font-bold text-text-dark">Status Visibilitas</label>
-                <label className="flex items-center gap-3 cursor-pointer p-4 border border-border-fine rounded-2xl hover:bg-bg-snow transition-colors">
-                  <input
-                    type="checkbox"
-                    name="isActive"
-                    value="true"
-                    defaultChecked={editingService.isActive}
-                    className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+              <div className="flex flex-col gap-4">
+                {/* FAQ */}
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="faq" className="text-sm font-bold text-text-dark">
+                    Tanya Jawab Layanan (FAQ)
+                  </label>
+                  <textarea
+                    id="faq"
+                    name="faq"
+                    rows={4}
+                    defaultValue={initialForm.faq}
+                    placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
+                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                   />
-                  <div>
-                    <p className="font-semibold text-sm text-text-dark">Aktifkan Layanan</p>
-                    <p className="text-xs text-text-muted">Jika dicentang, layanan ini akan publik dan dapat diakses pengunjung.</p>
-                  </div>
-                </label>
+                  <p className="text-xs text-text-muted">Tulis `Pertanyaan | Jawaban` 1 FAQ per baris.</p>
+                </div>
+
+                {/* Price List Field */}
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="priceList" className="text-sm font-bold text-text-dark">
+                    Daftar Harga (Khusus Vaksin / Layanan Terkait)
+                  </label>
+                  <textarea
+                    id="priceList"
+                    name="priceList"
+                    rows={3}
+                    defaultValue={editingService.priceList || ''}
+                    placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
+                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  />
+                </div>
               </div>
             </div>
           </div>
