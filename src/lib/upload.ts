@@ -1,5 +1,5 @@
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
+import { writeFile, unlink } from 'fs/promises';
+import { join, relative, isAbsolute } from 'path';
 import { mkdirSync, existsSync } from 'fs';
 
 // ============================================================
@@ -28,25 +28,28 @@ export async function uploadFile(file: File | null): Promise<string | null> {
 
   // --- Validasi ukuran ---
   if (file.size > MAX_FILE_SIZE_BYTES) {
+    console.error(`[UPLOAD ERROR] Ukuran file ${file.name} (${file.size} bytes) melebihi batas 5MB.`);
     throw new Error('Ukuran file melebihi batas maksimal 5 MB.');
   }
 
   // --- Validasi MIME type ---
   if (!ALLOWED_MIME_TYPES.has(file.type)) {
-    throw new Error(`Tipe file tidak diizinkan. Gunakan: JPG, PNG, WebP, AVIF, atau GIF.`);
+    console.error(`[UPLOAD ERROR] MIME type ${file.type} tidak diizinkan.`);
+    throw new Error('Format gambar tidak didukung. Gunakan JPG, PNG, atau WebP.');
   }
 
-  // --- Validasi ekstensi (cegah ekstensi ganda seperti file.php.jpg) ---
+  // --- Validasi ekstensi ---
   const rawExtension = file.name.split('.').pop()?.toLowerCase() ?? '';
   if (!ALLOWED_EXTENSIONS.has(rawExtension)) {
-    throw new Error(`Ekstensi file tidak diizinkan. Gunakan: ${[...ALLOWED_EXTENSIONS].join(', ')}.`);
+    console.error(`[UPLOAD ERROR] Ekstensi .${rawExtension} tidak diizinkan.`);
+    throw new Error(`Ekstensi file .${rawExtension} tidak didukung.`);
   }
 
   try {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Gunakan ekstensi yang sudah divalidasi (bukan dari nama file asli mentah)
+    // Gunakan nama unik bersertifikasi
     const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${rawExtension}`;
 
     // Tentukan direktori penyimpanan
@@ -61,13 +64,50 @@ export async function uploadFile(file: File | null): Promise<string | null> {
 
     // Tulis file ke sistem
     await writeFile(filePath, buffer);
+    const publicUrl = `/uploads/${uniqueName}`;
 
-    // Kembalikan public URL path
-    return `/uploads/${uniqueName}`;
+    console.log(`[UPLOAD SUCCESS] File ${file.name} berhasil disimpan ke ${publicUrl}`);
+    return publicUrl;
   } catch (error) {
-    // Re-throw error validasi agar bisa ditangkap di Server Action
     if (error instanceof Error) throw error;
-    console.error('Error uploading file:', error);
+    console.error('[UPLOAD ERROR] Gagal menyimpan file di disk:', error);
     throw new Error('Gagal menyimpan gambar di server.');
   }
+}
+
+/**
+ * Menghapus file fisik dari folder public/uploads jika ada.
+ * Mencegah Directory Traversal dengan memeriksa batasan folder public/uploads.
+ */
+export async function deleteFile(relativePath: string | null | undefined): Promise<boolean> {
+  if (!relativePath || typeof relativePath !== 'string') return false;
+  
+  // Abaikan URL eksternal (Unsplash, HTTP, dsb)
+  if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+    return false;
+  }
+
+  try {
+    // Bersihkan query string dan leading slash
+    const cleanPath = relativePath.split('?')[0].replace(/^\/+/, '');
+    const uploadDir = join(process.cwd(), 'public', 'uploads');
+    const fullPath = join(process.cwd(), 'public', cleanPath);
+
+    // Keamanan: pastikan file berada di dalam folder public/uploads
+    const rel = relative(uploadDir, fullPath);
+    const isInsideUploads = rel && !rel.startsWith('..') && !isAbsolute(rel);
+    if (!isInsideUploads) {
+      console.warn(`[SECURITY WARN] Percobaan penghapusan file di luar folder uploads diblokir: ${relativePath}`);
+      return false;
+    }
+
+    if (existsSync(fullPath)) {
+      await unlink(fullPath);
+      console.log(`[FILE DELETED] File fisik berhasil dihapus dari disk: ${fullPath}`);
+      return true;
+    }
+  } catch (error) {
+    console.error(`[FILE DELETE ERROR] Gagal menghapus file ${relativePath}:`, error);
+  }
+  return false;
 }

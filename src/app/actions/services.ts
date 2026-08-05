@@ -2,6 +2,7 @@
 
 /**
  * LAYER 3 - ACTION (Controller) untuk Layanan
+ * Mengatur alur validasi, eksekusi service layer, dan revalidasi path Next.js.
  */
 
 import { getSession } from '@/lib/auth';
@@ -11,9 +12,11 @@ import * as serviceService from '@/core/services/serviceService';
 
 export type ActionResult = { success?: boolean; error?: string; service?: any };
 
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
+
 export async function saveServiceAction(formData: FormData): Promise<ActionResult> {
   const session = await getSession();
-  if (!session) return { error: 'Unauthorized. Sesi telah habis.' };
+  if (!session) return { error: 'Unauthorized. Sesi Anda telah habis, silakan login kembali.' };
 
   const validation = parseForm(() => {
     const id = formData.get('id') as string | null;
@@ -23,7 +26,7 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
       description: z.maxLength(z.string(formData.get('description'), 'Deskripsi'), 1000, 'Deskripsi'),
       iconName: z.maxLength(z.string(formData.get('iconName'), 'Nama Ikon'), 50, 'Nama Ikon'),
       isActive: z.boolean(formData.get('isActive')),
-      imageFile: z.file(formData.get('roomImage'), 'Gambar Ruangan', false),
+      imageFile: z.file(formData.get('roomImage'), 'Foto Utama Layanan', false),
       priceList: formData.get('priceList') as string | null,
     };
   });
@@ -31,17 +34,28 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
   if (!validation.success) return { error: validation.error };
 
   const { id, name, description, iconName, isActive, imageFile, priceList } = validation.data;
+  const removeRoomImage = formData.get('removeRoomImage') === 'true';
 
-  // Extract gallery files and existing gallery array
+  // --- Validasi File Foto Utama ---
+  if (imageFile && imageFile.size > 0) {
+    if (!ALLOWED_MIME_TYPES.has(imageFile.type)) {
+      return { error: 'Format foto utama tidak didukung. Gunakan format JPG, PNG, atau WebP.' };
+    }
+    if (imageFile.size > 5 * 1024 * 1024) {
+      return { error: 'Ukuran foto utama melebihi batas maksimum 5 MB.' };
+    }
+  }
+
+  // --- Validasi File Galeri Foto ---
   const rawGalleryFiles = formData.getAll('galleryFiles');
   const galleryFiles: File[] = [];
   for (const item of rawGalleryFiles) {
     if (item instanceof File && item.size > 0) {
-      if (!item.type.startsWith('image/')) {
-        return { error: 'File galeri yang diunggah harus berupa gambar.' };
+      if (!ALLOWED_MIME_TYPES.has(item.type)) {
+        return { error: `Format file "${item.name}" tidak didukung. Gunakan format JPG, PNG, atau WebP.` };
       }
       if (item.size > 5 * 1024 * 1024) {
-        return { error: 'Ukuran foto galeri tidak boleh melebihi 5 MB.' };
+        return { error: `Ukuran foto "${item.name}" melebihi batas maksimum 5 MB.` };
       }
       galleryFiles.push(item);
     }
@@ -50,34 +64,42 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
   const rawExisting = formData.getAll('existingGallery');
   const existingGallery: string[] = rawExisting.map((item) => String(item)).filter(Boolean);
 
-  // Validasi file gambar utama jika ada
-  if (imageFile) {
-    if (!imageFile.type.startsWith('image/')) {
-      return { error: 'File yang diunggah harus berupa gambar.' };
-    }
-    if (imageFile.size > 5 * 1024 * 1024) {
-      return { error: 'Ukuran gambar tidak boleh melebihi 5 MB.' };
-    }
-  }
-
   try {
     let saved = null;
     if (id) {
       saved = await serviceService.updateService(id, { 
-        name, description, iconName, isActive, imageFile, galleryFiles, existingGallery, priceList 
+        name, 
+        description, 
+        iconName, 
+        isActive, 
+        imageFile, 
+        removeRoomImage,
+        galleryFiles, 
+        existingGallery, 
+        priceList 
       });
     } else {
       saved = await serviceService.createService({ 
-        name, description, iconName, isActive, imageFile, galleryFiles, priceList 
+        name, 
+        description, 
+        iconName, 
+        isActive, 
+        imageFile, 
+        galleryFiles, 
+        priceList 
       });
     }
+
+    // Revalidasi seluruh path publik & admin secara serentak
     revalidatePath('/');
     revalidatePath('/services');
     revalidatePath('/services/[slug]', 'page');
     revalidatePath('/admin/services');
+
     return { success: true, service: saved };
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Gagal menyimpan layanan.';
+    console.error('[ACTION ERROR] saveServiceAction failed:', error);
+    const msg = error instanceof Error ? error.message : 'Gagal menyimpan layanan. Silakan coba lagi.';
     return { error: msg };
   }
 }
@@ -85,15 +107,17 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
 export async function deleteServiceAction(id: number): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
-  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID layanan tidak valid.' };
 
   try {
     await serviceService.deleteService(id);
     revalidatePath('/');
     revalidatePath('/services');
+    revalidatePath('/services/[slug]', 'page');
     revalidatePath('/admin/services');
     return { success: true };
   } catch (error: unknown) {
+    console.error('[ACTION ERROR] deleteServiceAction failed:', error);
     const msg = error instanceof Error ? error.message : 'Gagal menghapus layanan.';
     return { error: msg };
   }
@@ -105,16 +129,18 @@ export async function toggleServiceStatusAction(
 ): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { error: 'Unauthorized.' };
-  if (!id || isNaN(id) || id <= 0) return { error: 'ID tidak valid.' };
+  if (!id || isNaN(id) || id <= 0) return { error: 'ID layanan tidak valid.' };
 
   try {
     await serviceService.toggleServiceStatus(id, currentStatus);
     revalidatePath('/');
     revalidatePath('/services');
+    revalidatePath('/services/[slug]', 'page');
     revalidatePath('/admin/services');
     return { success: true };
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Gagal mengubah status.';
+    console.error('[ACTION ERROR] toggleServiceStatusAction failed:', error);
+    const msg = error instanceof Error ? error.message : 'Gagal mengubah status layanan.';
     return { error: msg };
   }
 }

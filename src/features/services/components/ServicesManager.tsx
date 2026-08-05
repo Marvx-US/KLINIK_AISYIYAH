@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveServiceAction, deleteServiceAction, toggleServiceStatusAction } from '@/app/actions/services';
 import { 
-  Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, X, ImageIcon, Check,
+  Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, X, ImageIcon, Check, Upload,
   HeartPulse, Smile, Baby, Syringe, Activity, ShieldAlert, Stethoscope, Heart, Award, ShieldCheck, HelpCircle
 } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
@@ -68,7 +68,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [selectedIcon, setSelectedIcon] = useState('Activity');
+  
+  // Image States
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeRoomImage, setRemoveRoomImage] = useState(false);
   const [existingGallery, setExistingGallery] = useState<string[]>([]);
   const [newGalleryPreviews, setNewGalleryPreviews] = useState<string[]>([]);
 
@@ -85,6 +88,8 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
     if (editingService) {
       setSelectedIcon(editingService.iconName || 'Activity');
       setImagePreview(editingService.roomImage || null);
+      setRemoveRoomImage(false);
+
       if (editingService.gallery) {
         try {
           const parsed = JSON.parse(editingService.gallery);
@@ -102,6 +107,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
       setNewGalleryPreviews([]);
     } else {
       setImagePreview(null);
+      setRemoveRoomImage(false);
       setExistingGallery([]);
       setNewGalleryPreviews([]);
     }
@@ -131,7 +137,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
             return [res.service, ...prev];
           });
         }
-        setSuccessMsg('Berhasil! Data layanan dan foto galeri telah disimpan.');
+        setSuccessMsg('Berhasil! Foto dan data layanan telah diperbarui.');
         setTimeout(() => setSuccessMsg(null), 6000);
         setEditingService(null);
         router.refresh();
@@ -172,6 +178,9 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
     if (res?.error) {
       alert(res.error);
     } else {
+      setServices((prev) => prev.filter((s) => s.id !== id));
+      setSuccessMsg('Layanan dan seluruh berkas gambar terkait berhasil dihapus.');
+      setTimeout(() => setSuccessMsg(null), 6000);
       router.refresh();
     }
   };
@@ -190,10 +199,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
         <div className="p-6 md:p-8 border-b border-border-fine bg-bg-snow flex items-center justify-between">
           <div>
             <h3 className="font-heading font-bold text-xl text-text-dark">
-              {isEdit ? 'Edit Layanan' : 'Tambah Layanan Baru'}
+              {isEdit ? 'Edit Layanan Medis' : 'Tambah Layanan Baru'}
             </h3>
             <p className="text-sm text-text-muted mt-1">
-              {isEdit ? 'Ubah informasi detail mengenai layanan medis klinik.' : 'Tambahkan jenis layanan kesehatan baru untuk dipublikasikan.'}
+              {isEdit ? 'Ubah informasi detail, foto utama, dan galeri fasilitas layanan.' : 'Tambahkan jenis layanan kesehatan baru untuk dipublikasikan.'}
             </p>
           </div>
           <button
@@ -207,9 +216,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
 
         <form onSubmit={handleSubmit} encType="multipart/form-data" className="p-6 md:p-8 flex flex-col gap-6">
           {isEdit && <input type="hidden" name="id" value={editingService.id} />}
+          {removeRoomImage && <input type="hidden" name="removeRoomImage" value="true" />}
           
           {errorMsg && (
-            <div className="p-4 bg-red-50 text-red-600 rounded-2xl flex items-center gap-3 text-sm font-medium border border-red-100">
+            <div className="p-4 bg-red-50 text-red-600 rounded-2xl flex items-center gap-3 text-sm font-bold border border-red-200">
               <AlertCircle className="w-5 h-5 shrink-0" />
               {errorMsg}
             </div>
@@ -251,45 +261,69 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
 
               {/* Room Image Field */}
               <div className="flex flex-col gap-2">
-                <label htmlFor="roomImage" className="text-sm font-bold text-text-dark">
-                  Foto Utama & Ruangan Layanan
+                <label htmlFor="roomImage" className="text-sm font-bold text-text-dark flex items-center justify-between">
+                  <span>Foto Utama Layanan</span>
+                  {imagePreview && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setRemoveRoomImage(true);
+                      }}
+                      className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Hapus Foto Utama
+                    </button>
+                  )}
                 </label>
-                {imagePreview && (
-                  <div className="relative w-48 h-28 rounded-xl overflow-hidden border border-border-fine mb-2 shadow-sm bg-slate-900/5 flex items-center justify-center p-1">
+
+                {imagePreview ? (
+                  <div className="relative w-full h-40 rounded-2xl overflow-hidden border border-border-fine shadow-sm bg-slate-900/5 flex items-center justify-center p-2 group">
                     <img 
                       src={imagePreview} 
-                      alt="Preview Foto Layanan" 
+                      alt="Preview Foto Utama" 
                       className="w-full h-full object-contain"
                     />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <span className="text-white text-xs font-bold bg-black/60 px-3 py-1.5 rounded-full backdrop-blur-sm">Foto Utama Aktif</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-32 rounded-2xl border-2 border-dashed border-border-fine bg-bg-snow flex flex-col items-center justify-center gap-2 text-text-muted">
+                    <ImageIcon className="w-8 h-8 text-border-fine" />
+                    <p className="text-xs font-semibold">Belum ada foto utama yang dipilih</p>
                   </div>
                 )}
+
                 <input
                   id="roomImage"
                   name="roomImage"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
                       setImagePreview(URL.createObjectURL(file));
+                      setRemoveRoomImage(false);
                     }
                   }}
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium cursor-pointer"
                 />
-                <p className="text-xs text-text-muted">Upload foto baru untuk mengganti gambar utama pada halaman detail layanan (Maksimal 5MB. JPG, PNG, WebP).</p>
+                <p className="text-xs text-text-muted">Format didukung: JPG, PNG, WebP (Maksimal 5MB).</p>
               </div>
 
               {/* Gallery Photos Field */}
               <div className="flex flex-col gap-3">
                 <label className="text-sm font-bold text-text-dark flex items-center justify-between">
                   <span>Galeri Foto Ruangan & Fasilitas</span>
-                  <span className="text-xs font-normal text-text-muted">Dapat upload beberapa foto sekaligus</span>
+                  <span className="text-xs font-normal text-text-muted">Multiple upload</span>
                 </label>
 
                 {/* Render Existing Gallery Photos */}
                 {existingGallery.length > 0 && (
                   <div className="flex flex-col gap-2">
-                    <p className="text-xs font-semibold text-text-muted">Foto Galeri Saat Ini:</p>
+                    <p className="text-xs font-bold text-text-dark">Foto Galeri Aktif ({existingGallery.length}):</p>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                       {existingGallery.map((url, idx) => (
                         <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-1">
@@ -312,10 +346,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 {/* Render New Upload Previews */}
                 {newGalleryPreviews.length > 0 && (
                   <div className="flex flex-col gap-2">
-                    <p className="text-xs font-semibold text-primary">Foto Baru yang Dipilih:</p>
+                    <p className="text-xs font-bold text-primary">Foto Baru yang Akan Diunggah ({newGalleryPreviews.length}):</p>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                       {newGalleryPreviews.map((url, idx) => (
-                        <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40 bg-slate-900/5 flex items-center justify-center p-1">
+                        <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/50 bg-slate-900/5 flex items-center justify-center p-1">
                           <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-contain" />
                         </div>
                       ))}
@@ -329,7 +363,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   name="galleryFiles"
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
                   onChange={(e) => {
                     const files = e.target.files;
                     if (files && files.length > 0) {
@@ -341,7 +375,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   }}
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium cursor-pointer"
                 />
-                <p className="text-xs text-text-muted">Pilih satu atau beberapa foto ruangan/fasilitas untuk menambahkan koleksi galeri foto layanan.</p>
+                <p className="text-xs text-text-muted">Pilih satu atau beberapa foto dari komputer Anda untuk ditambahkan ke galeri fasilitas.</p>
               </div>
             </div>
 
@@ -554,7 +588,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
         }}
         onConfirm={executeDelete}
         title="Hapus Layanan Medis"
-        message="Apakah Anda yakin ingin menghapus layanan ini? Tindakan ini akan menghapusnya secara permanen dari database dan tidak dapat dibatalkan."
+        message="Apakah Anda yakin ingin menghapus layanan ini? Tindakan ini akan menghapusnya secara permanen dari database dan seluruh file gambar fisiknya di server akan terhapus."
         confirmText="Hapus"
         cancelText="Batal"
       />
