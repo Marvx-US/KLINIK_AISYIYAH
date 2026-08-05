@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSession, logout } from '@/lib/auth';
-import { LayoutDashboard, FileText, CalendarRange, LogOut, Heart, User, Users } from 'lucide-react';
+import { LayoutDashboard, FileText, CalendarRange, LogOut, Heart, User, Users, Activity } from 'lucide-react';
 
 export const revalidate = 0;
 
@@ -62,6 +62,13 @@ export default async function AdminLayout({
           >
             <LayoutDashboard className="h-4.5 w-4.5" />
             Dashboard
+          </Link>
+          <Link
+            href="/admin/services"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
+          >
+            <Activity className="h-4.5 w-4.5" />
+            Kelola Layanan
           </Link>
           <Link
             href="/admin/articles"

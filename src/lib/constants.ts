@@ -23,6 +23,7 @@ export const KLINIK_HOURS = [
 
 export const NAVIGATION_ITEMS = [
   { name: 'Beranda', href: '/' },
+  { name: 'Layanan', href: '/services' },
   { name: 'Artikel Kesehatan', href: '/articles' },
   { name: 'Event & Berita', href: '/events' },
   { name: 'Kontak', href: '/contact' },

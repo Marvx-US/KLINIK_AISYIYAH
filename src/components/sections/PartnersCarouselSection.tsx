@@ -18,7 +18,7 @@ export default function PartnersCarouselSection({ partners }: PartnersCarouselSe
   const duplicatedPartners = [...partners, ...partners];
 
   return (
-    <section className="py-16 md:py-24 w-full bg-transparent overflow-hidden flex flex-col justify-center items-center">
+    <section className="py-12 md:py-16 w-full bg-transparent overflow-hidden flex flex-col justify-center items-center">
       <div className="max-w-7xl mx-auto px-6 mb-12 text-center w-full flex flex-col items-center">
         <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-border-fine shadow-sm text-xs font-bold tracking-widest uppercase text-primary mb-3">
           Kerja Sama Kemitraan

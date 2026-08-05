@@ -119,6 +119,60 @@ async function main() {
     console.log('Event sudah terisi, melewati proses.');
   }
 
+  // 4. Buat Layanan Default
+  const servicesCount = await prisma.service.count();
+  if (servicesCount === 0) {
+    await prisma.service.createMany({
+      data: [
+        {
+          name: 'IGD (Instalasi Gawat Darurat)',
+          slug: 'igd-instalasi-gawat-darurat',
+          description: 'Layanan gawat darurat 24 jam dengan penanganan cepat, tepat, dan didukung oleh tim medis siaga.',
+          iconName: 'ShieldAlert',
+          isActive: true,
+        },
+        {
+          name: 'Poli Umum',
+          slug: 'poli-umum',
+          description: 'Pemeriksaan kesehatan dasar oleh dokter berpengalaman untuk penanganan keluhan medis umum secara cepat.',
+          iconName: 'HeartPulse',
+          isActive: true,
+        },
+        {
+          name: 'Poli Gigi',
+          slug: 'poli-gigi',
+          description: 'Pembersihan karang gigi, penambalan, pencabutan, dan konsultasi kesehatan mulut keluarga.',
+          iconName: 'Smile',
+          isActive: true,
+        },
+        {
+          name: 'Poli KIA / Bersalin',
+          slug: 'poli-kia-bersalin',
+          description: 'Layanan rutin kehamilan, tumbuh kembang balita, imunisasi anak, KB terpadu, dan pertolongan persalinan.',
+          iconName: 'Baby',
+          isActive: true,
+        },
+        {
+          name: 'Vaksin Haji & Umrah',
+          slug: 'vaksin-haji-umrah',
+          description: 'Layanan vaksinasi wajib dan anjuran untuk calon jemaah haji dan umrah guna perlindungan kesehatan optimal.',
+          iconName: 'Syringe',
+          isActive: true,
+        },
+        {
+          name: 'Rehabilitasi Napza',
+          slug: 'rehabilitasi-napza',
+          description: 'Program pemulihan dan konseling penyalahgunaan napza secara terpadu, konfidensial, dan profesional.',
+          iconName: 'Activity',
+          isActive: true,
+        },
+      ],
+    });
+    console.log('6 Layanan awal sukses ditambahkan!');
+  } else {
+    console.log('Layanan sudah terisi, melewati proses.');
+  }
+
   console.log('Seeding selesai dengan sukses!');
 }
 

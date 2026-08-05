@@ -17,7 +17,7 @@ export default function FacilityGallerySection({ facilities }: FacilityGallerySe
   if (!facilities || facilities.length === 0) return null;
 
   return (
-    <section className="py-24 w-full px-6 sm:px-8 lg:px-12 border-fine-b bg-bg-snow relative">
+    <section className="py-12 md:py-16 w-full px-6 sm:px-8 lg:px-12 border-fine-b bg-bg-snow relative">
       <SectionHeader
         eyebrow="Fasilitas & Ruangan"
         heading="Kenyamanan & Teknologi Medis Terdepan"

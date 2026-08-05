@@ -22,19 +22,19 @@ interface ArticleCardProps {
  */
 export default function ArticleCard({ article }: ArticleCardProps) {
   return (
-    <article className="bg-white rounded-2xl border-fine overflow-hidden transition-editorial hover-glow flex flex-col h-full group">
+    <article className="bg-white rounded-[1.25rem] border border-border-fine/60 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-primary/80 hover:shadow-[0_16px_32px_rgba(13,148,136,0.08)] hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col h-full group">
       {article.coverImage && (
-        <div className="relative w-full h-48 overflow-hidden bg-gray-100 border-b border-border-fine">
+        <div className="relative w-full h-48 overflow-hidden bg-gray-100 border-b border-border-fine/50">
           <Image 
             src={article.coverImage} 
             alt={article.title} 
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           />
         </div>
       )}
-      <div className="p-8 flex flex-col h-full">
+      <div className="p-6 md:p-8 flex flex-col h-full">
         <span className="text-xs font-bold text-primary uppercase tracking-wider mb-4 block">
           {article.category}
         </span>

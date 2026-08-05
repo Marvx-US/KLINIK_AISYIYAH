@@ -4,12 +4,15 @@ import { getActiveFacilities } from '@/core/services/facilityService';
 import { getActivePartners } from '@/core/services/partnerService';
 import { getPublishedArticles } from '@/core/services/articleService';
 import { getPublishedEvents } from '@/core/services/eventService';
+import { getActiveServices } from '@/core/services/serviceService';
 import { FALLBACK_ARTICLES, FALLBACK_EVENTS } from '@/lib/constants';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
 import SectionHeader from '@/components/ui/SectionHeader';
 import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import FAQSection from '@/components/sections/FAQSection';
 import dynamic from 'next/dynamic';
 
 const FacilityGallerySection = dynamic(
@@ -29,12 +32,13 @@ export const revalidate = 60; // ISR: re-generate tiap 1 menit
  */
 export default async function HomePage() {
 
-  const [rawArticles, rawEvents, banners, facilities, partners] = await Promise.all([
+  const [rawArticles, rawEvents, banners, facilities, partners, services] = await Promise.all([
     getPublishedArticles().catch(() => []),
     getPublishedEvents().catch(() => []),
     getActiveBanners().catch(() => []),
     getActiveFacilities().catch(() => []),
     getActivePartners().catch(() => []),
+    getActiveServices().catch(() => []),
   ]);
 
   // Fallback jika database kosong
@@ -63,45 +67,63 @@ export default async function HomePage() {
     : FALLBACK_EVENTS;
 
   return (
-    <div className="relative pb-24">
+    <div className="relative pb-12">
       <HeroSection banners={banners} />
-      <ServicesSection />
+      
+      <ScrollReveal>
+        <ServicesSection services={services} />
+      </ScrollReveal>
 
       {/* Section Event & Berita */}
-      <section className="py-24 w-full px-6 sm:px-8 lg:px-12 border-fine-b bg-bg-snow">
-        <SectionHeader
-          eyebrow="Berita & Kegiatan"
-          heading="Kegiatan & Agenda Mendatang"
-          linkText="Lihat Semua Berita"
-          linkHref="/events"
-        />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {events.map((evt: EventCardData) => (
-            <EventCard key={evt.id} event={evt} />
-          ))}
-        </div>
-      </section>
+      <ScrollReveal delay={100}>
+        <section className="py-12 md:py-16 w-full px-6 sm:px-8 lg:px-12 border-fine-b bg-bg-snow">
+          <SectionHeader
+            eyebrow="Berita & Kegiatan"
+            heading="Kegiatan & Agenda Mendatang"
+            linkText="Lihat Semua Berita"
+            linkHref="/events"
+          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {events.map((evt: EventCardData) => (
+              <EventCard key={evt.id} event={evt} />
+            ))}
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* Section Artikel Kesehatan */}
-      <section className="py-24 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow">
-        <SectionHeader
-          eyebrow="Artikel Kesehatan"
-          heading="Edukasi Kesehatan Terbaru"
-          linkText="Lihat Semua Artikel"
-          linkHref="/articles"
-        />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {articles.map((art: ArticleCardData) => (
-            <ArticleCard key={art.id} article={art} />
-          ))}
-        </div>
-      </section>
+      <ScrollReveal delay={100}>
+        <section className="py-12 md:py-16 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow">
+          <SectionHeader
+            eyebrow="Artikel Kesehatan"
+            heading="Edukasi Kesehatan Terbaru"
+            linkText="Lihat Semua Artikel"
+            linkHref="/articles"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {articles.map((art: ArticleCardData) => (
+              <ArticleCard key={art.id} article={art} />
+            ))}
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* Section Fasilitas & Ruangan */}
-      {facilities.length > 0 && <FacilityGallerySection facilities={facilities} />}
+      {facilities.length > 0 && (
+        <ScrollReveal>
+          <FacilityGallerySection facilities={facilities} />
+        </ScrollReveal>
+      )}
+
+      {/* Section FAQ (Tanya Jawab) */}
+      <FAQSection />
 
       {/* Section Mitra Kerjasama */}
-      {partners.length > 0 && <PartnersCarouselSection partners={partners} />}
+      {partners.length > 0 && (
+        <ScrollReveal>
+          <PartnersCarouselSection partners={partners} />
+        </ScrollReveal>
+      )}
     </div>
   );
 }
