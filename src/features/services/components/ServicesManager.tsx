@@ -378,10 +378,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     id="description"
                     name="description"
                     required
-                    rows={3}
+                    rows={5}
                     defaultValue={editingService.description}
                     placeholder="Deskripsikan layanan secara lengkap, fasilitas utama, dan info penting lainnya..."
-                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[130px]"
                   />
                 </div>
 
@@ -393,10 +393,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   <textarea
                     id="purpose"
                     name="purpose"
-                    rows={3}
+                    rows={5}
                     defaultValue={initialForm.purpose}
                     placeholder="Tujuan utama pelayanan ini, contoh: Memberikan perawatan medis darurat segera..."
-                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[130px]"
                   />
                 </div>
               </div>
@@ -540,10 +540,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="operationalHours"
                   name="operationalHours"
-                  rows={5}
+                  rows={9}
                   defaultValue={initialForm.operationalHours}
                   placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam..."
-                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono resize-none"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y min-h-[220px]"
                 />
                 <p className="text-xs text-text-muted">Masukkan jam operasional per hari (format `Hari: Jam`).</p>
               </div>
@@ -556,10 +556,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="facilities"
                   name="facilities"
-                  rows={5}
+                  rows={9}
                   defaultValue={initialForm.facilities}
                   placeholder="Tulis 1 nama fasilitas per baris:&#10;Ruang Resusitasi Jantung-Paru&#10;Ruang Bedah Minor&#10;Ambulans 24 Jam"
-                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[220px]"
                 />
                 <p className="text-xs text-text-muted">Tulis 1 fasilitas per baris. Ikon disesuaikan otomatis.</p>
               </div>
@@ -581,10 +581,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="benefits"
                   name="benefits"
-                  rows={4}
+                  rows={7}
                   defaultValue={initialForm.benefits}
                   placeholder="Tulis 1 manfaat per baris:&#10;Pelayanan non-stop 24 jam&#10;Tim medis bersertifikat"
-                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
                 />
                 <p className="text-xs text-text-muted">Poin keunggulan layanan, 1 per baris.</p>
               </div>
@@ -597,10 +597,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="preparation"
                   name="preparation"
-                  rows={4}
+                  rows={7}
                   defaultValue={initialForm.preparation}
                   placeholder="Tulis 1 instruksi per baris:&#10;Membawa KTP asli / Kartu Keluarga&#10;Membawa kartu BPJS"
-                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
                 />
                 <p className="text-xs text-text-muted">Petunjuk persiapan pasien sebelum berkunjung.</p>
               </div>
@@ -622,10 +622,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="procedures"
                   name="procedures"
-                  rows={4}
+                  rows={7}
                   defaultValue={initialForm.procedures}
                   placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka..."
-                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
                 />
                 <p className="text-xs text-text-muted">Tulis `Judul | Deskripsi` 1 tindakan per baris.</p>
               </div>
@@ -639,10 +639,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   <textarea
                     id="faq"
                     name="faq"
-                    rows={4}
+                    rows={7}
                     defaultValue={initialForm.faq}
                     placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
-                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
                   />
                   <p className="text-xs text-text-muted">Tulis `Pertanyaan | Jawaban` 1 FAQ per baris.</p>
                 </div>
@@ -655,10 +655,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   <textarea
                     id="priceList"
                     name="priceList"
-                    rows={3}
+                    rows={5}
                     defaultValue={editingService.priceList || ''}
                     placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
-                    className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[130px]"
                   />
                 </div>
               </div>
