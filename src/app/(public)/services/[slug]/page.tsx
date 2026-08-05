@@ -127,23 +127,26 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     }
   }
 
-  // Tentukan gallery final: jika admin pernah upload galeri, gunakan dbGallery secara utama!
+  // Tentukan gallery & heroImage final:
+  // Jika admin mengunggah galeri foto, gunakan foto galeri admin sebagai prioritas utama!
   let finalGallery: string[] = [];
   if (dbGallery && dbGallery.length > 0) {
     finalGallery = dbGallery;
+  } else if (dbService?.roomImage) {
+    finalGallery = [dbService.roomImage, ...(resolvedStatic.gallery || [])];
   } else {
     finalGallery = resolvedStatic.gallery || [];
   }
 
-  if (dbService?.roomImage && !finalGallery.includes(dbService.roomImage)) {
-    finalGallery = [dbService.roomImage, ...finalGallery];
-  }
+  const finalHeroImage = (dbGallery && dbGallery.length > 0) 
+    ? dbGallery[0] 
+    : (dbService?.roomImage || resolvedStatic.heroImage);
 
   const mergedData = {
     ...resolvedStatic,
     title: dbService?.name || resolvedStatic.title,
     fullDescription: dbService?.description || resolvedStatic.fullDescription,
-    heroImage: dbService?.roomImage || resolvedStatic.heroImage,
+    heroImage: finalHeroImage,
     gallery: finalGallery,
     vaccinePrices: dbPrices || resolvedStatic.vaccinePrices || null
   };
