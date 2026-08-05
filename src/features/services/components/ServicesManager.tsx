@@ -241,11 +241,11 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   Foto Utama & Ruangan Layanan
                 </label>
                 {imagePreview && (
-                  <div className="relative w-48 h-28 rounded-xl overflow-hidden border border-border-fine mb-2 shadow-sm bg-bg-snow">
+                  <div className="relative w-48 h-28 rounded-xl overflow-hidden border border-border-fine mb-2 shadow-sm bg-slate-900/5 flex items-center justify-center p-1">
                     <img 
                       src={imagePreview} 
                       alt="Preview Foto Layanan" 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 )}
@@ -278,12 +278,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     <p className="text-xs font-semibold text-text-muted">Foto Galeri Saat Ini:</p>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                       {existingGallery.map((url, idx) => (
-                        <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-bg-snow">
-                          <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-cover" />
+                        <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-1">
+                          <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-contain" />
                           <button
                             type="button"
                             onClick={() => setExistingGallery(prev => prev.filter((_, i) => i !== idx))}
-                            className="absolute top-1.5 right-1.5 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 hover:scale-110 transition-all shadow-md"
+                            className="absolute top-1.5 right-1.5 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 hover:scale-110 transition-all shadow-md z-10"
                             title="Hapus foto dari galeri"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -301,8 +301,8 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     <p className="text-xs font-semibold text-primary">Foto Baru yang Dipilih:</p>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                       {newGalleryPreviews.map((url, idx) => (
-                        <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40 bg-bg-snow">
-                          <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-cover" />
+                        <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40 bg-slate-900/5 flex items-center justify-center p-1">
+                          <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-contain" />
                         </div>
                       ))}
                     </div>

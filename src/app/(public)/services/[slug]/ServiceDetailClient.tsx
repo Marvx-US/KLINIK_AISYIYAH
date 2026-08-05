@@ -256,13 +256,13 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
             </div>
 
             <div className="space-y-6">
-              <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden border border-border-fine/60 shadow-sm bg-slate-100 group">
+              <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden border border-border-fine/60 shadow-sm bg-slate-900/5 group flex items-center justify-center p-2">
                 <img 
                   src={service.gallery[0] || service.heroImage} 
                   alt="Ilustrasi Ruangan"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 pointer-events-none">
                   <span className="text-white text-xs font-bold bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">Fasilitas Ruangan Utama</span>
                 </div>
               </div>
@@ -391,12 +391,12 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
                 <div 
                   key={idx} 
                   onClick={() => setSelectedImage(imgUrl)}
-                  className="group relative aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-border-fine bg-slate-100 cursor-pointer shadow-sm"
+                  className="group relative aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-2 cursor-pointer shadow-sm"
                 >
                   <img 
                     src={imgUrl} 
                     alt={`Galeri ${service.title} ${idx + 1}`} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Eye className="w-6 h-6 text-white" />
@@ -624,7 +624,7 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
               <img 
                 src={selectedImage} 
                 alt="Zoomed Ruangan" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain bg-black/50 p-2"
               />
             </motion.div>
           </motion.div>

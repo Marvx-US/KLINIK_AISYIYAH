@@ -54,7 +54,25 @@ export async function createService(data: {
   gallery?: string | null;
   priceList?: string | null;
 }) {
-  return (db as any).service.create({ data });
+  try {
+    return await (db as any).service.create({ data });
+  } catch (err: any) {
+    if (err.message && (err.message.includes("Unknown argument `gallery`") || err.message.includes("gallery"))) {
+      await (db as any).$executeRawUnsafe(
+        `INSERT INTO Service (name, slug, description, iconName, isActive, roomImage, gallery, priceList, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        data.name,
+        data.slug,
+        data.description,
+        data.iconName,
+        data.isActive ? 1 : 0,
+        data.roomImage || null,
+        data.gallery || null,
+        data.priceList || null
+      );
+      return findServiceBySlug(data.slug);
+    }
+    throw err;
+  }
 }
 
 export async function updateService(
@@ -70,7 +88,36 @@ export async function updateService(
     priceList?: string | null;
   }
 ) {
-  return (db as any).service.update({ where: { id }, data });
+  try {
+    return await (db as any).service.update({ where: { id }, data });
+  } catch (err: any) {
+    if (err.message && (err.message.includes("Unknown argument `gallery`") || err.message.includes("gallery"))) {
+      const existing = await findServiceById(id);
+      const name = data.name !== undefined ? data.name : existing.name;
+      const slug = data.slug !== undefined ? data.slug : existing.slug;
+      const description = data.description !== undefined ? data.description : existing.description;
+      const iconName = data.iconName !== undefined ? data.iconName : existing.iconName;
+      const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : (existing.isActive ? 1 : 0);
+      const roomImage = data.roomImage !== undefined ? data.roomImage : existing.roomImage;
+      const gallery = data.gallery !== undefined ? data.gallery : existing.gallery;
+      const priceList = data.priceList !== undefined ? data.priceList : existing.priceList;
+
+      await (db as any).$executeRawUnsafe(
+        `UPDATE Service SET name = ?, slug = ?, description = ?, iconName = ?, isActive = ?, roomImage = ?, gallery = ?, priceList = ?, updatedAt = NOW() WHERE id = ?`,
+        name,
+        slug,
+        description,
+        iconName,
+        isActive,
+        roomImage,
+        gallery,
+        priceList,
+        id
+      );
+      return findServiceById(id);
+    }
+    throw err;
+  }
 }
 
 export async function deleteService(id: number) {
