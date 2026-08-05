@@ -4,7 +4,8 @@ import { SERVICES_DATA, type ServiceData } from '@/data/services';
 import ServiceDetailClient from './ServiceDetailClient';
 import { notFound } from 'next/navigation';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -20,42 +21,29 @@ function normalizeSlug(slug: string): string {
 }
 
 function getPossibleDbSlugs(slug: string): string[] {
-  const s = slug.toLowerCase().trim();
-  const set = new Set<string>([s]);
-  if (s === 'igd' || s === 'igd-instalasi-gawat-darurat') {
-    set.add('igd');
-    set.add('igd-instalasi-gawat-darurat');
-  }
-  if (s === 'poli-kia' || s === 'poli-kia-bersalin' || s === 'kesehatan-ibu-anak-kia') {
-    set.add('poli-kia');
-    set.add('poli-kia-bersalin');
-    set.add('kesehatan-ibu-anak-kia');
-  }
-  if (s === 'vaksin-haji' || s === 'vaksin-haji-umrah' || s === 'poli-vaksinasi') {
-    set.add('vaksin-haji');
-    set.add('vaksin-haji-umrah');
-    set.add('poli-vaksinasi');
-  }
-  if (s === 'poli-gigi' || s === 'poli-gigi-mulut') {
-    set.add('poli-gigi');
-    set.add('poli-gigi-mulut');
-  }
-  return Array.from(set);
+  const norm = normalizeSlug(slug);
+  const result = [slug, norm];
+  if (norm === 'igd') result.push('igd-instalasi-gawat-darurat');
+  if (norm === 'poli-kia') result.push('poli-kia-bersalin', 'kesehatan-ibu-anak-kia');
+  if (norm === 'vaksin-haji') result.push('vaksin-haji-umrah', 'poli-vaksinasi');
+  if (norm === 'poli-gigi') result.push('poli-gigi-mulut');
+  if (norm === 'poli-umum') result.push('poli-umum-spesialis');
+  if (norm === 'rehabilitasi-napza') result.push('rehabilitasi-napza-narkoba');
+  return Array.from(new Set(result));
 }
 
-function parsePriceList(rawPrices: string | null | undefined): { name: string; price: number }[] | null {
-  if (!rawPrices) return null;
+function parsePriceList(raw: string | null | undefined): { name: string; price: number }[] | null {
+  if (!raw || !raw.trim()) return null;
   const list: { name: string; price: number }[] = [];
-  const lines = rawPrices.split('\n');
+  const lines = raw.split('\n');
   for (const line of lines) {
     if (!line.trim()) continue;
     const parts = line.split(':');
     if (parts.length >= 2) {
       const name = parts[0].trim();
-      const priceVal = parts[1].trim().replace(/[^0-9]/g, '');
-      const price = parseInt(priceVal, 10);
-      if (name && !isNaN(price)) {
-        list.push({ name, price });
+      const priceNum = parseInt(parts[1].replace(/[^0-9]/g, ''), 10);
+      if (name && !isNaN(priceNum)) {
+        list.push({ name, price: priceNum });
       }
     }
   }
@@ -67,14 +55,17 @@ function parseOperationalHours(raw: string | null | undefined): Record<string, s
   const hours: Record<string, string> = {};
   const lines = raw.split('\n');
   for (const line of lines) {
-    if (!line.trim()) continue;
-    const parts = line.split(':');
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const parts = trimmed.split(':');
     if (parts.length >= 2) {
       const key = parts[0].trim();
       const val = parts.slice(1).join(':').trim();
       if (key && val) {
         hours[key] = val;
       }
+    } else {
+      hours[trimmed] = 'Buka';
     }
   }
   return Object.keys(hours).length > 0 ? hours : null;

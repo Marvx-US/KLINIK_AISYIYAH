@@ -112,10 +112,10 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
     }
 
     // Revalidasi seluruh path publik & admin secara serentak
-    revalidatePath('/');
-    revalidatePath('/services');
+    revalidatePath('/', 'layout');
+    revalidatePath('/services', 'layout');
     revalidatePath('/services/[slug]', 'page');
-    revalidatePath('/admin/services');
+    revalidatePath('/admin/services', 'layout');
 
     return { success: true, service: saved };
   } catch (error: unknown) {
