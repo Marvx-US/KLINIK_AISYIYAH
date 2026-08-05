@@ -9,6 +9,70 @@ import {
   FileText, CheckCircle2
 } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
+import { SERVICES_DATA } from '@/data/services';
+
+function normalizeSlug(slug: string): string {
+  const s = slug.toLowerCase().trim();
+  if (s.includes('igd')) return 'igd';
+  if (s.includes('kia') || s.includes('bersalin')) return 'poli-kia';
+  if (s.includes('vaksin') || s.includes('haji')) return 'vaksin-haji';
+  if (s.includes('gigi')) return 'poli-gigi';
+  if (s.includes('napza') || s.includes('rehab')) return 'rehabilitasi-napza';
+  if (s.includes('umum')) return 'poli-umum';
+  return s;
+}
+
+function getInitialFormValues(service: Service) {
+  const normSlug = normalizeSlug(service.slug);
+  const staticData = SERVICES_DATA[normSlug] || SERVICES_DATA[service.slug];
+
+  let operationalHours = service.operationalHours || '';
+  if (!operationalHours && staticData?.operationalHours) {
+    operationalHours = Object.entries(staticData.operationalHours)
+      .map(([day, time]) => `${day}: ${time}`)
+      .join('\n');
+  }
+
+  let facilities = service.facilities || '';
+  if (!facilities && staticData?.facilities) {
+    facilities = staticData.facilities.join('\n');
+  }
+
+  let purpose = service.purpose || '';
+  if (!purpose && staticData?.purpose) {
+    purpose = staticData.purpose;
+  }
+
+  let benefits = service.benefits || '';
+  if (!benefits && staticData?.benefits) {
+    benefits = staticData.benefits.join('\n');
+  }
+
+  let preparation = service.preparation || '';
+  if (!preparation && staticData?.preparation) {
+    preparation = staticData.preparation.join('\n');
+  }
+
+  let procedures = service.procedures || '';
+  if (!procedures && staticData?.procedures) {
+    procedures = staticData.procedures.map((p) => `${p.title} | ${p.description}`).join('\n');
+  }
+
+  let faq = service.faq || '';
+  if (!faq && staticData?.faq) {
+    faq = staticData.faq.map((f) => `${f.question} | ${f.answer}`).join('\n');
+  }
+
+  return {
+    operationalHours,
+    facilities,
+    purpose,
+    benefits,
+    preparation,
+    procedures,
+    faq,
+  };
+}
 
 // Ikon yang tersedia untuk dipilih admin
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
@@ -201,6 +265,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
   if (editingService !== null) {
     // FORM VIEW
     const isEdit = editingService.id !== 0;
+    const initialForm = getInitialFormValues(editingService);
     
     return (
       <div className="bg-white rounded-3xl border border-border-fine shadow-sm overflow-hidden">
@@ -282,7 +347,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     id="purpose"
                     name="purpose"
                     rows={3}
-                    defaultValue={editingService.purpose || ''}
+                    defaultValue={initialForm.purpose}
                     placeholder="Tujuan utama pelayanan ini, contoh: Memberikan perawatan medis darurat segera..."
                     className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                   />
@@ -450,7 +515,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="operationalHours"
                   name="operationalHours"
                   rows={6}
-                  defaultValue={editingService.operationalHours || ''}
+                  defaultValue={initialForm.operationalHours}
                   placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam&#10;Kamis: 24 Jam&#10;Jumat: 24 Jam&#10;Sabtu: 24 Jam&#10;Minggu: 24 Jam"
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono resize-none"
                 />
@@ -466,7 +531,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="facilities"
                   name="facilities"
                   rows={6}
-                  defaultValue={editingService.facilities || ''}
+                  defaultValue={initialForm.facilities}
                   placeholder="Tulis 1 nama fasilitas per baris:&#10;Ruang Resusitasi Jantung-Paru&#10;Ruang Tindakan Bedah Minor&#10;Ambulans Gawat Darurat 24 Jam&#10;Ruang Tunggu Ber-AC&#10;Wi-Fi Kecepatan Tinggi"
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
@@ -491,7 +556,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="benefits"
                   name="benefits"
                   rows={5}
-                  defaultValue={editingService.benefits || ''}
+                  defaultValue={initialForm.benefits}
                   placeholder="Tulis 1 manfaat per baris:&#10;Pelayanan non-stop 24 jam sehari&#10;Tim medis bersertifikat (ACLS/ATLS)&#10;Akses ambulans cepat tanggap"
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
@@ -507,7 +572,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="preparation"
                   name="preparation"
                   rows={5}
-                  defaultValue={editingService.preparation || ''}
+                  defaultValue={initialForm.preparation}
                   placeholder="Tulis 1 instruksi per baris:&#10;Membawa KTP asli / Kartu Keluarga&#10;Membawa kartu asuransi atau BPJS Kesehatan&#10;Menginformasikan obat yang sedang dikonsumsi"
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
@@ -532,7 +597,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="procedures"
                   name="procedures"
                   rows={5}
-                  defaultValue={editingService.procedures || ''}
+                  defaultValue={initialForm.procedures}
                   placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Tindakan penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka robek...&#10;Tindakan EKG | Perekaman kelistrikan jantung..."
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
@@ -548,7 +613,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="faq"
                   name="faq"
                   rows={5}
-                  defaultValue={editingService.faq || ''}
+                  defaultValue={initialForm.faq}
                   placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD melayani 24 jam? | Ya, IGD beroperasi 24 jam nonstop.&#10;Berapa estimasi biaya? | Biaya penanganan sesuai tindakan yang diberikan."
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium resize-none"
                 />
