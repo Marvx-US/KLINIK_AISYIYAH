@@ -68,7 +68,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     gallery: [
       'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=2073&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1579684389782-64d84b5e905d?q=80&w=2000&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=2070&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=2070&auto=format&fit=crop'
     ],
     facilities: ['Ruang Resusitasi Jantung-Paru', 'Ruang Tindakan Bedah Minor', 'Ruang Observasi Intensif', 'Ambulans Gawat Darurat 24 Jam', 'Peralatan Oksigen Terintegrasi', 'Defibrillator (AED)', 'EKG 12 Lead'],
