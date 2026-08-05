@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveServiceAction, deleteServiceAction, toggleServiceStatusAction } from '@/app/actions/services';
 import { 
-  Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, X, ImageIcon,
+  Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, X, ImageIcon, Check,
   HeartPulse, Smile, Baby, Syringe, Activity, ShieldAlert, Stethoscope, Heart, Award, ShieldCheck, HelpCircle
 } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
@@ -66,6 +66,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
   // Form State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [selectedIcon, setSelectedIcon] = useState('Activity');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [existingGallery, setExistingGallery] = useState<string[]>([]);
@@ -114,11 +115,24 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
 
     try {
       const formData = new FormData(e.currentTarget);
-      const res = await saveServiceAction(formData);
+      const res: any = await saveServiceAction(formData);
 
       if (res?.error) {
         setErrorMsg(res.error);
       } else {
+        if (res?.service) {
+          setServices((prev) => {
+            const idx = prev.findIndex((s) => s.id === res.service.id);
+            if (idx >= 0) {
+              const updated = [...prev];
+              updated[idx] = res.service;
+              return updated;
+            }
+            return [res.service, ...prev];
+          });
+        }
+        setSuccessMsg('Berhasil! Data layanan dan foto galeri telah disimpan.');
+        setTimeout(() => setSuccessMsg(null), 6000);
         setEditingService(null);
         router.refresh();
       }
@@ -441,6 +455,13 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
             Layanan Baru
           </button>
         </div>
+
+        {successMsg && (
+          <div className="p-4 bg-green-50 text-green-700 rounded-2xl flex items-center gap-3 text-sm font-bold border border-green-200 shadow-sm">
+            <Check className="w-5 h-5 shrink-0 text-green-600" />
+            {successMsg}
+          </div>
+        )}
 
         <div className="bg-white rounded-3xl border border-border-fine shadow-sm overflow-hidden">
           <div className="overflow-x-auto">

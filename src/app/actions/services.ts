@@ -9,7 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { z, parseForm } from '@/lib/validations';
 import * as serviceService from '@/core/services/serviceService';
 
-export type ActionResult = { success?: boolean; error?: string };
+export type ActionResult = { success?: boolean; error?: string; service?: any };
 
 export async function saveServiceAction(formData: FormData): Promise<ActionResult> {
   const session = await getSession();
@@ -61,19 +61,21 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
   }
 
   try {
+    let saved = null;
     if (id) {
-      await serviceService.updateService(id, { 
+      saved = await serviceService.updateService(id, { 
         name, description, iconName, isActive, imageFile, galleryFiles, existingGallery, priceList 
       });
     } else {
-      await serviceService.createService({ 
+      saved = await serviceService.createService({ 
         name, description, iconName, isActive, imageFile, galleryFiles, priceList 
       });
     }
     revalidatePath('/');
     revalidatePath('/services');
+    revalidatePath('/services/[slug]', 'page');
     revalidatePath('/admin/services');
-    return { success: true };
+    return { success: true, service: saved };
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Gagal menyimpan layanan.';
     return { error: msg };
