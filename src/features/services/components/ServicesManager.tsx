@@ -66,6 +66,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedIcon, setSelectedIcon] = useState('Activity');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Action states for inline toggle status
   const [togglePendingId, setTogglePendingId] = useState<number | null>(null);
@@ -75,10 +76,13 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
     setServices(initialServices);
   }, [initialServices]);
 
-  // Sync selected icon state when entering editing mode
+  // Sync selected icon & image preview state when entering editing mode
   useEffect(() => {
     if (editingService) {
       setSelectedIcon(editingService.iconName || 'Activity');
+      setImagePreview(editingService.roomImage || null);
+    } else {
+      setImagePreview(null);
     }
   }, [editingService]);
 
@@ -214,13 +218,13 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
               {/* Room Image Field */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="roomImage" className="text-sm font-bold text-text-dark">
-                  Gambar Ruangan
+                  Foto Utama & Ruangan Layanan
                 </label>
-                {editingService.roomImage && (
-                  <div className="relative w-32 h-20 rounded-xl overflow-hidden border border-border-fine mb-2">
+                {imagePreview && (
+                  <div className="relative w-48 h-28 rounded-xl overflow-hidden border border-border-fine mb-2 shadow-sm bg-bg-snow">
                     <img 
-                      src={editingService.roomImage} 
-                      alt="Preview Ruangan" 
+                      src={imagePreview} 
+                      alt="Preview Foto Layanan" 
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -230,9 +234,15 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   name="roomImage"
                   type="file"
                   accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setImagePreview(URL.createObjectURL(file));
+                    }
+                  }}
                   className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium cursor-pointer"
                 />
-                <p className="text-xs text-text-muted">Pilih berkas gambar untuk mengunggah foto ruangan (maksimal 5MB). Format didukung: JPG, PNG, WebP.</p>
+                <p className="text-xs text-text-muted">Upload foto baru untuk mengganti gambar utama & galeri ruangan pada halaman detail layanan (Maksimal 5MB. JPG, PNG, WebP).</p>
               </div>
             </div>
 

@@ -85,6 +85,9 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     title: dbService?.name || resolvedStatic.title,
     fullDescription: dbService?.description || resolvedStatic.fullDescription,
     heroImage: dbService?.roomImage || resolvedStatic.heroImage,
+    gallery: dbService?.roomImage 
+      ? [dbService.roomImage, ...(resolvedStatic.gallery || []).filter(img => img !== dbService.roomImage)]
+      : resolvedStatic.gallery,
     vaccinePrices: dbPrices || resolvedStatic.vaccinePrices || null
   };
 
