@@ -1,5 +1,5 @@
 import React from 'react';
-import { getServiceBySlug } from '@/core/services/serviceService';
+import { getServiceBySlug, getAllServices } from '@/core/services/serviceService';
 import { SERVICES_DATA, type ServiceData } from '@/data/services';
 import ServiceDetailClient from './ServiceDetailClient';
 import { notFound } from 'next/navigation';
@@ -17,6 +17,30 @@ function normalizeSlug(slug: string): string {
   if (s === 'vaksin-haji-umrah' || s === 'poli-vaksinasi') return 'vaksin-haji';
   if (s === 'poli-gigi-mulut') return 'poli-gigi';
   return s;
+}
+
+function getPossibleDbSlugs(slug: string): string[] {
+  const s = slug.toLowerCase().trim();
+  const set = new Set<string>([s]);
+  if (s === 'igd' || s === 'igd-instalasi-gawat-darurat') {
+    set.add('igd');
+    set.add('igd-instalasi-gawat-darurat');
+  }
+  if (s === 'poli-kia' || s === 'poli-kia-bersalin' || s === 'kesehatan-ibu-anak-kia') {
+    set.add('poli-kia');
+    set.add('poli-kia-bersalin');
+    set.add('kesehatan-ibu-anak-kia');
+  }
+  if (s === 'vaksin-haji' || s === 'vaksin-haji-umrah' || s === 'poli-vaksinasi') {
+    set.add('vaksin-haji');
+    set.add('vaksin-haji-umrah');
+    set.add('poli-vaksinasi');
+  }
+  if (s === 'poli-gigi' || s === 'poli-gigi-mulut') {
+    set.add('poli-gigi');
+    set.add('poli-gigi-mulut');
+  }
+  return Array.from(set);
 }
 
 function parsePriceList(rawPrices: string | null | undefined): { name: string; price: number }[] | null {
@@ -43,10 +67,20 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   const rawSlug = resolvedParams.slug;
   const slug = normalizeSlug(rawSlug);
 
-  // Coba ambil dari DB
-  const dbService = await getServiceBySlug(rawSlug).catch(() => null) 
-    || await getServiceBySlug(slug).catch(() => null);
-  
+  // Ambil service dari DB dengan pencarian fleksibel
+  const candidateSlugs = getPossibleDbSlugs(rawSlug);
+  let dbService: any = null;
+  for (const candidate of candidateSlugs) {
+    dbService = await getServiceBySlug(candidate).catch(() => null);
+    if (dbService) break;
+  }
+  if (!dbService) {
+    const allDb = await getAllServices().catch(() => []);
+    dbService = allDb.find((s: any) => 
+      candidateSlugs.some(c => s.slug.toLowerCase().includes(c) || c.includes(s.slug.toLowerCase()))
+    ) || null;
+  }
+
   // Ambil detail statis premium
   const staticDetails = SERVICES_DATA[slug] || null;
 
@@ -54,7 +88,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // Jika tidak ada staticDetails tapi ada dbService, kita buat fallback minimal
+  // Jika tidak ada staticDetails tapi ada dbService, buat fallback
   const resolvedStatic: ServiceData = staticDetails || {
     id: dbService?.id || 0,
     slug: slug,
@@ -80,7 +114,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
 
   const dbPrices = parsePriceList(dbService?.priceList);
 
-  // Parse dbService.gallery jika ada
+  // Parse dbService.gallery jika ada dari admin
   let dbGallery: string[] | null = null;
   if (dbService?.gallery) {
     try {
@@ -93,8 +127,14 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     }
   }
 
-  // Tentukan gallery final
-  let finalGallery: string[] = dbGallery || resolvedStatic.gallery || [];
+  // Tentukan gallery final: jika admin pernah upload galeri, gunakan dbGallery secara utama!
+  let finalGallery: string[] = [];
+  if (dbGallery && dbGallery.length > 0) {
+    finalGallery = dbGallery;
+  } else {
+    finalGallery = resolvedStatic.gallery || [];
+  }
+
   if (dbService?.roomImage && !finalGallery.includes(dbService.roomImage)) {
     finalGallery = [dbService.roomImage, ...finalGallery];
   }
