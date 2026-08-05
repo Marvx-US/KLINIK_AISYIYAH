@@ -25,6 +25,13 @@ export async function createService(data: {
   imageFile?: File | null;
   galleryFiles?: File[] | null;
   priceList?: string | null;
+  purpose?: string | null;
+  benefits?: string | null;
+  facilities?: string | null;
+  operationalHours?: string | null;
+  preparation?: string | null;
+  procedures?: string | null;
+  faq?: string | null;
 }) {
   console.log(`[SERVICE LOG] Membuat layanan baru: "${data.name}"`);
   const slug = generateSlug(data.name);
@@ -63,6 +70,13 @@ export async function createService(data: {
     roomImage,
     gallery: galleryList.length > 0 ? JSON.stringify(galleryList) : null,
     priceList: data.priceList,
+    purpose: data.purpose,
+    benefits: data.benefits,
+    facilities: data.facilities,
+    operationalHours: data.operationalHours,
+    preparation: data.preparation,
+    procedures: data.procedures,
+    faq: data.faq,
   });
 }
 
@@ -78,6 +92,13 @@ export async function updateService(
     galleryFiles?: File[] | null;
     existingGallery?: string[] | null;
     priceList?: string | null;
+    purpose?: string | null;
+    benefits?: string | null;
+    facilities?: string | null;
+    operationalHours?: string | null;
+    preparation?: string | null;
+    procedures?: string | null;
+    faq?: string | null;
   }
 ) {
   console.log(`[SERVICE LOG] Perbarui layanan ID: ${id}`);
@@ -156,6 +177,13 @@ export async function updateService(
     roomImage,
     gallery: JSON.stringify(finalGalleryList),
     priceList: data.priceList,
+    purpose: data.purpose,
+    benefits: data.benefits,
+    facilities: data.facilities,
+    operationalHours: data.operationalHours,
+    preparation: data.preparation,
+    procedures: data.procedures,
+    faq: data.faq,
   });
 }
 

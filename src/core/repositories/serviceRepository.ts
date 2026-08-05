@@ -53,13 +53,20 @@ export async function createService(data: {
   roomImage?: string | null;
   gallery?: string | null;
   priceList?: string | null;
+  purpose?: string | null;
+  benefits?: string | null;
+  facilities?: string | null;
+  operationalHours?: string | null;
+  preparation?: string | null;
+  procedures?: string | null;
+  faq?: string | null;
 }) {
   try {
     return await (db as any).service.create({ data });
   } catch (err: any) {
-    if (err.message && (err.message.includes("Unknown argument `gallery`") || err.message.includes("gallery"))) {
+    if (err.message && (err.message.includes("Unknown argument") || err.message.includes("gallery"))) {
       await (db as any).$executeRawUnsafe(
-        `INSERT INTO Service (name, slug, description, iconName, isActive, roomImage, gallery, priceList, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        `INSERT INTO Service (name, slug, description, iconName, isActive, roomImage, gallery, priceList, purpose, benefits, facilities, operationalHours, preparation, procedures, faq, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         data.name,
         data.slug,
         data.description,
@@ -67,7 +74,14 @@ export async function createService(data: {
         data.isActive ? 1 : 0,
         data.roomImage || null,
         data.gallery || null,
-        data.priceList || null
+        data.priceList || null,
+        data.purpose || null,
+        data.benefits || null,
+        data.facilities || null,
+        data.operationalHours || null,
+        data.preparation || null,
+        data.procedures || null,
+        data.faq || null
       );
       return findServiceBySlug(data.slug);
     }
@@ -86,12 +100,19 @@ export async function updateService(
     roomImage?: string | null;
     gallery?: string | null;
     priceList?: string | null;
+    purpose?: string | null;
+    benefits?: string | null;
+    facilities?: string | null;
+    operationalHours?: string | null;
+    preparation?: string | null;
+    procedures?: string | null;
+    faq?: string | null;
   }
 ) {
   try {
     return await (db as any).service.update({ where: { id }, data });
   } catch (err: any) {
-    if (err.message && (err.message.includes("Unknown argument `gallery`") || err.message.includes("gallery"))) {
+    if (err.message && (err.message.includes("Unknown argument") || err.message.includes("gallery"))) {
       const existing = await findServiceById(id);
       const name = data.name !== undefined ? data.name : existing.name;
       const slug = data.slug !== undefined ? data.slug : existing.slug;
@@ -101,9 +122,16 @@ export async function updateService(
       const roomImage = data.roomImage !== undefined ? data.roomImage : existing.roomImage;
       const gallery = data.gallery !== undefined ? data.gallery : existing.gallery;
       const priceList = data.priceList !== undefined ? data.priceList : existing.priceList;
+      const purpose = data.purpose !== undefined ? data.purpose : existing.purpose;
+      const benefits = data.benefits !== undefined ? data.benefits : existing.benefits;
+      const facilities = data.facilities !== undefined ? data.facilities : existing.facilities;
+      const operationalHours = data.operationalHours !== undefined ? data.operationalHours : existing.operationalHours;
+      const preparation = data.preparation !== undefined ? data.preparation : existing.preparation;
+      const procedures = data.procedures !== undefined ? data.procedures : existing.procedures;
+      const faq = data.faq !== undefined ? data.faq : existing.faq;
 
       await (db as any).$executeRawUnsafe(
-        `UPDATE Service SET name = ?, slug = ?, description = ?, iconName = ?, isActive = ?, roomImage = ?, gallery = ?, priceList = ?, updatedAt = NOW() WHERE id = ?`,
+        `UPDATE Service SET name = ?, slug = ?, description = ?, iconName = ?, isActive = ?, roomImage = ?, gallery = ?, priceList = ?, purpose = ?, benefits = ?, facilities = ?, operationalHours = ?, preparation = ?, procedures = ?, faq = ?, updatedAt = NOW() WHERE id = ?`,
         name,
         slug,
         description,
@@ -112,6 +140,13 @@ export async function updateService(
         roomImage,
         gallery,
         priceList,
+        purpose,
+        benefits,
+        facilities,
+        operationalHours,
+        preparation,
+        procedures,
+        faq,
         id
       );
       return findServiceById(id);

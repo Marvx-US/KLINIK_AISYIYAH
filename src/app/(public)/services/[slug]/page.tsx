@@ -62,6 +62,71 @@ function parsePriceList(rawPrices: string | null | undefined): { name: string; p
   return list.length > 0 ? list.sort((a, b) => a.price - b.price) : null;
 }
 
+function parseOperationalHours(raw: string | null | undefined): Record<string, string> | null {
+  if (!raw || !raw.trim()) return null;
+  const hours: Record<string, string> = {};
+  const lines = raw.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const parts = line.split(':');
+    if (parts.length >= 2) {
+      const key = parts[0].trim();
+      const val = parts.slice(1).join(':').trim();
+      if (key && val) {
+        hours[key] = val;
+      }
+    }
+  }
+  return Object.keys(hours).length > 0 ? hours : null;
+}
+
+function parseList(raw: string | null | undefined): string[] | null {
+  if (!raw || !raw.trim()) return null;
+  const list = raw
+    .split('\n')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+  return list.length > 0 ? list : null;
+}
+
+function parseProcedures(raw: string | null | undefined): { title: string; description: string; iconName: string }[] | null {
+  if (!raw || !raw.trim()) return null;
+  const list: { title: string; description: string; iconName: string }[] = [];
+  const lines = raw.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const parts = line.split('|');
+    if (parts.length >= 2) {
+      const title = parts[0].trim();
+      const description = parts[1].trim();
+      if (title && description) {
+        list.push({ title, description, iconName: 'Activity' });
+      }
+    } else {
+      list.push({ title: line.trim(), description: '', iconName: 'Activity' });
+    }
+  }
+  return list.length > 0 ? list : null;
+}
+
+function parseFAQ(raw: string | null | undefined): { question: string; answer: string }[] | null {
+  if (!raw || !raw.trim()) return null;
+  const list: { question: string; answer: string }[] = [];
+  const lines = raw.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const parts = line.split('|');
+    if (parts.length >= 2) {
+      const question = parts[0].trim();
+      const answer = parts[1].trim();
+      if (question && answer) {
+        list.push({ question, answer });
+      }
+    }
+  }
+  return list.length > 0 ? list : null;
+}
+
 export default async function ServiceDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
   const rawSlug = resolvedParams.slug;
@@ -113,6 +178,13 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   };
 
   const dbPrices = parsePriceList(dbService?.priceList);
+  const dbOperationalHours = parseOperationalHours(dbService?.operationalHours);
+  const dbFacilities = parseList(dbService?.facilities);
+  const dbBenefits = parseList(dbService?.benefits);
+  const dbPreparation = parseList(dbService?.preparation);
+  const dbProcedures = parseProcedures(dbService?.procedures);
+  const dbFaq = parseFAQ(dbService?.faq);
+  const dbPurpose = dbService?.purpose ? dbService.purpose.trim() : null;
 
   // Parse dbService.gallery jika ada dari admin
   let dbGallery: string[] | null = null;
@@ -146,8 +218,15 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     ...resolvedStatic,
     title: dbService?.name || resolvedStatic.title,
     fullDescription: dbService?.description || resolvedStatic.fullDescription,
+    purpose: dbPurpose || resolvedStatic.purpose,
     heroImage: finalHeroImage,
     gallery: finalGallery,
+    operationalHours: dbOperationalHours || resolvedStatic.operationalHours,
+    facilities: dbFacilities || resolvedStatic.facilities,
+    benefits: dbBenefits || resolvedStatic.benefits,
+    preparation: dbPreparation || resolvedStatic.preparation,
+    procedures: dbProcedures || resolvedStatic.procedures,
+    faq: dbFaq || resolvedStatic.faq,
     vaccinePrices: dbPrices || resolvedStatic.vaccinePrices || null
   };
 

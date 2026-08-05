@@ -23,17 +23,24 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
     return {
       id: id ? z.number(id, 'ID Layanan') : null,
       name: z.maxLength(z.string(formData.get('name'), 'Nama Layanan'), 100, 'Nama Layanan'),
-      description: z.maxLength(z.string(formData.get('description'), 'Deskripsi'), 1000, 'Deskripsi'),
+      description: z.maxLength(z.string(formData.get('description'), 'Deskripsi'), 2000, 'Deskripsi'),
       iconName: z.maxLength(z.string(formData.get('iconName'), 'Nama Ikon'), 50, 'Nama Ikon'),
       isActive: z.boolean(formData.get('isActive')),
       imageFile: z.file(formData.get('roomImage'), 'Foto Utama Layanan', false),
       priceList: formData.get('priceList') as string | null,
+      purpose: formData.get('purpose') as string | null,
+      benefits: formData.get('benefits') as string | null,
+      facilities: formData.get('facilities') as string | null,
+      operationalHours: formData.get('operationalHours') as string | null,
+      preparation: formData.get('preparation') as string | null,
+      procedures: formData.get('procedures') as string | null,
+      faq: formData.get('faq') as string | null,
     };
   });
 
   if (!validation.success) return { error: validation.error };
 
-  const { id, name, description, iconName, isActive, imageFile, priceList } = validation.data;
+  const { id, name, description, iconName, isActive, imageFile, priceList, purpose, benefits, facilities, operationalHours, preparation, procedures, faq } = validation.data;
   const removeRoomImage = formData.get('removeRoomImage') === 'true';
 
   // --- Validasi File Foto Utama ---
@@ -76,7 +83,14 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
         removeRoomImage,
         galleryFiles, 
         existingGallery, 
-        priceList 
+        priceList,
+        purpose,
+        benefits,
+        facilities,
+        operationalHours,
+        preparation,
+        procedures,
+        faq
       });
     } else {
       saved = await serviceService.createService({ 
@@ -86,7 +100,14 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
         isActive, 
         imageFile, 
         galleryFiles, 
-        priceList 
+        priceList,
+        purpose,
+        benefits,
+        facilities,
+        operationalHours,
+        preparation,
+        procedures,
+        faq
       });
     }
 

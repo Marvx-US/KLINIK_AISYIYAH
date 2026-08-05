@@ -82,16 +82,23 @@ model Partner {
 }
 
 model Service {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String   @unique
-  description String   @db.Text
-  iconName    String
-  isActive    Boolean  @default(true)
-  roomImage   String?  @db.Text
-  gallery     String?  @db.Text
-  priceList   String?  @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  name             String
+  slug             String   @unique
+  description      String   @db.Text
+  iconName         String
+  isActive         Boolean  @default(true)
+  roomImage        String?  @db.Text
+  gallery          String?  @db.Text
+  priceList        String?  @db.Text
+  purpose          String?  @db.Text
+  benefits         String?  @db.Text
+  facilities       String?  @db.Text
+  operationalHours String?  @db.Text
+  preparation      String?  @db.Text
+  procedures       String?  @db.Text
+  faq              String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
