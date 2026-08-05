@@ -380,8 +380,19 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     required
                     rows={5}
                     defaultValue={editingService.description}
+                    ref={(el) => {
+                      if (el) {
+                        el.style.height = 'auto';
+                        el.style.height = `${Math.max(el.scrollHeight + 15, 180)}px`;
+                      }
+                    }}
+                    onInput={(e) => {
+                      const t = e.currentTarget;
+                      t.style.height = 'auto';
+                      t.style.height = `${Math.max(t.scrollHeight + 15, 180)}px`;
+                    }}
                     placeholder="Deskripsikan layanan secara lengkap, fasilitas utama, dan info penting lainnya..."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[130px]"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
                   />
                 </div>
 
@@ -395,8 +406,19 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     name="purpose"
                     rows={5}
                     defaultValue={initialForm.purpose}
+                    ref={(el) => {
+                      if (el) {
+                        el.style.height = 'auto';
+                        el.style.height = `${Math.max(el.scrollHeight + 15, 180)}px`;
+                      }
+                    }}
+                    onInput={(e) => {
+                      const t = e.currentTarget;
+                      t.style.height = 'auto';
+                      t.style.height = `${Math.max(t.scrollHeight + 15, 180)}px`;
+                    }}
                     placeholder="Tujuan utama pelayanan ini, contoh: Memberikan perawatan medis darurat segera..."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[130px]"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
                   />
                 </div>
               </div>
@@ -542,8 +564,19 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   name="operationalHours"
                   rows={9}
                   defaultValue={initialForm.operationalHours}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = 'auto';
+                      el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
+                    }
+                  }}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = 'auto';
+                    t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
+                  }}
                   placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam..."
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y min-h-[220px]"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y min-h-[250px]"
                 />
                 <p className="text-xs text-text-muted">Masukkan jam operasional per hari (format `Hari: Jam`).</p>
               </div>
@@ -558,8 +591,19 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   name="facilities"
                   rows={9}
                   defaultValue={initialForm.facilities}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = 'auto';
+                      el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
+                    }
+                  }}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = 'auto';
+                    t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
+                  }}
                   placeholder="Tulis 1 nama fasilitas per baris:&#10;Ruang Resusitasi Jantung-Paru&#10;Ruang Bedah Minor&#10;Ambulans 24 Jam"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[220px]"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[250px]"
                 />
                 <p className="text-xs text-text-muted">Tulis 1 fasilitas per baris. Ikon disesuaikan otomatis.</p>
               </div>
@@ -581,10 +625,21 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="benefits"
                   name="benefits"
-                  rows={7}
+                  rows={8}
                   defaultValue={initialForm.benefits}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = 'auto';
+                      el.style.height = `${Math.max(el.scrollHeight + 15, 240)}px`;
+                    }
+                  }}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = 'auto';
+                    t.style.height = `${Math.max(t.scrollHeight + 15, 240)}px`;
+                  }}
                   placeholder="Tulis 1 manfaat per baris:&#10;Pelayanan non-stop 24 jam&#10;Tim medis bersertifikat"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[240px]"
                 />
                 <p className="text-xs text-text-muted">Poin keunggulan layanan, 1 per baris.</p>
               </div>
@@ -597,10 +652,21 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="preparation"
                   name="preparation"
-                  rows={7}
+                  rows={8}
                   defaultValue={initialForm.preparation}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = 'auto';
+                      el.style.height = `${Math.max(el.scrollHeight + 15, 240)}px`;
+                    }
+                  }}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = 'auto';
+                    t.style.height = `${Math.max(t.scrollHeight + 15, 240)}px`;
+                  }}
                   placeholder="Tulis 1 instruksi per baris:&#10;Membawa KTP asli / Kartu Keluarga&#10;Membawa kartu BPJS"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[240px]"
                 />
                 <p className="text-xs text-text-muted">Petunjuk persiapan pasien sebelum berkunjung.</p>
               </div>
@@ -622,10 +688,21 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="procedures"
                   name="procedures"
-                  rows={7}
+                  rows={8}
                   defaultValue={initialForm.procedures}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = 'auto';
+                      el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
+                    }
+                  }}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = 'auto';
+                    t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
+                  }}
                   placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka..."
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[250px]"
                 />
                 <p className="text-xs text-text-muted">Tulis `Judul | Deskripsi` 1 tindakan per baris.</p>
               </div>
@@ -639,10 +716,21 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   <textarea
                     id="faq"
                     name="faq"
-                    rows={7}
+                    rows={8}
                     defaultValue={initialForm.faq}
+                    ref={(el) => {
+                      if (el) {
+                        el.style.height = 'auto';
+                        el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
+                      }
+                    }}
+                    onInput={(e) => {
+                      const t = e.currentTarget;
+                      t.style.height = 'auto';
+                      t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
+                    }}
                     placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[250px]"
                   />
                   <p className="text-xs text-text-muted">Tulis `Pertanyaan | Jawaban` 1 FAQ per baris.</p>
                 </div>
@@ -657,8 +745,19 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     name="priceList"
                     rows={5}
                     defaultValue={editingService.priceList || ''}
+                    ref={(el) => {
+                      if (el) {
+                        el.style.height = 'auto';
+                        el.style.height = `${Math.max(el.scrollHeight + 15, 180)}px`;
+                      }
+                    }}
+                    onInput={(e) => {
+                      const t = e.currentTarget;
+                      t.style.height = 'auto';
+                      t.style.height = `${Math.max(t.scrollHeight + 15, 180)}px`;
+                    }}
                     placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[130px]"
+                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
                   />
                 </div>
               </div>
