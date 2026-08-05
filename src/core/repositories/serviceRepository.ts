@@ -4,36 +4,27 @@
  */
 
 import { db } from '@/lib/db';
-import { unstable_cache } from 'next/cache';
 
-export const findAllServices = unstable_cache(
-  async () => {
-    try {
-      return await (db as any).service.findMany({ orderBy: { id: 'asc' } });
-    } catch (error) {
-      console.error('Database error in findAllServices:', error);
-      return [];
-    }
-  },
-  ['services-all'],
-  { revalidate: 60, tags: ['services'] }
-);
+export async function findAllServices() {
+  try {
+    return await (db as any).service.findMany({ orderBy: { id: 'asc' } });
+  } catch (error) {
+    console.error('Database error in findAllServices:', error);
+    return [];
+  }
+}
 
-export const findActiveServices = unstable_cache(
-  async () => {
-    try {
-      return await (db as any).service.findMany({
-        where: { isActive: true },
-        orderBy: { id: 'asc' },
-      });
-    } catch (error) {
-      console.error('Database error in findActiveServices:', error);
-      return [];
-    }
-  },
-  ['services-active'],
-  { revalidate: 60, tags: ['services'] }
-);
+export async function findActiveServices() {
+  try {
+    return await (db as any).service.findMany({
+      where: { isActive: true },
+      orderBy: { id: 'asc' },
+    });
+  } catch (error) {
+    console.error('Database error in findActiveServices:', error);
+    return [];
+  }
+}
 
 // Fungsi WRITE — tidak di-cache
 export async function findServiceById(id: number) {

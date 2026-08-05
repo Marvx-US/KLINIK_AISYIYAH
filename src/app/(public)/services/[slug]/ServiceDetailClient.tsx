@@ -504,9 +504,11 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
                   <span className={day === currentDayName ? "text-[#0EA5A4] font-extrabold" : "text-text-muted"}>
                     {day}
                   </span>
-                  <span className={day === currentDayName ? "text-[#0EA5A4] font-extrabold" : "text-text-dark"}>
-                    {time}
-                  </span>
+                  {time ? (
+                    <span className={day === currentDayName ? "text-[#0EA5A4] font-extrabold" : "text-text-dark"}>
+                      {time}
+                    </span>
+                  ) : null}
                 </div>
               ))}
             </div>
