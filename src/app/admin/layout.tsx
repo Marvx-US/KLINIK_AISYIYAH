@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { getSession, logout } from '@/lib/auth';
+import { KLINIK_INFO } from '@/lib/constants';
 import { LayoutDashboard, FileText, CalendarRange, LogOut, Heart, User, Users, Activity } from 'lucide-react';
 
 export const revalidate = 0;

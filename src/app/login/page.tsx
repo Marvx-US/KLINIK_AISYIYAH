@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { loginAction } from '../actions/auth';
+import { KLINIK_INFO } from '@/lib/constants';
 import { Lock, User, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
