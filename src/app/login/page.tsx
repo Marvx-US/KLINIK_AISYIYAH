@@ -3,8 +3,9 @@
 import React, { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { loginAction } from '../actions/auth';
-import { Heart, Lock, User, AlertCircle, Loader2 } from 'lucide-react';
+import { Lock, User, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,9 +26,16 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         {/* Logo and header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 group mb-6">
-            <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-white transition-transform group-hover:scale-105 duration-300">
-              <Heart className="h-6 w-6 fill-current" />
+          <Link href="/" className="inline-flex items-center gap-3 group mb-6">
+            <div className="h-11 w-11 rounded-full overflow-hidden shrink-0 border border-primary/20 shadow-sm transition-transform group-hover:scale-105 duration-300">
+              <Image
+                src="/logo.png"
+                alt="Logo Klinik Pratama Aisyiyah"
+                width={44}
+                height={44}
+                className="object-cover w-full h-full"
+                priority
+              />
             </div>
             <div className="text-left">
               <span className="font-heading font-extrabold text-xl tracking-tight text-text-dark">

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { getSession, logout } from '@/lib/auth';
 import { LayoutDashboard, FileText, CalendarRange, LogOut, Heart, User, Users, Activity } from 'lucide-react';
@@ -33,8 +34,15 @@ export default async function AdminLayout({
       <aside className="w-64 bg-white border-fine-r flex flex-col shrink-0">
         {/* Sidebar Header */}
         <div className="h-20 px-8 border-fine-b flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white">
-            <Heart className="h-4.5 w-4.5 fill-current" />
+          <div className="h-9 w-9 rounded-full overflow-hidden shrink-0 border border-primary/20 shadow-sm">
+            <Image
+              src="/logo.png"
+              alt="Logo Klinik Pratama Aisyiyah"
+              width={36}
+              height={36}
+              className="object-cover w-full h-full"
+              priority
+            />
           </div>
           <div>
             <span className="font-heading font-extrabold text-base tracking-tight text-text-dark">
