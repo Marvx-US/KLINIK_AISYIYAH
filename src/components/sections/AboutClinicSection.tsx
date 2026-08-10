@@ -32,6 +32,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 priority
+                suppressHydrationWarning
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
               
@@ -43,7 +44,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
 
               {/* Caption di bawah foto */}
               <div className="absolute bottom-6 left-6 right-6 text-white">
-                <p className="font-heading font-extrabold text-xl leading-snug drop-shadow-md">
+                <p className="font-heading font-extrabold text-xl leading-snug drop-shadow-md" suppressHydrationWarning>
                   {KLINIK_INFO.name}
                 </p>
                 <p className="text-xs text-gray-200 mt-1 flex items-center gap-1.5 font-medium">
@@ -78,7 +79,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
               <span className="text-xs font-bold text-primary uppercase tracking-widest block mb-2">
                 Profil & Pelayanan Medis
               </span>
-              <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-dark tracking-tight leading-tight font-editorial-serif">
+              <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-dark tracking-tight leading-tight font-editorial-serif" suppressHydrationWarning>
                 Tentang <span className="text-primary italic">{KLINIK_INFO.name}</span> & Jam Operasional
               </h2>
             </div>

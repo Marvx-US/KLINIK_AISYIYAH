@@ -52,12 +52,16 @@ export default function Navbar() {
                   height={36}
                   className="object-cover w-full h-full"
                   priority
+                  suppressHydrationWarning
                 />
               </div>
               <div>
-                <span className={`font-heading font-extrabold text-lg tracking-tight transition-colors duration-300 ${
-                  isDark ? 'text-text-dark' : 'text-white'
-                }`}>
+                <span 
+                  suppressHydrationWarning
+                  className={`font-heading font-extrabold text-lg tracking-tight transition-colors duration-300 ${
+                    isDark ? 'text-text-dark' : 'text-white'
+                  }`}
+                >
                   {KLINIK_INFO.name.split(' ')[0]}{' '}
                   <span className="text-primary">{KLINIK_INFO.name.split(' ')[1]}</span>
                 </span>

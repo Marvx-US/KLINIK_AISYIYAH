@@ -29,9 +29,10 @@ export default function Footer() {
                   width={32}
                   height={32}
                   className="object-contain w-full h-full"
+                  suppressHydrationWarning
                 />
               </div>
-              <span className="font-heading font-extrabold text-xl tracking-tight text-white">
+              <span className="font-heading font-extrabold text-xl tracking-tight text-white" suppressHydrationWarning>
                 {KLINIK_INFO.name.split(' ')[0]}{' '}
                 <span className="text-[#38BDF8]">{KLINIK_INFO.name.split(' ')[1]}</span>
               </span>
