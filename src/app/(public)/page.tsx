@@ -8,6 +8,7 @@ import { getActiveServices } from '@/core/services/serviceService';
 import { FALLBACK_ARTICLES, FALLBACK_EVENTS } from '@/lib/constants';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
+import AboutClinicSection from '@/components/sections/AboutClinicSection';
 import SectionHeader from '@/components/ui/SectionHeader';
 import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
@@ -66,10 +67,17 @@ export default async function HomePage() {
     }))
     : FALLBACK_EVENTS;
 
+  const firstFacilityPhoto = facilities.length > 0 ? facilities[0].imageUrl : undefined;
+
   return (
     <div className="relative pb-12">
       <HeroSection banners={banners} />
-      
+
+      {/* Section Tentang Klinik & Jam Operasional dengan Foto */}
+      <ScrollReveal>
+        <AboutClinicSection heroPhoto={firstFacilityPhoto} />
+      </ScrollReveal>
+
       <ScrollReveal>
         <ServicesSection services={services} />
       </ScrollReveal>
