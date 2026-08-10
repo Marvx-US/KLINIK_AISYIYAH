@@ -8,7 +8,6 @@ import { getActiveServices } from '@/core/services/serviceService';
 import { FALLBACK_ARTICLES, FALLBACK_EVENTS } from '@/lib/constants';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
-import AboutClinicSection from '@/components/sections/AboutClinicSection';
 import SectionHeader from '@/components/ui/SectionHeader';
 import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
@@ -16,6 +15,10 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSection from '@/components/sections/FAQSection';
 import dynamic from 'next/dynamic';
 
+const AboutClinicSection = dynamic(
+  () => import('@/components/sections/AboutClinicSection'),
+  { ssr: true }
+);
 const FacilityGallerySection = dynamic(
   () => import('@/components/sections/FacilityGallerySection'),
   { ssr: true }
