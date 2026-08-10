@@ -11,7 +11,7 @@ export const KLINIK_INFO = {
   whatsapp: '6281234567890',
   email: 'info@klinikaisyiyah.com',
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Klinik+Pratama+Aisyiyah+Pangkajene+Sidenreng+Rappang',
-  mapsEmbedUrl: 'https://maps.google.com/maps?q=Klinik+Pratama+Aisyiyah+Pangkajene+Sidenreng+Rappang&t=&z=15&ie=UTF8&iwloc=&output=embed',
+  mapsEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15915.228509707323!2d119.7891244!3d-3.9248234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2d95b966ed28987b%3A0xc07a4a9ad3d9d682!2sPangkajene%2C%20Maritengngae%2C%20Sidenreng%20Rappang%20Regency%2C%20South%20Sulawesi!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid',
   mapsDisplayCity: 'Pangkajene, Sidenreng Rappang, Sulawesi Selatan, Indonesia',
 };
 
