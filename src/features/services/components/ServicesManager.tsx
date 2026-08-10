@@ -185,6 +185,36 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
     }
   }, [editingService]);
 
+  // Auto-adjust all textarea heights when form opens or initial values load
+  useEffect(() => {
+    if (editingService !== null) {
+      const resizeAll = () => {
+        const textareas = document.querySelectorAll<HTMLTextAreaElement>('form textarea');
+        textareas.forEach((ta) => {
+          ta.style.height = 'auto';
+          const minH = parseInt(ta.getAttribute('data-minheight') || '260', 10);
+          ta.style.height = `${Math.max(ta.scrollHeight + 35, minH)}px`;
+        });
+      };
+      
+      const timer1 = setTimeout(resizeAll, 50);
+      const timer2 = setTimeout(resizeAll, 300);
+      window.addEventListener('resize', resizeAll);
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        window.removeEventListener('resize', resizeAll);
+      };
+    }
+  }, [editingService]);
+
+  const handleAutoResize = (e: React.FormEvent<HTMLTextAreaElement> | React.FocusEvent<HTMLTextAreaElement>) => {
+    const t = e.currentTarget;
+    t.style.height = 'auto';
+    const minH = parseInt(t.getAttribute('data-minheight') || '260', 10);
+    t.style.height = `${Math.max(t.scrollHeight + 35, minH)}px`;
+  };
+
   // Form submit handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -287,7 +317,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
           </button>
         </div>
 
-        <form key={editingService.id} onSubmit={handleSubmit} encType="multipart/form-data" className="p-6 md:p-8 flex flex-col gap-8">
+        <form key={editingService.id} onSubmit={handleSubmit} encType="multipart/form-data" className="p-6 md:p-10 flex flex-col gap-10">
           {isEdit && <input type="hidden" name="id" value={editingService.id} />}
           {removeRoomImage && <input type="hidden" name="removeRoomImage" value="true" />}
           
@@ -299,15 +329,16 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
           )}
 
           {/* BAGIAN 1: INFORMASI UTAMA */}
-          <div className="border-b border-border-fine pb-6">
-            <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
+          <div className="border-b border-border-fine pb-8">
+            <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
               <Activity className="w-5 h-5" /> 1. Informasi Utama Layanan
             </h4>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
+              {/* Header Fields in 3 Columns */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 {/* Name Field */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   <label htmlFor="name" className="text-sm font-bold text-text-dark">
                     Nama Layanan / Poli <span className="text-red-500">*</span>
                   </label>
@@ -323,13 +354,13 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 </div>
 
                 {/* Icon Selector Field */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   <label htmlFor="iconName" className="text-sm font-bold text-text-dark">
                     Pilih Ikon Layanan <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-primary-light border border-primary/20 flex items-center justify-center text-primary shrink-0">
-                      {renderIconPreview(selectedIcon, "w-6 h-6")}
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-2xl bg-primary-light border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                      {renderIconPreview(selectedIcon, "w-5 h-5")}
                     </div>
                     <div className="flex-grow">
                       <select
@@ -350,7 +381,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 </div>
 
                 {/* Status Field */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   <label className="text-sm font-bold text-text-dark">Status Visibilitas</label>
                   <label className="flex items-center gap-3 cursor-pointer p-3 border border-border-fine rounded-2xl hover:bg-bg-snow transition-colors">
                     <input
@@ -362,78 +393,60 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     />
                     <div>
                       <p className="font-semibold text-sm text-text-dark">Aktifkan Layanan</p>
-                      <p className="text-xs text-text-muted">Layanan ini akan tampil pada halaman publik.</p>
+                      <p className="text-xs text-text-muted mt-0.5">Tampil di halaman publik</p>
                     </div>
                   </label>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                {/* Description Field */}
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="description" className="text-sm font-bold text-text-dark">
-                    Deskripsi Layanan <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    required
-                    rows={5}
-                    defaultValue={editingService.description}
-                    ref={(el) => {
-                      if (el) {
-                        el.style.height = 'auto';
-                        el.style.height = `${Math.max(el.scrollHeight + 15, 180)}px`;
-                      }
-                    }}
-                    onInput={(e) => {
-                      const t = e.currentTarget;
-                      t.style.height = 'auto';
-                      t.style.height = `${Math.max(t.scrollHeight + 15, 180)}px`;
-                    }}
-                    placeholder="Deskripsikan layanan secara lengkap, fasilitas utama, dan info penting lainnya..."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
-                  />
-                </div>
+              {/* Description Field - Full Width */}
+              <div className="flex flex-col gap-2.5">
+                <label htmlFor="description" className="text-sm font-bold text-text-dark">
+                  Deskripsi Layanan <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  required
+                  rows={4}
+                  data-minheight="200"
+                  defaultValue={editingService.description}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
+                  placeholder="Deskripsikan layanan secara lengkap, fasilitas utama, dan info penting lainnya..."
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[200px]"
+                />
+              </div>
 
-                {/* Purpose Field */}
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="purpose" className="text-sm font-bold text-text-dark">
-                    Tujuan Utama Medis
-                  </label>
-                  <textarea
-                    id="purpose"
-                    name="purpose"
-                    rows={5}
-                    defaultValue={initialForm.purpose}
-                    ref={(el) => {
-                      if (el) {
-                        el.style.height = 'auto';
-                        el.style.height = `${Math.max(el.scrollHeight + 15, 180)}px`;
-                      }
-                    }}
-                    onInput={(e) => {
-                      const t = e.currentTarget;
-                      t.style.height = 'auto';
-                      t.style.height = `${Math.max(t.scrollHeight + 15, 180)}px`;
-                    }}
-                    placeholder="Tujuan utama pelayanan ini, contoh: Memberikan perawatan medis darurat segera..."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
-                  />
-                </div>
+              {/* Purpose Field - Full Width */}
+              <div className="flex flex-col gap-2.5">
+                <label htmlFor="purpose" className="text-sm font-bold text-text-dark">
+                  Tujuan Utama Medis
+                </label>
+                <textarea
+                  id="purpose"
+                  name="purpose"
+                  rows={4}
+                  data-minheight="200"
+                  defaultValue={initialForm.purpose}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
+                  placeholder="Tujuan utama pelayanan ini, contoh: Memberikan perawatan medis darurat segera..."
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[200px]"
+                />
               </div>
             </div>
           </div>
 
           {/* BAGIAN 2: FOTO UTAMA & GALERI RUANGAN */}
-          <div className="border-b border-border-fine pb-6">
-            <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
+          <div className="border-b border-border-fine pb-8">
+            <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
               <ImageIcon className="w-5 h-5" /> 2. Foto Utama & Galeri Ruangan
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 items-start">
               {/* Room Image Field */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5">
                 <label htmlFor="roomImage" className="text-sm font-bold text-text-dark flex items-center justify-between">
                   <span>Foto Utama Layanan</span>
                   {imagePreview && (
@@ -452,7 +465,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 </label>
 
                 {imagePreview ? (
-                  <div className="relative w-full h-40 rounded-2xl overflow-hidden border border-border-fine shadow-sm bg-slate-900/5 flex items-center justify-center p-2 group">
+                  <div className="relative w-full h-44 rounded-2xl overflow-hidden border border-border-fine shadow-sm bg-slate-900/5 flex items-center justify-center p-2 group">
                     <img 
                       src={imagePreview} 
                       alt="Preview Foto Utama" 
@@ -460,8 +473,8 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     />
                   </div>
                 ) : (
-                  <div className="w-full h-28 rounded-2xl border-2 border-dashed border-border-fine bg-bg-snow flex flex-col items-center justify-center gap-1 text-text-muted">
-                    <ImageIcon className="w-6 h-6 text-border-fine" />
+                  <div className="w-full h-32 rounded-2xl border-2 border-dashed border-border-fine bg-bg-snow flex flex-col items-center justify-center gap-1.5 text-text-muted">
+                    <ImageIcon className="w-7 h-7 text-border-fine" />
                     <p className="text-xs font-semibold">Belum ada foto utama yang dipilih</p>
                   </div>
                 )}
@@ -478,7 +491,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                       setRemoveRoomImage(false);
                     }
                   }}
-                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
                 />
               </div>
 
@@ -491,9 +504,9 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
 
                 {/* Existing Gallery */}
                 {existingGallery.length > 0 && (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2.5">
                     <p className="text-xs font-bold text-text-dark">Foto Galeri Aktif ({existingGallery.length}):</p>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-2.5">
                       {existingGallery.map((url, idx) => (
                         <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-1">
                           <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-contain" />
@@ -514,9 +527,9 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
 
                 {/* New Previews */}
                 {newGalleryPreviews.length > 0 && (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2.5">
                     <p className="text-xs font-bold text-primary">Foto Baru yang Akan Diunggah ({newGalleryPreviews.length}):</p>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-2.5">
                       {newGalleryPreviews.map((url, idx) => (
                         <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/50 bg-slate-900/5 flex items-center justify-center p-1">
                           <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-contain" />
@@ -541,84 +554,68 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                       setNewGalleryPreviews([]);
                     }
                   }}
-                  className="px-4 py-2.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
+                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
                 />
               </div>
             </div>
           </div>
 
           {/* BAGIAN 3: JADWAL OPERASIONAL & FASILITAS PENDUKUNG */}
-          <div className="border-b border-border-fine pb-6">
-            <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
+          <div className="border-b border-border-fine pb-8">
+            <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
               <Upload className="w-5 h-5" /> 3. Jadwal Operasional & Fasilitas Pendukung
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              {/* Operational Hours */}
-              <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-8">
+              {/* Operational Hours - Full Width */}
+              <div className="flex flex-col gap-2.5">
                 <label htmlFor="operationalHours" className="text-sm font-bold text-text-dark">
                   Jadwal Operasional
                 </label>
                 <textarea
                   id="operationalHours"
                   name="operationalHours"
-                  rows={9}
+                  rows={8}
+                  data-minheight="260"
                   defaultValue={initialForm.operationalHours}
-                  ref={(el) => {
-                    if (el) {
-                      el.style.height = 'auto';
-                      el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
-                    }
-                  }}
-                  onInput={(e) => {
-                    const t = e.currentTarget;
-                    t.style.height = 'auto';
-                    t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
-                  }}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
                   placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam..."
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y min-h-[250px]"
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y min-h-[260px]"
                 />
-                <p className="text-xs text-text-muted">Masukkan jam operasional per hari (format `Hari: Jam`).</p>
+                <p className="text-xs text-text-muted font-medium mt-1">Masukkan jam operasional per hari (format `Hari: Jam`).</p>
               </div>
 
-              {/* Facilities */}
-              <div className="flex flex-col gap-2">
+              {/* Facilities - Full Width */}
+              <div className="flex flex-col gap-2.5">
                 <label htmlFor="facilities" className="text-sm font-bold text-text-dark">
                   Fasilitas Pendukung
                 </label>
                 <textarea
                   id="facilities"
                   name="facilities"
-                  rows={9}
+                  rows={8}
+                  data-minheight="260"
                   defaultValue={initialForm.facilities}
-                  ref={(el) => {
-                    if (el) {
-                      el.style.height = 'auto';
-                      el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
-                    }
-                  }}
-                  onInput={(e) => {
-                    const t = e.currentTarget;
-                    t.style.height = 'auto';
-                    t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
-                  }}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
                   placeholder="Tulis 1 nama fasilitas per baris:&#10;Ruang Resusitasi Jantung-Paru&#10;Ruang Bedah Minor&#10;Ambulans 24 Jam"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[250px]"
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[260px]"
                 />
-                <p className="text-xs text-text-muted">Tulis 1 fasilitas per baris. Ikon disesuaikan otomatis.</p>
+                <p className="text-xs text-text-muted font-medium mt-1">Tulis 1 fasilitas per baris. Ikon disesuaikan otomatis.</p>
               </div>
             </div>
           </div>
 
           {/* BAGIAN 4: DETAIL PELAYANAN & PERSIAPAN */}
-          <div className="border-b border-border-fine pb-6">
-            <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
+          <div className="border-b border-border-fine pb-8">
+            <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
               <FileText className="w-5 h-5" /> 4. Detail Pelayanan, Keunggulan & Persiapan
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              {/* Benefits */}
-              <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-8">
+              {/* Benefits - Full Width */}
+              <div className="flex flex-col gap-2.5">
                 <label htmlFor="benefits" className="text-sm font-bold text-text-dark">
                   Manfaat & Keunggulan Layanan
                 </label>
@@ -626,26 +623,18 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="benefits"
                   name="benefits"
                   rows={8}
+                  data-minheight="280"
                   defaultValue={initialForm.benefits}
-                  ref={(el) => {
-                    if (el) {
-                      el.style.height = 'auto';
-                      el.style.height = `${Math.max(el.scrollHeight + 15, 240)}px`;
-                    }
-                  }}
-                  onInput={(e) => {
-                    const t = e.currentTarget;
-                    t.style.height = 'auto';
-                    t.style.height = `${Math.max(t.scrollHeight + 15, 240)}px`;
-                  }}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
                   placeholder="Tulis 1 manfaat per baris:&#10;Pelayanan non-stop 24 jam&#10;Tim medis bersertifikat"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[240px]"
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[280px]"
                 />
-                <p className="text-xs text-text-muted">Poin keunggulan layanan, 1 per baris.</p>
+                <p className="text-xs text-text-muted font-medium mt-1">Poin keunggulan layanan, 1 per baris.</p>
               </div>
 
-              {/* Preparation */}
-              <div className="flex flex-col gap-2">
+              {/* Preparation - Full Width */}
+              <div className="flex flex-col gap-2.5">
                 <label htmlFor="preparation" className="text-sm font-bold text-text-dark">
                   Persiapan Berkunjung Pasien
                 </label>
@@ -653,113 +642,80 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="preparation"
                   name="preparation"
                   rows={8}
+                  data-minheight="280"
                   defaultValue={initialForm.preparation}
-                  ref={(el) => {
-                    if (el) {
-                      el.style.height = 'auto';
-                      el.style.height = `${Math.max(el.scrollHeight + 15, 240)}px`;
-                    }
-                  }}
-                  onInput={(e) => {
-                    const t = e.currentTarget;
-                    t.style.height = 'auto';
-                    t.style.height = `${Math.max(t.scrollHeight + 15, 240)}px`;
-                  }}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
                   placeholder="Tulis 1 instruksi per baris:&#10;Membawa KTP asli / Kartu Keluarga&#10;Membawa kartu BPJS"
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[240px]"
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[280px]"
                 />
-                <p className="text-xs text-text-muted">Petunjuk persiapan pasien sebelum berkunjung.</p>
+                <p className="text-xs text-text-muted font-medium mt-1">Petunjuk persiapan pasien sebelum berkunjung.</p>
               </div>
             </div>
           </div>
 
           {/* BAGIAN 5: TINDAKAN MEDIS, FAQ, DAN HARGA */}
-          <div className="pb-4">
-            <h4 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
+          <div className="pb-6">
+            <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
               <CheckCircle2 className="w-5 h-5" /> 5. Pelayanan & Tindakan Medis, FAQ, & Harga
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              {/* Procedures */}
-              <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-8">
+              {/* Procedures - FULL WIDTH */}
+              <div className="flex flex-col gap-2.5">
                 <label htmlFor="procedures" className="text-sm font-bold text-text-dark">
                   Pelayanan & Tindakan Medis
                 </label>
                 <textarea
                   id="procedures"
                   name="procedures"
-                  rows={8}
+                  rows={10}
+                  data-minheight="320"
                   defaultValue={initialForm.procedures}
-                  ref={(el) => {
-                    if (el) {
-                      el.style.height = 'auto';
-                      el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
-                    }
-                  }}
-                  onInput={(e) => {
-                    const t = e.currentTarget;
-                    t.style.height = 'auto';
-                    t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
-                  }}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
                   placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka..."
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[250px]"
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[320px]"
                 />
-                <p className="text-xs text-text-muted">Tulis `Judul | Deskripsi` 1 tindakan per baris.</p>
+                <p className="text-xs text-text-muted font-medium mt-1">Tulis `Judul | Deskripsi` 1 tindakan per baris.</p>
               </div>
 
-              <div className="flex flex-col gap-4">
-                {/* FAQ */}
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="faq" className="text-sm font-bold text-text-dark">
-                    Tanya Jawab Layanan (FAQ)
-                  </label>
-                  <textarea
-                    id="faq"
-                    name="faq"
-                    rows={8}
-                    defaultValue={initialForm.faq}
-                    ref={(el) => {
-                      if (el) {
-                        el.style.height = 'auto';
-                        el.style.height = `${Math.max(el.scrollHeight + 15, 250)}px`;
-                      }
-                    }}
-                    onInput={(e) => {
-                      const t = e.currentTarget;
-                      t.style.height = 'auto';
-                      t.style.height = `${Math.max(t.scrollHeight + 15, 250)}px`;
-                    }}
-                    placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[250px]"
-                  />
-                  <p className="text-xs text-text-muted">Tulis `Pertanyaan | Jawaban` 1 FAQ per baris.</p>
-                </div>
+              {/* FAQ - FULL WIDTH */}
+              <div className="flex flex-col gap-2.5">
+                <label htmlFor="faq" className="text-sm font-bold text-text-dark">
+                  Tanya Jawab Layanan (FAQ)
+                </label>
+                <textarea
+                  id="faq"
+                  name="faq"
+                  rows={10}
+                  data-minheight="320"
+                  defaultValue={initialForm.faq}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
+                  placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[320px]"
+                />
+                <p className="text-xs text-text-muted font-medium mt-1">Tulis `Pertanyaan | Jawaban` 1 FAQ per baris.</p>
+              </div>
 
-                {/* Price List Field */}
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="priceList" className="text-sm font-bold text-text-dark">
-                    Daftar Harga (Khusus Vaksin / Layanan Terkait)
-                  </label>
-                  <textarea
-                    id="priceList"
-                    name="priceList"
-                    rows={5}
-                    defaultValue={editingService.priceList || ''}
-                    ref={(el) => {
-                      if (el) {
-                        el.style.height = 'auto';
-                        el.style.height = `${Math.max(el.scrollHeight + 15, 180)}px`;
-                      }
-                    }}
-                    onInput={(e) => {
-                      const t = e.currentTarget;
-                      t.style.height = 'auto';
-                      t.style.height = `${Math.max(t.scrollHeight + 15, 180)}px`;
-                    }}
-                    placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
-                    className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[180px]"
-                  />
-                </div>
+              {/* Price List Field - FULL WIDTH */}
+              <div className="flex flex-col gap-2.5">
+                <label htmlFor="priceList" className="text-sm font-bold text-text-dark">
+                  Daftar Harga (Khusus Vaksin / Layanan Terkait)
+                </label>
+                <textarea
+                  id="priceList"
+                  name="priceList"
+                  rows={6}
+                  data-minheight="200"
+                  defaultValue={editingService.priceList || ''}
+                  onFocus={handleAutoResize}
+                  onInput={handleAutoResize}
+                  placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
+                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[200px]"
+                />
+                <p className="text-xs text-text-muted font-medium mt-1">Format: `Nama Vaksin: Harga` 1 per baris.</p>
               </div>
             </div>
           </div>
