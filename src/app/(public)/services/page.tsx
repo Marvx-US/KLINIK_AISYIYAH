@@ -4,6 +4,7 @@ import { getActiveServices } from '@/core/services/serviceService';
 import ServiceCard, { type ServiceCardData } from '@/components/ui/ServiceCard';
 import EmptyState from '@/components/ui/EmptyState';
 import { STATIC_SERVICES } from '@/components/sections/ServicesSection';
+import { KLINIK_INFO } from '@/lib/constants';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
@@ -17,7 +18,7 @@ async function getFilteredServices(searchQuery: string) {
     const filtered = all.filter((svc: any) =>
       searchQuery
         ? svc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          svc.description.toLowerCase().includes(searchQuery.toLowerCase())
+        svc.description.toLowerCase().includes(searchQuery.toLowerCase())
         : true
     );
     return filtered;
@@ -33,7 +34,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
 
   let services = await getFilteredServices(searchQuery);
   const isFallbackUsed = services.length === 0 && !searchQuery;
-  
+
   if (isFallbackUsed) {
     services = STATIC_SERVICES as any[];
   }
@@ -49,7 +50,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
           Solusi Layanan Medis Terpadu & Profesional
         </h1>
         <p className="text-text-muted text-lg leading-relaxed">
-          Klinik Pratama Aisyiyah menyediakan berbagai fasilitas penunjang medis modern guna memberikan diagnosis yang tepat demi pengobatan optimal Anda dan keluarga.
+          {KLINIK_INFO.name} menyediakan berbagai fasilitas penunjang medis modern guna memberikan diagnosis yang tepat demi pengobatan optimal Anda dan keluarga.
         </p>
       </div>
 
@@ -79,15 +80,15 @@ export default async function ServicesPage({ searchParams }: PageProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((svc: any) => (
-            <ServiceCard 
-              key={svc.id || svc.title} 
+            <ServiceCard
+              key={svc.id || svc.title}
               service={{
                 title: svc.name || svc.title,
                 slug: svc.slug,
                 desc: svc.description || svc.desc,
                 iconName: svc.iconName,
                 icon: svc.icon,
-              }} 
+              }}
             />
           ))}
         </div>
