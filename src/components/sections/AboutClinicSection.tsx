@@ -14,13 +14,13 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
   const displayPhoto = heroPhoto || '/uploads/1786371427727-896528188.jpg';
 
   return (
-    <section className="py-16 md:py-24 w-full px-6 sm:px-8 lg:px-12 bg-white border-b border-border-fine relative overflow-hidden">
+    <section className="py-8 md:py-12 w-full px-6 sm:px-8 lg:px-12 bg-white border-b border-border-fine relative overflow-hidden">
       {/* Glow ambient background element */}
       <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 bg-accent-gold/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           
           {/* FOTO TENTANG KLINIK & OVERLAY BADGE (LEFT SIDE - 6 COLS) */}
           <div className="lg:col-span-6 flex flex-col items-center">

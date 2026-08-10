@@ -87,7 +87,7 @@ export default async function HomePage() {
 
       {/* Section Event & Berita */}
       <ScrollReveal delay={100}>
-        <section className="py-12 md:py-16 w-full px-6 sm:px-8 lg:px-12 border-fine-b bg-bg-snow">
+        <section className="py-8 md:py-12 w-full px-6 sm:px-8 lg:px-12 border-fine-b bg-bg-snow">
           <SectionHeader
             eyebrow="Berita & Kegiatan"
             heading="Kegiatan & Agenda Mendatang"
@@ -104,7 +104,7 @@ export default async function HomePage() {
 
       {/* Section Artikel Kesehatan */}
       <ScrollReveal delay={100}>
-        <section className="py-12 md:py-16 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow">
+        <section className="py-8 md:py-12 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow">
           <SectionHeader
             eyebrow="Artikel Kesehatan"
             heading="Edukasi Kesehatan Terbaru"

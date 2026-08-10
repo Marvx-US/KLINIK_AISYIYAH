@@ -16,10 +16,10 @@ export const KLINIK_INFO = {
 };
 
 export const KLINIK_HOURS = [
-  { day: 'Senin - Jumat', hours: '08.00 - 21.00 WIB', closed: false },
-  { day: 'Sabtu', hours: '08.00 - 17.00 WIB', closed: false },
+  { day: 'Senin - Jumat', hours: '08.00 - 17.00 WITA', closed: false },
+  { day: 'Sabtu', hours: '08.00 - 17.00 WITA', closed: false },
   { day: 'Minggu & Tanggal Merah', hours: 'Tutup', closed: true },
-  { day: 'Poli KIA & Anak', hours: 'Selasa, Kamis, Sabtu (14.00 - 17.00 WIB)', closed: false },
+  { day: 'Poli KIA & Anak', hours: 'Selasa, Kamis, Sabtu (14.00 - 17.00 WITA)', closed: false },
 ];
 
 export const NAVIGATION_ITEMS = [
