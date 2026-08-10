@@ -25,7 +25,7 @@ export default function Footer() {
               <div className="h-10 w-10 rounded-full overflow-hidden shrink-0 border border-white/20 bg-white p-1">
                 <Image
                   src="/logo.png"
-                  alt="Logo Klinik Aisyiyah Pangkajene"
+                  alt={`Logo ${KLINIK_INFO.name}`}
                   width={32}
                   height={32}
                   className="object-contain w-full h-full"

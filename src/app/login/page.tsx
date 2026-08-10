@@ -30,7 +30,7 @@ export default function LoginPage() {
             <div className="h-11 w-11 rounded-full overflow-hidden shrink-0 border border-primary/20 shadow-sm transition-transform group-hover:scale-105 duration-300">
               <Image
                 src="/logo.png"
-                alt="Logo Klinik Aisyiyah Pangkajene"
+                alt={`Logo ${KLINIK_INFO.name}`}
                 width={44}
                 height={44}
                 className="object-cover w-full h-full"

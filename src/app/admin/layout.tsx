@@ -37,7 +37,7 @@ export default async function AdminLayout({
           <div className="h-9 w-9 rounded-full overflow-hidden shrink-0 border border-primary/20 shadow-sm">
             <Image
               src="/logo.png"
-              alt="Logo Klinik Aisyiyah Pangkajene"
+              alt={`Logo ${KLINIK_INFO.name}`}
               width={36}
               height={36}
               className="object-cover w-full h-full"

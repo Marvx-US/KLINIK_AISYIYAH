@@ -52,7 +52,7 @@ export default function RootLayout({
       lang="id"
       className={`${plusJakartaSans.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="font-sans min-h-full flex flex-col bg-bg-snow text-text-dark">
+      <body className="font-sans min-h-full flex flex-col bg-bg-snow text-text-dark" suppressHydrationWarning>
         {children}
       </body>
     </html>

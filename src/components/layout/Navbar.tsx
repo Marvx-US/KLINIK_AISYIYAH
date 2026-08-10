@@ -47,7 +47,7 @@ export default function Navbar() {
               <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 transition-transform group-hover:scale-105 duration-300">
                 <Image
                   src="/logo.png"
-                  alt="Logo Klinik Aisyiyah Pangkajene"
+                  alt={`Logo ${KLINIK_INFO.name}`}
                   width={36}
                   height={36}
                   className="object-cover w-full h-full"
