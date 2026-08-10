@@ -6,12 +6,13 @@
 export const KLINIK_INFO = {
   name: 'Klinik Aisyiyah',
   tagline: 'Kesehatan Masyarakat',
-  address: 'Jl. Jenderal Sudirman No. 45, Pangkajene, Indonesia',
+  address: 'Jl. Jenderal Sudirman No. 45, Pangkajene, Sidenreng Rappang, Sulawesi Selatan',
   phone: '+62 812-3456-7890',
   whatsapp: '6281234567890',
   email: 'info@klinikaisyiyah.com',
-  mapsUrl: 'https://maps.google.com',
-  mapsDisplayCity: 'Yogyakarta, D.I. Yogyakarta, Indonesia',
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Klinik+Pratama+Aisyiyah+Pangkajene+Sidenreng+Rappang',
+  mapsEmbedUrl: 'https://maps.google.com/maps?q=Klinik+Pratama+Aisyiyah+Pangkajene+Sidenreng+Rappang&t=&z=15&ie=UTF8&iwloc=&output=embed',
+  mapsDisplayCity: 'Pangkajene, Sidenreng Rappang, Sulawesi Selatan, Indonesia',
 };
 
 export const KLINIK_HOURS = [

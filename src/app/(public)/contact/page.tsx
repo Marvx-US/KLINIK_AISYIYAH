@@ -114,24 +114,43 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Peta Mockup */}
-          <div className="bg-white rounded-2xl border-fine overflow-hidden shadow-sm aspect-video relative flex items-center justify-center bg-primary/5">
-            <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:24px_24px]" />
-            <div className="relative text-center p-8 flex flex-col items-center gap-4">
-              <MapPin className="h-10 w-10 text-primary animate-bounce" />
-              <div>
-                <p className="font-heading font-bold text-text-dark text-base">
-                  Lokasi Klinik Utama Aisyiyah
-                </p>
-                <p className="text-text-muted text-xs mt-1">{KLINIK_INFO.mapsDisplayCity}</p>
+          {/* Peta Interactive Google Maps */}
+          <div className="bg-white rounded-2xl border-fine overflow-hidden shadow-sm relative flex flex-col group">
+            {/* Live Embedded Google Maps iframe */}
+            <div className="w-full h-64 sm:h-72 relative bg-slate-100 overflow-hidden">
+              <iframe
+                title="Peta Lokasi Klinik Aisyiyah Pangkajene"
+                src={KLINIK_INFO.mapsEmbedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full filter saturate-[0.85] contrast-[1.05]"
+              />
+            </div>
+
+            {/* Map Info & Direct Link Action */}
+            <div className="p-6 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-border-fine">
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary-light flex items-center justify-center text-primary shrink-0 mt-0.5">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-heading font-bold text-text-dark text-base">
+                    Lokasi Klinik Utama Aisyiyah
+                  </p>
+                  <p className="text-text-muted text-xs mt-0.5 leading-relaxed">{KLINIK_INFO.mapsDisplayCity}</p>
+                </div>
               </div>
               <a
                 href={KLINIK_INFO.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full bg-primary text-white font-sans text-xs font-semibold hover:bg-primary-dark transition-all duration-300 shadow-sm"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-white font-sans text-xs font-bold hover:bg-primary-dark transition-all duration-300 shadow-sm hover:shadow-md shrink-0 active:scale-[0.98]"
               >
-                <ShieldCheck className="h-3.5 w-3.5" />
+                <ShieldCheck className="h-4 w-4" />
                 Petunjuk Arah Rute Google Maps
               </a>
             </div>

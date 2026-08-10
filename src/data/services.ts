@@ -198,7 +198,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       { title: 'Penulisan Surat Sakit & Sehat', description: 'Pembuatan surat keterangan sehat/sakit resmi untuk kebutuhan dinas.', iconName: 'FileText' }
     ],
     faq: [
-      { question: 'Apakah Poli Umum bekerja sama dengan BPJS Kesehatan?', answer: 'Ya, kami melayani pasien BPJS Kesehatan tingkat pertama (Faskes 1). Pastikan faskes Anda telah terdaftar di Klinik Aisyiyah Yogyakarta.' },
+      { question: 'Apakah Poli Umum bekerja sama dengan BPJS Kesehatan?', answer: 'Ya, kami melayani pasien BPJS Kesehatan tingkat pertama (Faskes 1). Pastikan faskes Anda telah terdaftar di Klinik Aisyiyah Pangkajene Sidrap.' },
       { question: 'Apakah bisa berkonsultasi secara online?', answer: 'Saat ini konsultasi medis diwajibkan secara tatap muka agar pemeriksaan fisik dapat berjalan optimal dan akurat.' }
     ],
     relatedServices: ['poli-gigi', 'layanan-laboratorium'],
@@ -208,7 +208,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       email: 'poliumum@klinikaisyiyah.com'
     },
     seo: {
-      title: 'Poli Umum Terpadu Yogyakarta - Klinik Aisyiyah',
+      title: 'Poli Umum Terpadu Pangkajene Sidrap - Klinik Aisyiyah',
       description: 'Pemeriksaan dokter umum profesional dengan pelayanan ramah dan rekam medis digital. Daftar konsultasi kesehatan Anda sekeluarga di Klinik Aisyiyah.',
       keywords: ['poli umum jogja', 'dokter umum terdekat', 'pendaftaran dokter online', 'check up kesehatan', 'faskes bpjs']
     }
@@ -444,7 +444,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       email: 'vaksin@klinikaisyiyah.com'
     },
     seo: {
-      title: 'Vaksin Meningitis Haji & Umrah Resmi Yogyakarta - Klinik Aisyiyah',
+      title: 'Vaksin Meningitis Haji & Umrah Resmi Pangkajene Sidrap - Klinik Aisyiyah',
       description: 'Layanan vaksinasi wajib meningitis bagi calon jemaah haji & umrah lengkap dengan Kartu Kuning Internasional (ICV) ber-barcode resmi Kemenkes.',
       keywords: ['vaksin meningitis jogja', 'buku kuning icv umrah', 'vaksin influenza haji', 'sertifikat vaksin perjalanan', 'biaya vaksin meningitis']
     },
@@ -535,7 +535,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       email: 'rehab@klinikaisyiyah.com'
     },
     seo: {
-      title: 'Unit Rehabilitasi Rawat Jalan Napza Yogyakarta - Klinik Aisyiyah',
+      title: 'Unit Rehabilitasi Rawat Jalan Napza Pangkajene Sidrap - Klinik Aisyiyah',
       description: 'Layanan rehabilitasi adiksi narkoba rawat jalan dengan pendampingan dokter & psikolog secara privat dan konfidensial.',
       keywords: ['rehabilitasi narkoba jogja', 'rehab rawat jalan', 'konseling kecanduan', 'psikolog adiksi', 'tes urine narkoba']
     }
