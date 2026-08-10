@@ -27,7 +27,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
             <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-border-fine shadow-lg bg-bg-snow group">
               <Image
                 src={displayPhoto}
-                alt="Fasilitas & Gedung Klinik Pratama Aisyiyah"
+                alt="Fasilitas & Gedung Klinik Aisyiyah Pangkajene"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -44,7 +44,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
               {/* Caption di bawah foto */}
               <div className="absolute bottom-6 left-6 right-6 text-white">
                 <p className="font-heading font-extrabold text-xl leading-snug drop-shadow-md">
-                  Klinik Pratama Aisyiyah Pangkajene
+                  Klinik Aisyiyah Pangkajene
                 </p>
                 <p className="text-xs text-gray-200 mt-1 flex items-center gap-1.5 font-medium">
                   <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
@@ -79,13 +79,13 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                 Profil & Pelayanan Medis
               </span>
               <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-dark tracking-tight leading-tight font-editorial-serif">
-                Tentang <span className="text-primary italic">Klinik Aisyiyah</span> & Jam Operasional
+                Tentang <span className="text-primary italic">Klinik Aisyiyah Pangkajene</span> & Jam Operasional
               </h2>
             </div>
 
             {/* Narasi Ringkas Tentang Klinik */}
             <p className="text-text-muted text-base leading-relaxed mb-6">
-              Klinik Pratama Aisyiyah Pangkajene hadir memberikan layanan kesehatan komprehensif, mudah diakses, serta mengutamakan pendekatan medis yang hangat bagi seluruh masyarakat Sidenreng Rappang. Didukung oleh tim dokter, bidan, dan staf medis profesional yang berdedikasi.
+              Klinik Aisyiyah Pangkajene hadir memberikan layanan kesehatan komprehensif, mudah diakses, serta mengutamakan pendekatan medis yang hangat bagi seluruh masyarakat Sidenreng Rappang. Didukung oleh tim dokter, bidan, dan staf medis profesional yang berdedikasi.
             </p>
 
             {/* Poin Keunggulan Utama */}

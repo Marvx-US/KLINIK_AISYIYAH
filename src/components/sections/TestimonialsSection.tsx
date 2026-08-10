@@ -95,7 +95,7 @@ export default function TestimonialsSection() {
             Apa Kata Mereka Tentang Kami
           </h2>
           <p className="text-text-muted mt-4 max-w-2xl mx-auto text-sm md:text-base">
-            Ulasan jujur dari pasien yang telah merasakan langsung kualitas layanan medis profesional di Klinik Pratama Aisyiyah.
+            Ulasan jujur dari pasien yang telah merasakan langsung kualitas layanan medis profesional di Klinik Aisyiyah Pangkajene.
           </p>
         </div>
 

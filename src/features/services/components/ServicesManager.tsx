@@ -744,7 +744,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="font-heading font-extrabold text-3xl text-text-dark">Kelola Layanan Medis</h1>
-            <p className="text-text-muted mt-2">Daftar poli, IGD, dan layanan kesehatan Klinik Pratama Aisyiyah.</p>
+            <p className="text-text-muted mt-2">Daftar poli, IGD, dan layanan kesehatan Klinik Aisyiyah Pangkajene.</p>
           </div>
           <button
             onClick={() => setEditingService({ id: 0, name: '', slug: '', description: '', iconName: 'Activity', isActive: true, createdAt: new Date(), updatedAt: new Date() })}

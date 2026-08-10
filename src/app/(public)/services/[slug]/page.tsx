@@ -159,7 +159,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     id: dbService?.id || 0,
     slug: slug,
     title: dbService?.name || 'Layanan Kesehatan',
-    shortDescription: dbService?.description.substring(0, 150) || 'Layanan medis Klinik Pratama Aisyiyah.',
+    shortDescription: dbService?.description.substring(0, 150) || 'Layanan medis Klinik Aisyiyah Pangkajene.',
     fullDescription: dbService?.description || 'Detail layanan belum tersedia.',
     purpose: 'Memberikan pelayanan kesehatan prima.',
     benefits: ['Pelayanan ramah', 'Dokter profesional', 'Fasilitas memadai'],

@@ -4,7 +4,7 @@
 // ============================================================
 
 export const KLINIK_INFO = {
-  name: 'Klinik Aisyiyah',
+  name: 'Klinik Aisyiyah Pangkajene',
   tagline: 'Kesehatan Masyarakat',
   address: 'Jl. Jenderal Sudirman No. 45, Pangkajene, Sidenreng Rappang, Sulawesi Selatan',
   phone: '+62 812-3456-7890',

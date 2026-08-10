@@ -17,7 +17,7 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Apakah menerima BPJS?',
-    answer: 'Saat ini Klinik Pratama Aisyiyah melayani pasien umum mandiri serta beberapa asuransi kemitraan korporasi. Kami sedang dalam proses integrasi sistem dengan BPJS Kesehatan untuk melayani Anda lebih luas di masa depan.',
+    answer: 'Saat ini Klinik Aisyiyah Pangkajene melayani pasien umum mandiri serta beberapa asuransi kemitraan korporasi. Kami sedang dalam proses integrasi sistem dengan BPJS Kesehatan untuk melayani Anda lebih luas di masa depan.',
   },
   {
     question: 'Bagaimana cara membuat janji?',
