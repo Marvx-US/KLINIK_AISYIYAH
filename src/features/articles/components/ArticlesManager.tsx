@@ -304,19 +304,19 @@ export default function ArticlesManager({ initialArticles }: ArticlesManagerProp
                   id="summary"
                   name="summary"
                   required
-                  rows={4}
+                  rows={3}
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
                   onFocus={(e) => {
                     e.currentTarget.style.height = 'auto';
-                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 20, 140)}px`;
+                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 8, 90)}px`;
                   }}
                   onInput={(e) => {
                     e.currentTarget.style.height = 'auto';
-                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 20, 140)}px`;
+                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 8, 90)}px`;
                   }}
                   placeholder="Masukkan ringkasan singkat 2-3 kalimat untuk card depan..."
-                  className="w-full bg-white border border-border-fine rounded-2xl py-4 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all resize-y min-h-[140px] leading-relaxed"
+                  className="w-full bg-white border border-border-fine rounded-2xl py-3.5 px-5 text-sm font-sans focus:outline-none focus:border-primary text-text-dark transition-all resize-y overflow-hidden min-h-[90px] leading-relaxed"
                 />
               </div>
 

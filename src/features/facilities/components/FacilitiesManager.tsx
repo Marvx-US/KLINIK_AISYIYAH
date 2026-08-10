@@ -159,18 +159,18 @@ export default function FacilitiesManager({ initialFacilities }: FacilitiesManag
                   id="description"
                   name="description"
                   required
-                  rows={5}
+                  rows={3}
                   defaultValue={editingFacility.description}
                   onFocus={(e) => {
                     e.currentTarget.style.height = 'auto';
-                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 20, 160)}px`;
+                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 8, 90)}px`;
                   }}
                   onInput={(e) => {
                     e.currentTarget.style.height = 'auto';
-                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 20, 160)}px`;
+                    e.currentTarget.style.height = `${Math.max(e.currentTarget.scrollHeight + 8, 90)}px`;
                   }}
                   placeholder="Deskripsikan fasilitas secara singkat namun menarik..."
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[160px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
               </div>
 

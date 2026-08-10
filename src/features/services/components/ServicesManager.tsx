@@ -185,25 +185,24 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
     }
   }, [editingService]);
 
-  // Auto-adjust all textarea heights when form opens or initial values load
+  // Auto-adjust all textarea heights to fit exact text content without excess empty space
   useEffect(() => {
     if (editingService !== null) {
-      const resizeAll = () => {
+      const resizeAllToContent = () => {
         const textareas = document.querySelectorAll<HTMLTextAreaElement>('form textarea');
         textareas.forEach((ta) => {
           ta.style.height = 'auto';
-          const minH = parseInt(ta.getAttribute('data-minheight') || '260', 10);
-          ta.style.height = `${Math.max(ta.scrollHeight + 35, minH)}px`;
+          ta.style.height = `${Math.max(ta.scrollHeight + 8, 90)}px`;
         });
       };
       
-      const timer1 = setTimeout(resizeAll, 50);
-      const timer2 = setTimeout(resizeAll, 300);
-      window.addEventListener('resize', resizeAll);
+      const timer1 = setTimeout(resizeAllToContent, 40);
+      const timer2 = setTimeout(resizeAllToContent, 200);
+      window.addEventListener('resize', resizeAllToContent);
       return () => {
         clearTimeout(timer1);
         clearTimeout(timer2);
-        window.removeEventListener('resize', resizeAll);
+        window.removeEventListener('resize', resizeAllToContent);
       };
     }
   }, [editingService]);
@@ -211,8 +210,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
   const handleAutoResize = (e: React.FormEvent<HTMLTextAreaElement> | React.FocusEvent<HTMLTextAreaElement>) => {
     const t = e.currentTarget;
     t.style.height = 'auto';
-    const minH = parseInt(t.getAttribute('data-minheight') || '260', 10);
-    t.style.height = `${Math.max(t.scrollHeight + 35, minH)}px`;
+    t.style.height = `${Math.max(t.scrollHeight + 8, 90)}px`;
   };
 
   // Form submit handler
@@ -408,13 +406,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="description"
                   name="description"
                   required
-                  rows={4}
-                  data-minheight="200"
+                  rows={3}
                   defaultValue={editingService.description}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Deskripsikan layanan secara lengkap, fasilitas utama, dan info penting lainnya..."
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[200px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
               </div>
 
@@ -426,13 +423,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="purpose"
                   name="purpose"
-                  rows={4}
-                  data-minheight="200"
+                  rows={3}
                   defaultValue={initialForm.purpose}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Tujuan utama pelayanan ini, contoh: Memberikan perawatan medis darurat segera..."
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[200px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
               </div>
             </div>
@@ -575,13 +571,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="operationalHours"
                   name="operationalHours"
-                  rows={8}
-                  data-minheight="260"
+                  rows={3}
                   defaultValue={initialForm.operationalHours}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam..."
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y min-h-[260px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
                 <p className="text-xs text-text-muted font-medium mt-1">Masukkan jam operasional per hari (format `Hari: Jam`).</p>
               </div>
@@ -594,13 +589,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="facilities"
                   name="facilities"
-                  rows={8}
-                  data-minheight="260"
+                  rows={3}
                   defaultValue={initialForm.facilities}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Tulis 1 nama fasilitas per baris:&#10;Ruang Resusitasi Jantung-Paru&#10;Ruang Bedah Minor&#10;Ambulans 24 Jam"
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[260px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
                 <p className="text-xs text-text-muted font-medium mt-1">Tulis 1 fasilitas per baris. Ikon disesuaikan otomatis.</p>
               </div>
@@ -622,13 +616,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="benefits"
                   name="benefits"
-                  rows={8}
-                  data-minheight="280"
+                  rows={3}
                   defaultValue={initialForm.benefits}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Tulis 1 manfaat per baris:&#10;Pelayanan non-stop 24 jam&#10;Tim medis bersertifikat"
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[280px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
                 <p className="text-xs text-text-muted font-medium mt-1">Poin keunggulan layanan, 1 per baris.</p>
               </div>
@@ -641,13 +634,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="preparation"
                   name="preparation"
-                  rows={8}
-                  data-minheight="280"
+                  rows={3}
                   defaultValue={initialForm.preparation}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Tulis 1 instruksi per baris:&#10;Membawa KTP asli / Kartu Keluarga&#10;Membawa kartu BPJS"
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[280px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
                 <p className="text-xs text-text-muted font-medium mt-1">Petunjuk persiapan pasien sebelum berkunjung.</p>
               </div>
@@ -669,13 +661,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="procedures"
                   name="procedures"
-                  rows={10}
-                  data-minheight="320"
+                  rows={3}
                   defaultValue={initialForm.procedures}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka..."
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[320px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
                 <p className="text-xs text-text-muted font-medium mt-1">Tulis `Judul | Deskripsi` 1 tindakan per baris.</p>
               </div>
@@ -688,13 +679,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="faq"
                   name="faq"
-                  rows={10}
-                  data-minheight="320"
+                  rows={3}
                   defaultValue={initialForm.faq}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[320px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
                 <p className="text-xs text-text-muted font-medium mt-1">Tulis `Pertanyaan | Jawaban` 1 FAQ per baris.</p>
               </div>
@@ -707,13 +697,12 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 <textarea
                   id="priceList"
                   name="priceList"
-                  rows={6}
-                  data-minheight="200"
+                  rows={3}
                   defaultValue={editingService.priceList || ''}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
-                  className="w-full px-5 py-4 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y min-h-[200px]"
+                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
                 <p className="text-xs text-text-muted font-medium mt-1">Format: `Nama Vaksin: Harga` 1 per baris.</p>
               </div>
