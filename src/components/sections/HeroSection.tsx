@@ -29,25 +29,32 @@ export default function HeroSection({
   const hasBanners = banners.length > 0;
 
   return (
-    <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 min-h-screen flex items-center overflow-hidden border-fine-b bg-bg-snow">
+    <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 min-h-[500px] md:min-h-[580px] lg:min-h-[640px] flex items-center overflow-hidden border-fine-b bg-slate-950">
       {/* Background Banners */}
       {hasBanners && banners.map((banner, idx) => (
         <div 
           key={banner.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
         >
-          {/* Menggunakan Next.js Image Component dengan prioritas tinggi untuk hero section */}
+          {/* Ambient Blurred Background to soften edges */}
+          <Image 
+            src={banner.imageUrl} 
+            alt="" 
+            fill
+            className="object-cover object-center blur-2xl opacity-40 scale-105 pointer-events-none" 
+          />
+          {/* Main Crisp Banner Image - Proportioned Fit */}
           <Image 
             src={banner.imageUrl} 
             alt={banner.title} 
             fill
             priority={idx === 0}
             fetchPriority={idx === 0 ? 'high' : 'low'}
-            sizes="(max-width: 768px) 100vw, 100vw"
-            className="object-cover" 
+            sizes="100vw"
+            className="object-contain md:object-cover object-center opacity-85" 
           />
           {/* Overlay gradien gelap agar teks tetap terbaca */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/75 to-slate-950/45" />
         </div>
       ))}
 

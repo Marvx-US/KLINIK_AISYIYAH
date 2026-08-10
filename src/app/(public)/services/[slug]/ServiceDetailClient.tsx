@@ -167,17 +167,17 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
       
       {/* 1. HERO BANNER */}
       <section className="relative w-full bg-slate-950 overflow-hidden pt-36 pb-16 md:pt-44 md:pb-20">
-        {/* Parallax Background */}
+        {/* Background Image */}
         <motion.div 
-          initial={{ scale: 1.15, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.4 }}
-          transition={{ duration: 1.6, ease: "easeOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.4 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           className="absolute inset-0"
         >
           <img 
             src={service.heroImage} 
             alt={service.title}
-            className="w-full h-full object-cover select-none pointer-events-none"
+            className="w-full h-full object-contain md:object-cover object-center select-none pointer-events-none"
           />
         </motion.div>
         
