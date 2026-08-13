@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Memulai proses seeding...');
 
-  // 1. Buat User Admin Default
-  const adminUsername = 'admin';
-  const adminPasswordPlain = 'admin123';
+  // 1. Buat User Admin Default (Bisa dikonfigurasi via Environment Variables)
+  const adminUsername = process.env.DEFAULT_ADMIN_USERNAME || 'admin_klinik';
+  const adminPasswordPlain = process.env.DEFAULT_ADMIN_PASSWORD || 'KlinikAisyiyahSecure2024!';
   const hashedPassword = bcrypt.hashSync(adminPasswordPlain, 10);
 
   const existingAdmin = await prisma.user.findUnique({
