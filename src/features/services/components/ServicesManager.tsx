@@ -563,23 +563,27 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
             </h4>
 
             <div className="flex flex-col gap-8">
-              {/* Operational Hours - Full Width */}
-              <div className="flex flex-col gap-2.5">
-                <label htmlFor="operationalHours" className="text-sm font-bold text-text-dark">
-                  Jadwal Operasional
-                </label>
-                <textarea
-                  id="operationalHours"
-                  name="operationalHours"
-                  rows={3}
-                  defaultValue={initialForm.operationalHours}
-                  onFocus={handleAutoResize}
-                  onInput={handleAutoResize}
-                  placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 24 Jam&#10;Selasa: 24 Jam&#10;Rabu: 24 Jam..."
-                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y overflow-hidden min-h-[90px]"
-                />
-                <p className="text-xs text-text-muted font-medium mt-1">Masukkan jam operasional per hari (format `Hari: Jam`).</p>
-              </div>
+              {/* Operational Hours - Hanya untuk Poli (Poli Umum, Poli KIA, Poli Gigi) */}
+              {(['poli-umum', 'poli-kia', 'poli-gigi'].includes(editingService.slug?.toLowerCase() || '') || editingService.name.toLowerCase().includes('poli')) ? (
+                <div className="flex flex-col gap-2.5">
+                  <label htmlFor="operationalHours" className="text-sm font-bold text-text-dark">
+                    Jadwal Operasional / Jam Praktek
+                  </label>
+                  <textarea
+                    id="operationalHours"
+                    name="operationalHours"
+                    rows={3}
+                    defaultValue={initialForm.operationalHours}
+                    onFocus={handleAutoResize}
+                    onInput={handleAutoResize}
+                    placeholder="Format satu per baris (Hari: Jam):&#10;Senin: 13.00 - 20.00 WITA&#10;Selasa: 13.00 - 20.00 WITA..."
+                    className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium font-mono leading-relaxed resize-y overflow-hidden min-h-[90px]"
+                  />
+                  <p className="text-xs text-text-muted font-medium mt-1">Masukkan jam praktek per hari (format `Hari: Jam`).</p>
+                </div>
+              ) : (
+                <input type="hidden" name="operationalHours" value="" />
+              )}
 
               {/* Facilities - Full Width */}
               <div className="flex flex-col gap-2.5">
