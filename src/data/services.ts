@@ -400,19 +400,11 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
         name: 'dr. H. Rian Hidayat',
         specialty: 'Dokter Umum Kesehatan Perjalanan',
         experience: '8 Tahun',
-        schedule: 'Senin - Jumat (09:00 - 13:00 WIB)',
+        schedule: 'Sesuai Perjanjian',
         image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=2070&auto=format&fit=crop'
       }
     ],
-    operationalHours: {
-      'Senin': '08:00 - 15:00 WIB',
-      'Selasa': '08:00 - 15:00 WIB',
-      'Rabu': '08:00 - 15:00 WIB',
-      'Kamis': '08:00 - 15:00 WIB',
-      'Jumat': '08:00 - 15:00 WIB',
-      'Sabtu': '08:00 - 12:00 WIB',
-      'Minggu': 'Tutup'
-    },
+    operationalHours: {},
     workflow: [
       'Registrasi dan verifikasi berkas paspor/KTP di loket pendaftaran.',
       'Pemeriksaan tanda vital (tensi, suhu) dan screening kesehatan singkat oleh Dokter.',
@@ -484,26 +476,18 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
         name: 'dr. H. Rian Hidayat',
         specialty: 'Dokter Umum Pemeriksa Asesmen Medis',
         experience: '8 Tahun',
-        schedule: 'Selasa & Jumat (15:00 - 18:00 WIB)',
+        schedule: 'Sesuai Perjanjian',
         image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=2070&auto=format&fit=crop'
       },
       {
         name: 'Siti Rahmawati, S.Psi',
         specialty: 'Konselor Adiksi & Psikolog Klinis',
         experience: '6 Tahun',
-        schedule: 'Senin - Kamis (13:00 - 17:00 WIB)',
+        schedule: 'Sesuai Perjanjian',
         image: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?q=80&w=2000&auto=format&fit=crop'
       }
     ],
-    operationalHours: {
-      'Senin': '09:00 - 17:00 WIB',
-      'Selasa': '09:00 - 17:00 WIB',
-      'Rabu': '09:00 - 17:00 WIB',
-      'Kamis': '09:00 - 17:00 WIB',
-      'Jumat': '09:00 - 17:00 WIB',
-      'Sabtu': 'Tutup',
-      'Minggu': 'Tutup'
-    },
+    operationalHours: {},
     workflow: [
       'Pasien/keluarga melakukan pendaftaran khusus konfidensial.',
       'Asesmen Medis & Asesmen Asiksi awal (menggunakan instrumen ASSIST).',

@@ -498,45 +498,47 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
         <div className="space-y-8">
           
           {/* 8. JADWAL PELAYANAN CARD */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="bg-white p-8 rounded-[1.5rem] border border-border-fine/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]"
-          >
-            <h3 className="font-extrabold text-lg text-text-dark mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-[#0EA5A4]" />
-              Jam Praktek
-            </h3>
-            
-            {/* Status Badge */}
-            <div className={`p-4 rounded-2xl mb-6 flex items-center gap-3 border ${
-              isOpenToday 
-                ? 'bg-green-50/50 text-green-700 border-green-200/50' 
-                : 'bg-red-50/50 text-red-700 border-red-200/50'
-            }`}>
-              <div className={`w-2.5 h-2.5 rounded-full animate-ping ${isOpenToday ? 'bg-green-600' : 'bg-red-600'}`} />
-              <span className="text-xs font-bold">
-                Hari Ini {currentDayName} — {isOpenToday ? 'Poli Sedang Buka' : 'Poli Sedang Tutup'}
-              </span>
-            </div>
+          {Object.keys(service.operationalHours).length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="bg-white p-8 rounded-[1.5rem] border border-border-fine/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]"
+            >
+              <h3 className="font-extrabold text-lg text-text-dark mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-[#0EA5A4]" />
+                Jam Praktek
+              </h3>
+              
+              {/* Status Badge */}
+              <div className={`p-4 rounded-2xl mb-6 flex items-center gap-3 border ${
+                isOpenToday 
+                  ? 'bg-green-50/50 text-green-700 border-green-200/50' 
+                  : 'bg-red-50/50 text-red-700 border-red-200/50'
+              }`}>
+                <div className={`w-2.5 h-2.5 rounded-full animate-ping ${isOpenToday ? 'bg-green-600' : 'bg-red-600'}`} />
+                <span className="text-xs font-bold">
+                  Hari Ini {currentDayName} — {isOpenToday ? 'Poli Sedang Buka' : 'Poli Sedang Tutup'}
+                </span>
+              </div>
 
-            <div className="space-y-3.5">
-              {Object.entries(service.operationalHours).map(([day, time]) => (
-                <div key={day} className="flex justify-between items-center text-xs font-semibold py-2 border-b border-border-fine/30 last:border-0">
-                  <span className={day === currentDayName ? "text-[#0EA5A4] font-extrabold" : "text-text-muted"}>
-                    {day}
-                  </span>
-                  {time ? (
-                    <span className={day === currentDayName ? "text-[#0EA5A4] font-extrabold" : "text-text-dark"}>
-                      {time}
+              <div className="space-y-3.5">
+                {Object.entries(service.operationalHours).map(([day, time]) => (
+                  <div key={day} className="flex justify-between items-center text-xs font-semibold py-2 border-b border-border-fine/30 last:border-0">
+                    <span className={day === currentDayName ? "text-[#0EA5A4] font-extrabold" : "text-text-muted"}>
+                      {day}
                     </span>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </motion.div>
+                    {time ? (
+                      <span className={day === currentDayName ? "text-[#0EA5A4] font-extrabold" : "text-text-dark"}>
+                        {time}
+                      </span>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
           {/* 9. FASILITAS PENDUKUNG */}
           <motion.div 
