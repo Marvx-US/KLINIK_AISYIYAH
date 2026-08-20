@@ -274,6 +274,14 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       { question: 'Apakah membersihkan karang gigi terasa sakit?', answer: 'Pembersihan karang gigi menggunakan alat ultrasonik yang sangat aman. Terkadang ada rasa ngilu sedikit di area gigi sensitif, namun ini wajar dan dokter gigi kami akan menyesuaikan getarannya agar nyaman.' },
       { question: 'Apakah Poli Gigi melayani pasien BPJS?', answer: 'Ya, BPJS Kesehatan mencakup beberapa tindakan gigi seperti tambal gigi, cabut gigi biasa, dan scaling gigi satu kali dalam setahun atas indikasi medis.' }
     ],
+    vaccinePrices: [
+      { name: 'Konsultasi & Check-up Gigi', price: 50000 },
+      { name: 'Pencabutan Gigi Sederhana', price: 150000 },
+      { name: 'Scaling / Pembersihan Karang Gigi', price: 200000 },
+      { name: 'Penambalan Gigi Komposit (Estetis)', price: 250000 },
+      { name: 'Perawatan Saluran Akar (PSA)', price: 350000 },
+      { name: 'Pencabutan Gigi Bungsu / Odontektomi', price: 750000 },
+    ],
     relatedServices: ['poli-umum', 'layanan-laboratorium'],
     contactInformation: {
       phone: '(0274) 555-777',

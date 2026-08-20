@@ -306,7 +306,7 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
             </motion.section>
           )}
 
-          {/* 3.1 DAFTAR HARGA VAKSIN (KONDISIONAL) */}
+          {/* 3.1 DAFTAR HARGA (KONDISIONAL) */}
           {service.vaccinePrices && service.vaccinePrices.length > 0 && (
             <motion.section 
               initial={{ opacity: 0, y: 30 }}
@@ -317,10 +317,12 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
             >
               <div className="space-y-2">
                 <h2 className="text-2xl font-extrabold text-text-dark font-heading">
-                  Daftar Harga Vaksinasi Resmi
+                  {currentSlug === 'poli-gigi' ? 'Daftar Harga Perawatan Gigi & Mulut' : 'Daftar Harga Vaksinasi Resmi'}
                 </h2>
                 <p className="text-text-muted text-xs">
-                  Harga vaksin transparan diurutkan dari yang terendah ke tertinggi.
+                  {currentSlug === 'poli-gigi' 
+                    ? 'Estimasi biaya tindakan dan perawatan gigi transparan diurutkan dari yang terendah ke tertinggi.' 
+                    : 'Harga vaksin transparan diurutkan dari yang terendah ke tertinggi.'}
                 </p>
               </div>
 
@@ -329,7 +331,9 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-bg-snow border-b border-border-fine/60">
-                        <th className="py-4 px-6 font-bold text-xs text-text-dark uppercase tracking-wider">Nama Vaksin</th>
+                        <th className="py-4 px-6 font-bold text-xs text-text-dark uppercase tracking-wider">
+                          {currentSlug === 'poli-gigi' ? 'Tindakan / Perawatan Gigi' : 'Nama Vaksin'}
+                        </th>
                         <th className="py-4 px-6 font-bold text-xs text-text-dark uppercase tracking-wider text-right">Harga Estimasi (Nett)</th>
                       </tr>
                     </thead>

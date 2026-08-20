@@ -138,27 +138,27 @@ export default function Footer() {
             </h3>
             <ul className="flex flex-col gap-3 text-white/80 text-sm font-sans font-semibold">
               <li>
-                <Link href="/services" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                <Link href="/services/poli-umum" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
                   Poli Umum
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                <Link href="/services/poli-gigi" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
                   Poli Gigi & Mulut
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                <Link href="/services/poli-kia" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
                   Poli KIA / Bersalin
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                <Link href="/services/vaksin-haji" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
                   Vaksin Haji & Umrah
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                <Link href="/services/igd" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
                   Instalasi Gawat Darurat (IGD)
                 </Link>
               </li>
@@ -203,18 +203,6 @@ export default function Footer() {
           <p>
             &copy; {currentYear} {KLINIK_INFO.name}. Hak Cipta Dilindungi.
           </p>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="hover:text-white transition-colors duration-200"
-            >
-              Portal Admin
-            </Link>
-            <span>&bull;</span>
-            <span className="flex items-center gap-1">
-              Made with <Heart className="w-3.5 h-3.5 text-red-400 fill-current" /> for healthy communities.
-            </span>
-          </div>
         </div>
       </div>
     </footer>
