@@ -29,7 +29,7 @@ export default function HeroSection({
   const hasBanners = banners.length > 0;
 
   return (
-    <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 min-h-[500px] md:min-h-[580px] lg:min-h-[640px] flex items-center overflow-hidden border-fine-b bg-slate-950">
+    <section className="relative pt-36 pb-32 md:pt-48 md:pb-44 lg:pt-52 lg:pb-48 min-h-[620px] md:min-h-[720px] lg:min-h-[820px] flex items-center overflow-hidden border-fine-b bg-slate-950">
       {/* Background Banners */}
       {hasBanners && banners.map((banner, idx) => (
         <div 
