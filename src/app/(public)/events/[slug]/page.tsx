@@ -161,7 +161,7 @@ export default async function EventDetailPage({ params }: PageProps) {
               </div>
               <div className="border-t border-border-fine pt-4 mt-2">
                 <a
-                  href={`https://wa.me/6281234567890?text=Halo%20Admin%20Klinik%20Aisyiyah,%20saya%20tertarik%20dengan%20kegiatan%20*${encodeURIComponent(event.title)}*`}
+                  href={`https://wa.me/${KLINIK_INFO.whatsapp}?text=Halo%20Admin%20Klinik%20Aisyiyah,%20saya%20tertarik%20dengan%20kegiatan%20*${encodeURIComponent(event.title)}*`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center w-full py-3 rounded-full bg-primary text-white font-sans text-xs font-bold transition-all duration-300 hover:bg-primary-dark active:scale-[0.98]"

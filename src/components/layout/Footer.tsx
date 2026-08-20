@@ -199,7 +199,7 @@ export default function Footer() {
         </div>
 
         {/* Separator & Footer Copyright */}
-        <div className="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-white/60 text-xs font-sans">
+        <div className="border-t border-white/10 mt-10 pt-6 flex justify-center items-center text-white/60 text-xs font-sans text-center">
           <p>
             &copy; {currentYear} {KLINIK_INFO.name}. Hak Cipta Dilindungi.
           </p>

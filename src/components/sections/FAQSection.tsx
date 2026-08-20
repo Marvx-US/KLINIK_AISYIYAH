@@ -33,7 +33,7 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Bagaimana cara menghubungi klinik?',
-    answer: 'Anda dapat menghubungi pusat kontak kami melalui Telepon di +62 812-3456-7890, email di info@klinikaisyiyah.com, atau klik ikon chat WhatsApp yang melayang di pojok layar untuk berkomunikasi secara langsung dengan staf medis kami.',
+    answer: 'Anda dapat menghubungi pusat kontak kami melalui Telepon/WhatsApp di 0878-3117-7100, email di klinikaisyiyahpangkajene@gmail.com, atau klik ikon chat WhatsApp yang melayang di pojok layar untuk berkomunikasi secara langsung dengan staf medis kami.',
   },
 ];
 

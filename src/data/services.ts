@@ -115,9 +115,9 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     ],
     relatedServices: ['poli-umum', 'poli-kia'],
     contactInformation: {
-      phone: '(0274) 555-999',
-      whatsapp: 'https://wa.me/6281122334455',
-      email: 'igd@klinikaisyiyah.com'
+      phone: '0878-3117-7100',
+      whatsapp: 'https://wa.me/6287831177100',
+      email: 'klinikaisyiyahpangkajene@gmail.com'
     },
     seo: {
       title: 'Instalasi Gawat Darurat (IGD) 24 Jam - Klinik Aisyiyah',
@@ -195,9 +195,9 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     ],
     relatedServices: ['poli-gigi', 'layanan-laboratorium'],
     contactInformation: {
-      phone: '(0274) 555-888',
-      whatsapp: 'https://wa.me/6281122334455',
-      email: 'poliumum@klinikaisyiyah.com'
+      phone: '0878-3117-7100',
+      whatsapp: 'https://wa.me/6287831177100',
+      email: 'klinikaisyiyahpangkajene@gmail.com'
     },
     seo: {
       title: 'Poli Umum Terpadu Pangkajene Sidrap - Klinik Aisyiyah',
@@ -284,9 +284,9 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     ],
     relatedServices: ['poli-umum', 'layanan-laboratorium'],
     contactInformation: {
-      phone: '(0274) 555-777',
-      whatsapp: 'https://wa.me/6281122334455',
-      email: 'poligigi@klinikaisyiyah.com'
+      phone: '0878-3117-7100',
+      whatsapp: 'https://wa.me/6287831177100',
+      email: 'klinikaisyiyahpangkajene@gmail.com'
     },
     seo: {
       title: 'Poli Gigi & Mulut Spesialis - Klinik Aisyiyah',
@@ -365,9 +365,9 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     ],
     relatedServices: ['poli-umum', 'vaksin-haji'],
     contactInformation: {
-      phone: '(0274) 555-666',
-      whatsapp: 'https://wa.me/6281122334455',
-      email: 'kia@klinikaisyiyah.com'
+      phone: '0878-3117-7100',
+      whatsapp: 'https://wa.me/6287831177100',
+      email: 'klinikaisyiyahpangkajene@gmail.com'
     },
     seo: {
       title: 'Kesehatan Ibu & Anak (KIA) & Kebidanan - Klinik Aisyiyah',
@@ -431,9 +431,9 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     ],
     relatedServices: ['poli-umum', 'layanan-laboratorium'],
     contactInformation: {
-      phone: '(0274) 555-555',
-      whatsapp: 'https://wa.me/6281122334455',
-      email: 'vaksin@klinikaisyiyah.com'
+      phone: '0878-3117-7100',
+      whatsapp: 'https://wa.me/6287831177100',
+      email: 'klinikaisyiyahpangkajene@gmail.com'
     },
     seo: {
       title: 'Vaksin Meningitis Haji & Umrah Resmi Pangkajene Sidrap - Klinik Aisyiyah',
@@ -514,9 +514,9 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     ],
     relatedServices: ['poli-umum', 'layanan-laboratorium'],
     contactInformation: {
-      phone: '(0274) 555-444',
-      whatsapp: 'https://wa.me/6281122334455',
-      email: 'rehab@klinikaisyiyah.com'
+      phone: '0878-3117-7100',
+      whatsapp: 'https://wa.me/6287831177100',
+      email: 'klinikaisyiyahpangkajene@gmail.com'
     },
     seo: {
       title: 'Unit Rehabilitasi Rawat Jalan Napza Pangkajene Sidrap - Klinik Aisyiyah',

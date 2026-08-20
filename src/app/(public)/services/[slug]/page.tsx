@@ -174,7 +174,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     procedures: [],
     faq: [],
     relatedServices: [],
-    contactInformation: { phone: '(0274) 555-888', whatsapp: 'https://wa.me/6281122334455', email: 'info@klinikaisyiyah.com' },
+    contactInformation: { phone: '0878-3117-7100', whatsapp: 'https://wa.me/6287831177100', email: 'klinikaisyiyahpangkajene@gmail.com' },
     seo: { title: dbService?.name || 'Layanan', description: dbService?.description || 'Layanan', keywords: [] }
   };
 

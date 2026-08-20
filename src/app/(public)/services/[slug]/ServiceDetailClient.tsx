@@ -573,12 +573,6 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
               <Phone className="w-5 h-5" />
               Hubungi via WhatsApp
             </Link>
-            <button 
-              onClick={() => alert('Fitur pendaftaran online sedang disiapkan. Silakan hubungi via WhatsApp untuk saat ini.')}
-              className="px-8 py-4 bg-slate-900/40 hover:bg-slate-900/60 text-white border border-white/20 hover:border-white/55 font-bold rounded-full transition-all"
-            >
-              Daftar Online (E-Patient)
-            </button>
           </div>
         </div>
       </section>
