@@ -220,7 +220,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
 
   const isPoliWithHours = ['poli-umum', 'poli-kia', 'poli-gigi'].includes(slug);
   const finalOperationalHours = isPoliWithHours
-    ? (dbOperationalHours || resolvedStatic.operationalHours)
+    ? (resolvedStatic.operationalHours || dbOperationalHours)
     : {};
 
   const mergedData = {
