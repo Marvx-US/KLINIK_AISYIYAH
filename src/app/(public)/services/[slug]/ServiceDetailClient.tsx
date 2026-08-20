@@ -507,7 +507,7 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
           >
             <h3 className="font-extrabold text-lg text-text-dark mb-4 flex items-center gap-2">
               <Clock className="w-5 h-5 text-[#0EA5A4]" />
-              Jadwal Operasional
+              Jam Praktek
             </h3>
             
             {/* Status Badge */}
@@ -518,7 +518,7 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
             }`}>
               <div className={`w-2.5 h-2.5 rounded-full animate-ping ${isOpenToday ? 'bg-green-600' : 'bg-red-600'}`} />
               <span className="text-xs font-bold">
-                Hari Ini {currentDayName} — {isOpenToday ? 'Klinik Sedang Buka' : 'Klinik Sedang Tutup'}
+                Hari Ini {currentDayName} — {isOpenToday ? 'Poli Sedang Buka' : 'Poli Sedang Tutup'}
               </span>
             </div>
 

@@ -186,9 +186,12 @@ export default function Footer() {
               <li className="flex items-start gap-2.5 border-t border-white/10 pt-4 mt-2">
                 <Clock className="h-5 w-5 text-[#38BDF8] shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-white text-xs uppercase tracking-wider">Jam Operasional:</p>
-                  <p className="mt-1 text-xs">{KLINIK_HOURS[0].day}: {KLINIK_HOURS[0].hours}</p>
-                  <p className="text-xs">{KLINIK_HOURS[1].day}: {KLINIK_HOURS[1].hours}</p>
+                  <p className="font-bold text-white text-xs uppercase tracking-wider">Jam Praktek:</p>
+                  {KLINIK_HOURS.map((item, idx) => (
+                    <p key={idx} className="mt-1 text-xs">
+                      {item.day}: {item.hours}
+                    </p>
+                  ))}
                 </div>
               </li>
             </ul>

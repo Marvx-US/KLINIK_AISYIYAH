@@ -80,7 +80,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                 Profil & Pelayanan Medis
               </span>
               <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-dark tracking-tight leading-tight font-editorial-serif" suppressHydrationWarning>
-                Tentang <span className="text-primary italic">{KLINIK_INFO.name}</span> & Jam Operasional
+                Tentang <span className="text-primary italic">{KLINIK_INFO.name}</span> & Jam Praktek
               </h2>
             </div>
 
@@ -109,7 +109,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
               </div>
             </div>
 
-            {/* KOTAK JAM OPERASIONAL */}
+            {/* KOTAK JAM PRAKTEK */}
             <div className="bg-bg-snow rounded-2xl border border-border-fine p-6 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between border-b border-border-fine pb-4 mb-4">
                 <div className="flex items-center gap-2.5">
@@ -117,7 +117,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                     <Clock className="w-4.5 h-4.5" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-bold text-base text-text-dark">Jadwal Operasional Klinik</h3>
+                    <h3 className="font-heading font-bold text-base text-text-dark">Jam Praktek Dokter</h3>
                     <p className="text-[11px] text-text-muted">Siap melayani kebutuhan berobat keluarga Anda</p>
                   </div>
                 </div>

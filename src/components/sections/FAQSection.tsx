@@ -24,8 +24,8 @@ const FAQ_ITEMS: FAQItem[] = [
     answer: 'Membuat janji temu dengan dokter spesialis atau dokter gigi sangat mudah. Silakan klik tombol "Hubungi Kami" atau hubungi WhatsApp resmi kami, pilih dokter dan jadwal yang Anda inginkan, dan admin kami akan memberikan konfirmasi jadwal.',
   },
   {
-    question: 'Bagaimana jam operasional?',
-    answer: 'Klinik kami beroperasi hari Senin - Jumat pukul 08.00 - 21.00 WIB, dan Sabtu pukul 08.00 - 17.00 WIB. Hari Minggu dan tanggal merah nasional klinik libur, kecuali untuk layanan gawat darurat tertentu.',
+    question: 'Bagaimana jam praktek pelayanan poliklinik?',
+    answer: 'Jam praktek pelayanan poliklinik di Klinik Aisyiyah Pangkajene yaitu Poli Umum pukul 13.00 - 20.00 WITA, serta Poli KIA dan Poli Gigi pukul 16.00 - 18.00 WITA. Layanan Instalasi Gawat Darurat (IGD) tetap siaga 24 Jam Nonstop.',
   },
   {
     question: 'Apakah tersedia konsultasi online?',

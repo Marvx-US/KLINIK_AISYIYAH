@@ -158,24 +158,24 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
         name: 'dr. H. Rian Hidayat',
         specialty: 'Dokter Umum Keluarga',
         experience: '8 Tahun',
-        schedule: 'Senin - Sabtu (08:00 - 14:00 WIB)',
+        schedule: 'Senin - Sabtu (13.00 - 20.00 WITA)',
         image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=2070&auto=format&fit=crop'
       },
       {
         name: 'dr. Amalia Putri',
         specialty: 'Dokter Umum / Konsultan Preventif',
         experience: '5 Tahun',
-        schedule: 'Senin - Jumat (14:00 - 20:00 WIB)',
+        schedule: 'Senin - Sabtu (13.00 - 20.00 WITA)',
         image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=2070&auto=format&fit=crop'
       }
     ],
     operationalHours: {
-      'Senin': '08:00 - 20:00 WIB',
-      'Selasa': '08:00 - 20:00 WIB',
-      'Rabu': '08:00 - 20:00 WIB',
-      'Kamis': '08:00 - 20:00 WIB',
-      'Jumat': '08:00 - 20:00 WIB',
-      'Sabtu': '08:00 - 17:00 WIB',
+      'Senin': '13.00 - 20.00 WITA',
+      'Selasa': '13.00 - 20.00 WITA',
+      'Rabu': '13.00 - 20.00 WITA',
+      'Kamis': '13.00 - 20.00 WITA',
+      'Jumat': '13.00 - 20.00 WITA',
+      'Sabtu': '13.00 - 20.00 WITA',
       'Minggu': 'Tutup'
     },
     workflow: [
@@ -238,24 +238,24 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
         name: 'drg. Shinta Wulandari',
         specialty: 'Dokter Gigi Restorasi & Konservasi',
         experience: '7 Tahun',
-        schedule: 'Senin, Rabu, Jumat (09:00 - 15:00 WIB)',
+        schedule: 'Senin, Rabu, Jumat (16.00 - 18.00 WITA)',
         image: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?q=80&w=2000&auto=format&fit=crop'
       },
       {
         name: 'drg. Rahmat Setiawan',
         specialty: 'Dokter Gigi Umum & Estetika Gigi',
         experience: '9 Tahun',
-        schedule: 'Selasa, Kamis, Sabtu (13:00 - 19:00 WIB)',
+        schedule: 'Selasa, Kamis, Sabtu (16.00 - 18.00 WITA)',
         image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=2000&auto=format&fit=crop'
       }
     ],
     operationalHours: {
-      'Senin': '09:00 - 19:00 WIB',
-      'Selasa': '09:00 - 19:00 WIB',
-      'Rabu': '09:00 - 19:00 WIB',
-      'Kamis': '09:00 - 19:00 WIB',
-      'Jumat': '09:00 - 19:00 WIB',
-      'Sabtu': '09:00 - 15:00 WIB',
+      'Senin': '16.00 - 18.00 WITA',
+      'Selasa': '16.00 - 18.00 WITA',
+      'Rabu': '16.00 - 18.00 WITA',
+      'Kamis': '16.00 - 18.00 WITA',
+      'Jumat': '16.00 - 18.00 WITA',
+      'Sabtu': '16.00 - 18.00 WITA',
       'Minggu': 'Tutup'
     },
     workflow: [
@@ -319,24 +319,24 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
         name: 'Bidan Maryati, S.Tr.Keb',
         specialty: 'Bidan Koordinator KIA & Laktasi',
         experience: '15 Tahun',
-        schedule: 'Senin - Sabtu (08:00 - 14:00 WIB)',
+        schedule: 'Senin - Sabtu (16.00 - 18.00 WITA)',
         image: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?q=80&w=2000&auto=format&fit=crop'
       },
       {
         name: 'dr. H. Rian Hidayat (USG)',
         specialty: 'Dokter Pemeriksa USG Kebidanan',
         experience: '8 Tahun',
-        schedule: 'Selasa & Kamis (16:00 - 18:00 WIB)',
+        schedule: 'Senin - Sabtu (16.00 - 18.00 WITA)',
         image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=2070&auto=format&fit=crop'
       }
     ],
     operationalHours: {
-      'Senin': '08:00 - 17:00 WIB',
-      'Selasa': '08:00 - 17:00 WIB',
-      'Rabu': '08:00 - 17:00 WIB',
-      'Kamis': '08:00 - 17:00 WIB',
-      'Jumat': '08:00 - 17:00 WIB',
-      'Sabtu': '08:00 - 14:00 WIB',
+      'Senin': '16.00 - 18.00 WITA',
+      'Selasa': '16.00 - 18.00 WITA',
+      'Rabu': '16.00 - 18.00 WITA',
+      'Kamis': '16.00 - 18.00 WITA',
+      'Jumat': '16.00 - 18.00 WITA',
+      'Sabtu': '16.00 - 18.00 WITA',
       'Minggu': 'Tutup'
     },
     workflow: [

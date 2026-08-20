@@ -91,11 +91,11 @@ export default function ContactPage() {
 
         {/* Jam Operasional + Peta */}
         <div className="lg:col-span-6 flex flex-col gap-8">
-          {/* Jam Operasional dari constants */}
+          {/* Jam Praktek Dokter dari constants */}
           <div className="bg-white p-8 rounded-2xl border-fine shadow-sm">
             <h3 className="font-heading font-bold text-lg text-text-dark mb-6 flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
-              Jadwal Operasional
+              Jam Praktek Dokter
             </h3>
             <div className="flex flex-col gap-4 text-sm text-text-muted">
               {KLINIK_HOURS.map((item, index) => (
