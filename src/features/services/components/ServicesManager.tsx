@@ -63,6 +63,11 @@ function getInitialFormValues(service: Service) {
     faq = staticData.faq.map((f) => `${f.question} | ${f.answer}`).join('\n');
   }
 
+  let priceList = service.priceList || '';
+  if (!priceList && staticData?.vaccinePrices) {
+    priceList = staticData.vaccinePrices.map((v) => `${v.name}: ${v.price}`).join('\n');
+  }
+
   return {
     operationalHours,
     facilities,
@@ -71,6 +76,7 @@ function getInitialFormValues(service: Service) {
     preparation,
     procedures,
     faq,
+    priceList,
   };
 }
 
@@ -702,7 +708,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   id="priceList"
                   name="priceList"
                   rows={3}
-                  defaultValue={editingService.priceList || ''}
+                  defaultValue={initialForm.priceList}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
                   placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
