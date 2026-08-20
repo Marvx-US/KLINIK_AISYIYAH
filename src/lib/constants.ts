@@ -16,9 +16,9 @@ export const KLINIK_INFO = {
 };
 
 export const KLINIK_HOURS = [
-  { day: 'Poli Umum', hours: '13.00 - 20.00 WITA', closed: false },
-  { day: 'Poli KIA', hours: '16.00 - 18.00 WITA', closed: false },
-  { day: 'Poli Gigi', hours: '16.00 - 18.00 WITA', closed: false },
+  { day: 'Senin - Jumat', hours: '08.00 - 20.00 WITA', closed: false },
+  { day: 'Sabtu', hours: '08.00 - 17.00 WITA', closed: false },
+  { day: 'Minggu & Tanggal Merah', hours: 'Tutup (IGD 24 Jam)', closed: true },
 ];
 
 export const NAVIGATION_ITEMS = [
