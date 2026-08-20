@@ -497,8 +497,8 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
         {/* RIGHT COLUMN: Sidebar (Hours, Facilities, Preparation, CTAs) */}
         <div className="space-y-8">
           
-          {/* 8. JADWAL PELAYANAN CARD */}
-          {Object.keys(service.operationalHours).length > 0 && (
+          {/* 8. JADWAL PELAYANAN CARD (Hanya untuk Poli Umum, Poli KIA, dan Poli Gigi) */}
+          {['poli-umum', 'poli-kia', 'poli-gigi'].includes(currentSlug) && Object.keys(service.operationalHours).length > 0 && (
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}

@@ -218,6 +218,11 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     finalGallery = resolvedStatic.gallery || [];
   }
 
+  const isPoliWithHours = ['poli-umum', 'poli-kia', 'poli-gigi'].includes(slug);
+  const finalOperationalHours = isPoliWithHours
+    ? (dbOperationalHours || resolvedStatic.operationalHours)
+    : {};
+
   const mergedData = {
     ...resolvedStatic,
     title: dbService?.name || resolvedStatic.title,
@@ -225,7 +230,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     purpose: dbPurpose || resolvedStatic.purpose,
     heroImage: finalHeroImage,
     gallery: finalGallery,
-    operationalHours: dbOperationalHours || resolvedStatic.operationalHours,
+    operationalHours: finalOperationalHours,
     facilities: dbFacilities || resolvedStatic.facilities,
     benefits: dbBenefits || resolvedStatic.benefits,
     preparation: dbPreparation || resolvedStatic.preparation,

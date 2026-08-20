@@ -88,15 +88,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
         image: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?q=80&w=2000&auto=format&fit=crop'
       }
     ],
-    operationalHours: {
-      'Senin': '24 Jam',
-      'Selasa': '24 Jam',
-      'Rabu': '24 Jam',
-      'Kamis': '24 Jam',
-      'Jumat': '24 Jam',
-      'Sabtu': '24 Jam',
-      'Minggu': '24 Jam'
-    },
+    operationalHours: {},
     workflow: [
       'Penerimaan Pasien di area Drop-off IGD.',
       'Proses Triase (Pemeriksaan awal tingkat keparahan oleh perawat).',
