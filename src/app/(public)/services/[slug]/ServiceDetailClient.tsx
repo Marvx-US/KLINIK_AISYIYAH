@@ -89,33 +89,6 @@ interface Props {
   currentSlug: string;
 }
 
-function checkIsOpenNow(scheduleStr: string | null | undefined): boolean {
-  if (!scheduleStr || !scheduleStr.trim()) return false;
-  const lower = scheduleStr.toLowerCase().trim();
-  if (lower.includes('tutup') || lower.includes('libur')) return false;
-  if (lower.includes('24 jam') || lower.includes('24jam') || lower.includes('nonstop')) return true;
-
-  const match = lower.match(/(\d{1,2})[:.](\d{2})\s*[-–—to]+\s*(\d{1,2})[:.](\d{2})/);
-  if (match) {
-    const startH = parseInt(match[1], 10);
-    const startM = parseInt(match[2], 10);
-    const endH = parseInt(match[3], 10);
-    const endM = parseInt(match[4], 10);
-
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const startMinutes = startH * 60 + startM;
-    const endMinutes = endH * 60 + endM;
-
-    if (endMinutes < startMinutes) {
-      return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
-    }
-
-    return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
-  }
-
-  return !lower.includes('tutup');
-}
 
 export default function ServiceDetailClient({ service: rawService, currentSlug }: Props) {
   const service = {
@@ -141,18 +114,6 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
 
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isOpenToday, setIsOpenToday] = useState(true);
-  const [currentDayName, setCurrentDayName] = useState('');
-
-  // Check if clinic is open right now based on day and time range
-  useEffect(() => {
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const todayName = days[new Date().getDay()];
-    setCurrentDayName(todayName);
-    
-    const scheduleStr = service.operationalHours[todayName] || service.operationalHours['Senin - Sabtu'] || service.operationalHours['Setiap Hari'];
-    setIsOpenToday(checkIsOpenNow(scheduleStr));
-  }, [rawService]);
 
   // Smooth scroll helper
   const scrollToSection = (id: string) => {
