@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Clock, CheckCircle2, Phone, MapPin, ShieldCheck, HeartPulse, ArrowRight } from 'lucide-react';
@@ -12,6 +12,14 @@ interface AboutClinicSectionProps {
 
 export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProps) {
   const displayPhoto = heroPhoto || '/uploads/1786371427727-896528188.jpg';
+  const [todayStatus, setTodayStatus] = useState('Hari Ini — Klinik Sedang Buka');
+
+  useEffect(() => {
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const todayName = days[new Date().getDay()];
+    const isSunday = new Date().getDay() === 0;
+    setTodayStatus(`Hari Ini ${todayName} — ${isSunday ? 'Klinik Sedang Tutup (IGD 24 Jam)' : 'Klinik Sedang Buka'}`);
+  }, []);
 
   return (
     <section className="py-8 md:py-12 w-full px-6 sm:px-8 lg:px-12 bg-white border-b border-border-fine relative overflow-hidden">
@@ -124,6 +132,12 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                 <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-wider border border-green-200">
                   IGD 24 Jam Nonstop
                 </span>
+              </div>
+
+              {/* Status Badge Hari Ini */}
+              <div className="mb-4 px-3.5 py-2.5 rounded-xl bg-green-50/80 border border-green-200/80 text-green-700 text-xs font-bold flex items-center gap-2.5">
+                <div className="w-2 h-2 rounded-full bg-green-600 animate-ping shrink-0" />
+                <span suppressHydrationWarning>{todayStatus}</span>
               </div>
 
               {/* Table / List Jam Operasional */}
