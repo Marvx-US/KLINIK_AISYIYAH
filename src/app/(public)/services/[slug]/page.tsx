@@ -237,18 +237,20 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     }
   }
 
-  // Tentukan finalHeroImage & finalGallery:
-  // Foto Utama yang dipilih admin (dbService.roomImage) adalah PRIORITAS #1 untuk Tampilan Publik!
-  const finalHeroImage = dbService?.roomImage 
-    || (dbGallery && dbGallery.length > 0 ? dbGallery[0] : resolvedStatic.heroImage);
+  // BANNER IMAGE: foto ruangan dari gallery → dipakai sebagai background hero banner
+  // Prioritas: gallery[0] > roomImage > static heroImage
+  const finalBannerImage = (dbGallery && dbGallery.length > 0 ? dbGallery[0] : null)
+    || dbService?.roomImage
+    || resolvedStatic.heroImage;
+
+  // HERO IMAGE: foto dokter / tenaga medis → ditampilkan di kartu detail
+  // Prioritas: roomImage (upload foto dokter admin) > static heroImage
+  const finalHeroImage = dbService?.roomImage
+    || resolvedStatic.heroImage;
 
   let finalGallery: string[] = [];
   if (dbGallery && dbGallery.length > 0) {
-    if (dbService?.roomImage && !dbGallery.includes(dbService.roomImage)) {
-      finalGallery = [dbService.roomImage, ...dbGallery];
-    } else {
-      finalGallery = dbGallery;
-    }
+    finalGallery = dbGallery;
   } else if (dbService?.roomImage) {
     finalGallery = [dbService.roomImage, ...(resolvedStatic.gallery || [])];
   } else {
@@ -266,6 +268,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     fullDescription: dbService?.description || resolvedStatic.fullDescription,
     purpose: dbPurpose || resolvedStatic.purpose,
     heroImage: finalHeroImage,
+    bannerImage: finalBannerImage,
     gallery: finalGallery,
     operationalHours: finalOperationalHours,
     facilities: dbFacilities || resolvedStatic.facilities,

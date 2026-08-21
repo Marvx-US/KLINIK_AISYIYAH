@@ -447,10 +447,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 items-start">
-              {/* Room Image Field */}
+              {/* Room Image Field — Foto Dokter */}
               <div className="flex flex-col gap-2.5">
                 <label htmlFor="roomImage" className="text-sm font-bold text-text-dark flex items-center justify-between">
-                  <span>Foto Utama Layanan</span>
+                  <span>Foto Dokter / Tenaga Medis</span>
                   {imagePreview && (
                     <button
                       type="button"
@@ -461,7 +461,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                       className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      Hapus Foto Utama
+                      Hapus Foto Dokter
                     </button>
                   )}
                 </label>
@@ -477,7 +477,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 ) : (
                   <div className="w-full h-32 rounded-2xl border-2 border-dashed border-border-fine bg-bg-snow flex flex-col items-center justify-center gap-1.5 text-text-muted">
                     <ImageIcon className="w-7 h-7 text-border-fine" />
-                    <p className="text-xs font-semibold">Belum ada foto utama yang dipilih</p>
+                    <p className="text-xs font-semibold">Belum ada foto dokter yang dipilih</p>
                   </div>
                 )}
 
@@ -497,10 +497,10 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                 />
               </div>
 
-              {/* Gallery Photos Field */}
+              {/* Gallery Photos Field — Foto Ruangan (dipakai sebagai banner) */}
               <div className="flex flex-col gap-3">
                 <label className="text-sm font-bold text-text-dark flex items-center justify-between">
-                  <span>Galeri Foto Ruangan & Fasilitas</span>
+                  <span>Galeri Foto Ruangan <span className="text-primary text-[10px] font-semibold">(dipakai sebagai banner halaman)</span></span>
                   <span className="text-xs font-normal text-text-muted">Multiple upload</span>
                 </label>
 

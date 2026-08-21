@@ -66,7 +66,8 @@ interface ServiceData {
   purpose: string;
   benefits: string[];
   targetAudience: string;
-  heroImage: string;
+  heroImage: string;     // Foto dokter / tenaga medis (ditampilkan di kartu detail)
+  bannerImage: string;   // Foto ruangan (dipakai sebagai background hero banner)
   gallery: string[];
   facilities: string[];
   doctors: Doctor[];
@@ -99,6 +100,7 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
     benefits: rawService?.benefits || [],
     targetAudience: rawService?.targetAudience || '',
     heroImage: rawService?.heroImage || '',
+    bannerImage: rawService?.bannerImage || rawService?.heroImage || '',
     gallery: rawService?.gallery || [],
     facilities: rawService?.facilities || [],
     doctors: rawService?.doctors || [],
@@ -126,19 +128,19 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
   return (
     <div className="bg-bg-snow min-h-screen text-text-dark font-sans selection:bg-[#0EA5A4]/20 selection:text-[#0EA5A4]">
       
-      {/* 1. HERO BANNER */}
-      <section className="relative w-full bg-slate-950 overflow-hidden pt-36 pb-16 md:pt-44 md:pb-20">
-        {/* Background Image */}
+      {/* 1. HERO BANNER — pakai foto ruangan (bannerImage / gallery) sebagai background */}
+      <section className="relative w-full bg-slate-950 overflow-hidden" style={{ minHeight: '420px', paddingTop: '9rem', paddingBottom: '5rem' }}>
+        {/* Background Image: foto ruangan */}
         <motion.div 
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
+          animate={{ opacity: 0.55 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
           className="absolute inset-0"
         >
           <img 
-            src={service.heroImage} 
+            src={service.bannerImage || service.gallery[0] || service.heroImage} 
             alt={service.title}
-            className="w-full h-full object-contain md:object-cover object-center select-none pointer-events-none"
+            className="w-full h-full object-cover object-center select-none pointer-events-none"
           />
         </motion.div>
         
@@ -241,14 +243,14 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
             </div>
 
             <div className="space-y-6">
-              <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden border border-border-fine/60 shadow-sm bg-slate-900/5 group flex items-center justify-center p-2">
+              <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden border border-border-fine/60 shadow-sm bg-slate-900/5 group">
                 <img 
                   src={service.heroImage || service.gallery[0]} 
-                  alt="Ilustrasi Ruangan"
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                  alt={`Foto Dokter / Tenaga Medis ${service.title}`}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 pointer-events-none">
-                  <span className="text-white text-xs font-bold bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">Fasilitas Ruangan Utama</span>
+                  <span className="text-white text-xs font-bold bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">Foto Dokter / Tenaga Medis</span>
                 </div>
               </div>
               
