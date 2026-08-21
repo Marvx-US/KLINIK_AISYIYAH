@@ -129,7 +129,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                     <p className="text-[11px] text-text-muted">Siap melayani kebutuhan berobat keluarga Anda</p>
                   </div>
                 </div>
-                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-wider border border-primary/20">
+                <span suppressHydrationWarning className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-wider border border-primary/20">
                   Buka Senin – Sabtu
                 </span>
               </div>
