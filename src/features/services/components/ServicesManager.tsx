@@ -659,7 +659,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
           {/* BAGIAN 5: TINDAKAN MEDIS, FAQ, DAN HARGA */}
           <div className="pb-6">
             <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
-              <CheckCircle2 className="w-5 h-5" /> 5. Pelayanan & Tindakan Medis, FAQ, & Harga
+              <CheckCircle2 className="w-5 h-5" /> 5. Pelayanan & Tindakan Medis, FAQ, & Daftar Harga
             </h4>
 
             <div className="flex flex-col gap-8">
@@ -702,7 +702,7 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
               {/* Price List Field - FULL WIDTH */}
               <div className="flex flex-col gap-2.5">
                 <label htmlFor="priceList" className="text-sm font-bold text-text-dark">
-                  Daftar Harga (Khusus Vaksin / Layanan Terkait)
+                  Daftar Harga Layanan (Vaksin, Gigi, atau Tindakan Terkait)
                 </label>
                 <textarea
                   id="priceList"
@@ -711,10 +711,19 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   defaultValue={initialForm.priceList}
                   onFocus={handleAutoResize}
                   onInput={handleAutoResize}
-                  placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000"
+                  placeholder={
+                    editingService.slug?.toLowerCase().includes('gigi')
+                      ? "Format: Nama Tindakan: Harga\nKonsultasi & Check-up Gigi: 50000\nScaling / Pembersihan Karang Gigi: 200000\nPencabutan Gigi Sederhana: 150000"
+                      : "Format: Nama: Harga\nVaksin Influenza: 250000\nVaksin Meningitis: 350000"
+                  }
                   className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
-                <p className="text-xs text-text-muted font-medium mt-1">Format: `Nama Vaksin: Harga` 1 per baris.</p>
+                <p className="text-xs text-text-muted font-medium mt-1">
+                  Format: <code className="bg-bg-snow px-1 rounded">{`Nama Layanan: Harga`}</code> — 1 item per baris.
+                  {editingService.slug?.toLowerCase().includes('gigi') && (
+                    <span className="ml-1 text-primary font-semibold">Untuk Poli Gigi, tulis nama tindakan/perawatan gigi.</span>
+                  )}
+                </p>
               </div>
             </div>
           </div>
