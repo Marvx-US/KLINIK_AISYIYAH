@@ -317,11 +317,11 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
             >
               <div className="space-y-2">
                 <h2 className="text-2xl font-extrabold text-text-dark font-heading">
-                  {currentSlug === 'poli-gigi' ? 'Daftar Harga Perawatan Gigi & Mulut' : 'Daftar Harga Vaksinasi Resmi'}
+                  {currentSlug === 'poli-gigi' ? 'Daftar Harga Periksa Gigi' : 'Daftar Harga Vaksinasi Resmi'}
                 </h2>
                 <p className="text-text-muted text-xs">
-                  {currentSlug === 'poli-gigi' 
-                    ? 'Estimasi biaya tindakan dan perawatan gigi transparan diurutkan dari yang terendah ke tertinggi.' 
+                  {currentSlug === 'poli-gigi'
+                    ? 'Estimasi biaya perawatan gigi diurutkan dari yang terendah ke tertinggi.'
                     : 'Harga vaksin transparan diurutkan dari yang terendah ke tertinggi.'}
                 </p>
               </div>
@@ -332,7 +332,7 @@ export default function ServiceDetailClient({ service: rawService, currentSlug }
                     <thead>
                       <tr className="bg-bg-snow border-b border-border-fine/60">
                         <th className="py-4 px-6 font-bold text-xs text-text-dark uppercase tracking-wider">
-                          {currentSlug === 'poli-gigi' ? 'Tindakan / Perawatan Gigi' : 'Nama Vaksin'}
+                          {currentSlug === 'poli-gigi' ? 'Tindakan / Perawatan' : 'Nama Vaksin'}
                         </th>
                         <th className="py-4 px-6 font-bold text-xs text-text-dark uppercase tracking-wider text-right">Harga Estimasi (Nett)</th>
                       </tr>

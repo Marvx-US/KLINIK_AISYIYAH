@@ -718,11 +718,11 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                   }
                   className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
                 />
-                <p className="text-xs text-text-muted font-medium mt-1">
-                  Format: <code className="bg-bg-snow px-1 rounded">{`Nama Layanan: Harga`}</code> — 1 item per baris.
-                  {editingService.slug?.toLowerCase().includes('gigi') && (
-                    <span className="ml-1 text-primary font-semibold">Untuk Poli Gigi, tulis nama tindakan/perawatan gigi.</span>
-                  )}
+                <p className="text-xs text-text-muted font-medium mt-1 leading-relaxed">
+                  Didukung 3 format (pilih salah satu): <br/>
+                  <code className="bg-bg-snow px-1 rounded">Nama: Harga</code> &nbsp;·&nbsp;
+                  <code className="bg-bg-snow px-1 rounded">Nama Rp 100.000</code> &nbsp;·&nbsp;
+                  Nama di baris pertama, harga di baris kedua. Harga otomatis diurutkan dari terendah.
                 </p>
               </div>
             </div>

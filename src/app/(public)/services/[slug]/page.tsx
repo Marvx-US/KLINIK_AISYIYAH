@@ -41,18 +41,55 @@ function parsePriceList(rawPrices: string | null | undefined): { name: string; p
   const cleaned = cleanRaw(rawPrices);
   if (!cleaned) return null;
   const list: { name: string; price: number }[] = [];
-  const lines = cleaned.split('\n');
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    const parts = line.split(':');
-    if (parts.length >= 2) {
-      const name = parts[0].trim();
-      const priceNum = parseInt(parts[1].replace(/[^0-9]/g, ''), 10);
-      if (name && !isNaN(priceNum)) {
-        list.push({ name, price: priceNum });
+  const lines = cleaned.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Format 1: "Nama: Harga" — format standar dengan titik dua
+    if (line.includes(':')) {
+      const colonIdx = line.lastIndexOf(':');
+      const namePart = line.substring(0, colonIdx).trim();
+      const pricePart = line.substring(colonIdx + 1).trim();
+      const priceNum = parseInt(pricePart.replace(/[^0-9]/g, ''), 10);
+      if (namePart && !isNaN(priceNum) && priceNum > 0) {
+        list.push({ name: namePart, price: priceNum });
+        i++;
+        continue;
       }
     }
+
+    // Format 2: "Nama Rp 100.000" — nama dan harga dalam satu baris dengan prefix Rp
+    const inlineRpMatch = line.match(/^(.+?)\s+Rp\.?\s*([\d.,]+)\s*$/i);
+    if (inlineRpMatch) {
+      const name = inlineRpMatch[1].trim();
+      const priceNum = parseInt(inlineRpMatch[2].replace(/[^0-9]/g, ''), 10);
+      if (name && !isNaN(priceNum) && priceNum > 0) {
+        list.push({ name, price: priceNum });
+        i++;
+        continue;
+      }
+    }
+
+    // Format 3: "Nama" di baris ini, "Rp Harga" atau angka saja di baris berikutnya
+    if (i + 1 < lines.length) {
+      const nextLine = lines[i + 1];
+      const nextRpMatch = nextLine.match(/^(?:Rp\.?\s*)?([\d.,]+)\s*$/i);
+      if (nextRpMatch) {
+        const name = line.trim();
+        const priceNum = parseInt(nextRpMatch[1].replace(/[^0-9]/g, ''), 10);
+        if (name && !isNaN(priceNum) && priceNum > 0) {
+          list.push({ name, price: priceNum });
+          i += 2; // lewati dua baris sekaligus
+          continue;
+        }
+      }
+    }
+
+    i++;
   }
+
   return list.length > 0 ? list.sort((a, b) => a.price - b.price) : null;
 }
 
