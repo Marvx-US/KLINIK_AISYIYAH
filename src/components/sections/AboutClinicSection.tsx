@@ -167,6 +167,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                   href={`https://wa.me/${KLINIK_INFO.whatsapp}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  suppressHydrationWarning
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white font-sans text-xs font-bold hover:bg-primary-dark transition-all duration-300 shadow-sm active:scale-[0.98]"
                 >
                   <Phone className="w-3.5 h-3.5" />

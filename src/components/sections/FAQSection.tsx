@@ -89,7 +89,7 @@ export default function FAQSection() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-6 pb-6 md:px-8 md:pb-8 border-t border-border-fine/30 pt-4 text-text-muted text-sm md:text-base leading-relaxed font-sans">
+                    <div suppressHydrationWarning className="px-6 pb-6 md:px-8 md:pb-8 border-t border-border-fine/30 pt-4 text-text-muted text-sm md:text-base leading-relaxed font-sans">
                       {item.answer}
                     </div>
                   </div>

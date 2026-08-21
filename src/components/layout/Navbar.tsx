@@ -104,6 +104,7 @@ export default function Navbar() {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
+              suppressHydrationWarning
               className={`inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full font-sans text-xs sm:text-sm font-bold transition-all duration-300 active:scale-[0.98] shadow-sm hover:shadow-md ${
                 isDark 
                   ? 'bg-primary text-white hover:bg-primary-dark hover:shadow-primary/20'
@@ -159,6 +160,7 @@ export default function Navbar() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                suppressHydrationWarning
                 className="inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-primary text-white font-sans text-sm font-bold transition-all shadow-md hover:bg-primary-dark"
               >
                 <Phone className="h-4 w-4" />
