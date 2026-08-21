@@ -18,7 +18,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
     const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const todayName = days[new Date().getDay()];
     const isSunday = new Date().getDay() === 0;
-    setTodayStatus(`Hari Ini ${todayName} — ${isSunday ? 'Klinik Sedang Tutup (IGD 24 Jam)' : 'Klinik Sedang Buka'}`);
+    setTodayStatus(`Hari Ini ${todayName} — ${isSunday ? 'Klinik Sedang Tutup' : 'Klinik Sedang Buka'}`);
   }, []);
 
   return (
@@ -129,8 +129,8 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
                     <p className="text-[11px] text-text-muted">Siap melayani kebutuhan berobat keluarga Anda</p>
                   </div>
                 </div>
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-wider border border-green-200">
-                  IGD 24 Jam Nonstop
+                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-wider border border-primary/20">
+                  Buka Senin – Sabtu
                 </span>
               </div>
 

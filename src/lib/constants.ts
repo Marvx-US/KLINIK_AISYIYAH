@@ -6,7 +6,7 @@
 export const KLINIK_INFO = {
   name: 'Klinik Aisyiyah Pangkajene',
   tagline: 'Kesehatan Masyarakat',
-  address: 'Jl. Jenderal Sudirman No. 45, Pangkajene, Sidenreng Rappang, Sulawesi Selatan',
+  address: 'Jl. Andi Cammi No. 17 Pangkajene, Kec. Maritengngae, Kab. Sidrap, Sulawesi Selatan',
   phone: '0878-3117-7100',
   whatsapp: '6287831177100',
   email: 'klinikaisyiyahpangkajene@gmail.com',
@@ -16,9 +16,8 @@ export const KLINIK_INFO = {
 };
 
 export const KLINIK_HOURS = [
-  { day: 'Senin - Jumat', hours: '08.00 - 20.00 WITA', closed: false },
-  { day: 'Sabtu', hours: '08.00 - 17.00 WITA', closed: false },
-  { day: 'Minggu & Tanggal Merah', hours: 'Tutup (IGD 24 Jam)', closed: true },
+  { day: 'Senin - Sabtu', hours: '08.00 - 20.00 WITA', closed: false },
+  { day: 'Minggu & Tanggal Merah', hours: 'Tutup (IGD mengikuti jam klinik)', closed: true },
 ];
 
 export const NAVIGATION_ITEMS = [
