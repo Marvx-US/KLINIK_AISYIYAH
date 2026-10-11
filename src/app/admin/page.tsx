@@ -50,6 +50,7 @@ export default async function AdminDashboardPage() {
             <h3 className="font-heading font-extrabold text-3xl text-text-dark">{articleCount}</h3>
             <Link
               href="/admin/articles"
+              prefetch={false}
               className="inline-flex items-center gap-1 text-primary text-xs font-bold hover:underline mt-4"
             >
               Kelola artikel
@@ -68,6 +69,7 @@ export default async function AdminDashboardPage() {
             <h3 className="font-heading font-extrabold text-3xl text-text-dark">{eventCount}</h3>
             <Link
               href="/admin/events"
+              prefetch={false}
               className="inline-flex items-center gap-1 text-primary text-xs font-bold hover:underline mt-4"
             >
               Kelola event
@@ -86,6 +88,7 @@ export default async function AdminDashboardPage() {
         <div className="flex flex-wrap gap-4">
           <Link
             href="/admin/articles?action=new"
+            prefetch={false}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white font-sans text-sm font-semibold transition-all duration-300 hover:bg-primary-dark active:scale-[0.98] shadow-sm hover:shadow-md"
           >
             <Plus className="h-4.5 w-4.5" />
@@ -93,6 +96,7 @@ export default async function AdminDashboardPage() {
           </Link>
           <Link
             href="/admin/events?action=new"
+            prefetch={false}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-border-fine bg-white text-text-dark font-sans text-sm font-semibold transition-all duration-300 hover:bg-bg-snow active:scale-[0.98]"
           >
             <Plus className="h-4.5 w-4.5" />
