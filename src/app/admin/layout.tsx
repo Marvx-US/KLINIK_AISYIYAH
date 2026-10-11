@@ -67,6 +67,7 @@ export default async function AdminLayout({
         <nav className="flex-grow p-6 flex flex-col gap-2">
           <Link
             href="/admin"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
             <LayoutDashboard className="h-4.5 w-4.5" />
@@ -74,6 +75,7 @@ export default async function AdminLayout({
           </Link>
           <Link
             href="/admin/services"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
             <Activity className="h-4.5 w-4.5" />
@@ -81,6 +83,7 @@ export default async function AdminLayout({
           </Link>
           <Link
             href="/admin/articles"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
             <FileText className="h-4.5 w-4.5" />
@@ -88,6 +91,7 @@ export default async function AdminLayout({
           </Link>
           <Link
             href="/admin/events"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
             <CalendarRange className="h-4.5 w-4.5" />
@@ -95,14 +99,15 @@ export default async function AdminLayout({
           </Link>
           <Link
             href="/admin/banners"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
-            {/* Menggunakan ImageIcon dari lucide-react jika di-import, atau cukup pakai FileText/Heart */}
             <FileText className="h-4.5 w-4.5" />
             Kelola Banner Latar
           </Link>
           <Link
             href="/admin/clinic-profile"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
             <ImageIcon className="h-4.5 w-4.5" />
@@ -110,6 +115,7 @@ export default async function AdminLayout({
           </Link>
           <Link
             href="/admin/facilities"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
             <Heart className="h-4.5 w-4.5" />
@@ -117,6 +123,7 @@ export default async function AdminLayout({
           </Link>
           <Link
             href="/admin/partners"
+            prefetch={false}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
           >
             <Users className="h-4.5 w-4.5" />
