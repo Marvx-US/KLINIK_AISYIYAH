@@ -24,7 +24,7 @@ async function main() {
         role: 'ADMIN',
       },
     });
-    console.log(`User Admin sukses dibuat! Username: ${adminUsername}, Password: ${adminPasswordPlain}`);
+    console.log(`User Admin sukses dibuat! Username: ${adminUsername}`);
   } else {
     console.log('User Admin sudah ada, melewati pembuatan user.');
   }
