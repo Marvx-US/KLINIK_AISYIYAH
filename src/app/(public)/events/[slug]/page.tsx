@@ -23,6 +23,8 @@ interface PageProps {
 
 import type { Metadata, ResolvingMetadata } from 'next';
 import { KLINIK_INFO } from '@/lib/constants';
+import JsonLd from '@/components/seo/JsonLd';
+import { getEventSchema } from '@/lib/seoSchemas';
 
 export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { slug } = await params;
@@ -33,6 +35,9 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
   return {
     title: event.title,
     description: `Ikuti kegiatan ${event.title} di Klinik Aisyiyah. Temukan informasi lengkap seputar jadwal, lokasi, dan detail acara.`,
+    alternates: {
+      canonical: `/events/${slug}`,
+    },
     openGraph: {
       title: event.title,
       description: `Ikuti kegiatan ${event.title} di Klinik Aisyiyah. Temukan informasi lengkap seputar jadwal, lokasi, dan detail acara.`,
@@ -48,7 +53,7 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
       ] : [],
       locale: 'id_ID',
       type: 'article',
-      authors: ['Klinik Aisyiyah'],
+      authors: ['Klinik Aisyiyah Pangkajene'],
     },
     twitter: {
       card: 'summary_large_image',
@@ -65,6 +70,8 @@ export default async function EventDetailPage({ params }: PageProps) {
   const event = await getEventBySlug(slug).catch(() => null);
   if (!event) notFound();
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
   // Event rekomendasi lainnya
   const upcomingEvents = await getPublishedEvents()
     .then((all) => all.filter((e) => e.slug !== slug).slice(0, 3))
@@ -72,6 +79,8 @@ export default async function EventDetailPage({ params }: PageProps) {
 
   return (
     <div className="pt-32 pb-16 md:pt-40 md:pb-24 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow min-h-screen">
+      <JsonLd data={getEventSchema(event, baseUrl)} />
+
       {/* Back button */}
       <Link
         href="/events"

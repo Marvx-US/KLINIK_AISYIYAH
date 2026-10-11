@@ -1,15 +1,33 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { Search } from 'lucide-react';
 import { getPublishedEvents } from '@/core/services/eventService';
-import { FALLBACK_EVENTS } from '@/lib/constants';
+import { FALLBACK_EVENTS, KLINIK_INFO } from '@/lib/constants';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
 import EmptyState from '@/components/ui/EmptyState';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
+export const metadata: Metadata = {
+  title: 'Agenda, Kegiatan & Berita',
+  description: 'Informasi agenda kegiatan kesehatan masyarakat, bakti sosial, penyuluhan gizi, seminar medis, dan pengumuman resmi Klinik Aisyiyah Pangkajene.',
+  alternates: {
+    canonical: '/events',
+  },
+  openGraph: {
+    title: 'Agenda, Kegiatan & Berita | Klinik Aisyiyah Pangkajene',
+    description: 'Informasi agenda kegiatan kesehatan masyarakat, bakti sosial, dan pengumuman resmi Klinik Aisyiyah Pangkajene.',
+    url: '/events',
+    siteName: KLINIK_INFO.name,
+    locale: 'id_ID',
+    type: 'website',
+  },
+};
+
 interface PageProps {
   searchParams: Promise<{ q?: string }>;
 }
+
 
 /** Mengambil event dari DB via Service, fallback jika DB kosong */
 async function getFilteredEvents(searchQuery: string): Promise<EventCardData[]> {

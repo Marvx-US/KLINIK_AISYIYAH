@@ -23,7 +23,8 @@ interface PageProps {
 
 import type { Metadata, ResolvingMetadata } from 'next';
 import { KLINIK_INFO } from '@/lib/constants';
-
+import JsonLd from '@/components/seo/JsonLd';
+import { getArticleSchema } from '@/lib/seoSchemas';
 
 export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { slug } = await params;
@@ -34,6 +35,9 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
   return {
     title: article.title,
     description: article.summary || `Baca artikel tentang ${article.title} di Klinik Aisyiyah.`,
+    alternates: {
+      canonical: `/articles/${slug}`,
+    },
     openGraph: {
       title: article.title,
       description: article.summary || `Baca artikel tentang ${article.title} di Klinik Aisyiyah.`,
@@ -50,7 +54,7 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
       locale: 'id_ID',
       type: 'article',
       publishedTime: new Date(article.createdAt).toISOString(),
-      authors: ['Klinik Aisyiyah'],
+      authors: ['Klinik Aisyiyah Pangkajene'],
     },
     twitter: {
       card: 'summary_large_image',
@@ -67,6 +71,8 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const article = await getArticleBySlug(slug).catch(() => null);
   if (!article) notFound();
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
   // Artikel rekomendasi lainnya
   const recentArticles = await getPublishedArticles()
     .then((all) => all.filter((a) => a.slug !== slug).slice(0, 3))
@@ -74,6 +80,8 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
   return (
     <div className="pt-32 pb-16 md:pt-40 md:pb-24 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow min-h-screen">
+      <JsonLd data={getArticleSchema(article, baseUrl)} />
+
       {/* Back button */}
       <Link
         href="/articles"

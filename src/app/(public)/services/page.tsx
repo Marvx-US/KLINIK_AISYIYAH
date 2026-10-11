@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { Search } from 'lucide-react';
 import { getActiveServices } from '@/core/services/serviceService';
 import ServiceCard, { type ServiceCardData } from '@/components/ui/ServiceCard';
@@ -8,9 +9,26 @@ import { KLINIK_INFO } from '@/lib/constants';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
+export const metadata: Metadata = {
+  title: 'Layanan Medis & Fasilitas Kesehatan',
+  description: 'Daftar lengkap layanan kesehatan terpadu dan fasilitas medis di Klinik Aisyiyah Pangkajene, Kab. Sidrap. Pelayanan IGD 24 Jam, Poli Umum, Poli Gigi, Poli KIA/Bersalin, dan Vaksinasi.',
+  alternates: {
+    canonical: '/services',
+  },
+  openGraph: {
+    title: 'Layanan Medis & Fasilitas Kesehatan | Klinik Aisyiyah Pangkajene',
+    description: 'Daftar lengkap layanan kesehatan terpadu dan fasilitas medis di Klinik Aisyiyah Pangkajene, Kab. Sidrap.',
+    url: '/services',
+    siteName: KLINIK_INFO.name,
+    locale: 'id_ID',
+    type: 'website',
+  },
+};
+
 interface PageProps {
   searchParams: Promise<{ q?: string }>;
 }
+
 
 async function getFilteredServices(searchQuery: string) {
   try {

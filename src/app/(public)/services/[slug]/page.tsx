@@ -1,8 +1,12 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { getServiceBySlug, getAllServices } from '@/core/services/serviceService';
 import { SERVICES_DATA, type ServiceData } from '@/data/services';
 import ServiceDetailClient from './ServiceDetailClient';
 import { notFound } from 'next/navigation';
+import { KLINIK_INFO } from '@/lib/constants';
+import JsonLd from '@/components/seo/JsonLd';
+import { getMedicalServiceSchema } from '@/lib/seoSchemas';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -10,6 +14,61 @@ export const revalidate = 0;
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const rawSlug = resolvedParams.slug;
+  const slug = normalizeSlug(rawSlug);
+  const candidateSlugs = getPossibleDbSlugs(rawSlug);
+
+  let dbService: any = null;
+  for (const candidate of candidateSlugs) {
+    dbService = await getServiceBySlug(candidate).catch(() => null);
+    if (dbService) break;
+  }
+  if (!dbService) {
+    const allDb = await getAllServices().catch(() => []);
+    dbService = allDb.find((s: any) =>
+      candidateSlugs.some(c => s.slug.toLowerCase().includes(c) || c.includes(s.slug.toLowerCase()))
+    ) || null;
+  }
+
+  const staticDetails = SERVICES_DATA[slug] || null;
+  const title = dbService?.name || staticDetails?.title || 'Layanan Kesehatan';
+  const description = dbService?.description || staticDetails?.shortDescription || `Layanan medis ${title} terpadu di Klinik Aisyiyah Pangkajene, Kab. Sidrap.`;
+  const image = dbService?.roomImage || staticDetails?.heroImage || '/logo.png';
+
+  return {
+    title: `${title} - Layanan Medis`,
+    description,
+    alternates: {
+      canonical: `/services/${rawSlug}`,
+    },
+    openGraph: {
+      title: `${title} | Klinik Aisyiyah Pangkajene`,
+      description,
+      url: `/services/${rawSlug}`,
+      siteName: KLINIK_INFO.name,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      locale: 'id_ID',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | Klinik Aisyiyah`,
+      description,
+      images: [image],
+    },
+  };
+}
+
 
 function normalizeSlug(slug: string): string {
   const s = slug.toLowerCase().trim();
@@ -279,5 +338,13 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     vaccinePrices: dbPrices || resolvedStatic.vaccinePrices || null
   };
 
-  return <ServiceDetailClient service={mergedData} currentSlug={slug} />;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+  return (
+    <>
+      <JsonLd data={getMedicalServiceSchema(mergedData, baseUrl)} />
+      <ServiceDetailClient service={mergedData} currentSlug={slug} />
+    </>
+  );
 }
+

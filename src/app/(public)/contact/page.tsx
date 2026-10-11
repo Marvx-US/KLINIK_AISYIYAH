@@ -3,6 +3,26 @@ import { Phone, Mail, MapPin, Clock, MessageSquare, ShieldCheck } from 'lucide-r
 import { type LucideIcon } from 'lucide-react';
 import { KLINIK_INFO, KLINIK_HOURS } from '@/lib/constants';
 
+import type { Metadata } from 'next';
+import JsonLd from '@/components/seo/JsonLd';
+import { getClinicSchema } from '@/lib/seoSchemas';
+
+export const metadata: Metadata = {
+  title: 'Kontak & Lokasi Klinik',
+  description: 'Alamat lengkap, nomor telepon, WhatsApp pendaftaran, email resmi, dan petunjuk arah Google Maps Klinik Aisyiyah Pangkajene, Kab. Sidrap.',
+  alternates: {
+    canonical: '/contact',
+  },
+  openGraph: {
+    title: 'Kontak & Lokasi Klinik | Klinik Aisyiyah Pangkajene',
+    description: 'Hubungi Klinik Aisyiyah Pangkajene atau kunjungi langsung gedung klinik di Jl. Andi Cammi No. 17 Pangkajene, Sidrap.',
+    url: '/contact',
+    siteName: KLINIK_INFO.name,
+    locale: 'id_ID',
+    type: 'website',
+  },
+};
+
 interface ContactItem {
   title: string;
   desc: string;
@@ -44,8 +64,13 @@ const CONTACT_ITEMS: ContactItem[] = [
  * Data kontak bersumber dari constants.ts.
  */
 export default function ContactPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const clinicSchema = getClinicSchema(baseUrl);
+
   return (
     <div className="pt-32 pb-16 md:pt-40 md:pb-24 w-full px-6 sm:px-8 lg:px-12 bg-bg-snow min-h-screen">
+      <JsonLd data={clinicSchema} />
+
       {/* Page Header */}
       <div className="max-w-3xl mb-16">
         <span className="text-xs font-bold text-primary uppercase tracking-widest block mb-3">

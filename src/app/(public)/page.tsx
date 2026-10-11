@@ -5,7 +5,7 @@ import { getActivePartners } from '@/core/services/partnerService';
 import { getPublishedArticles } from '@/core/services/articleService';
 import { getPublishedEvents } from '@/core/services/eventService';
 import { getActiveServices } from '@/core/services/serviceService';
-import { FALLBACK_ARTICLES, FALLBACK_EVENTS } from '@/lib/constants';
+import { FALLBACK_ARTICLES, FALLBACK_EVENTS, FAQ_ITEMS } from '@/lib/constants';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -13,7 +13,11 @@ import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EventCard, { type EventCardData } from '@/components/ui/EventCard';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSection from '@/components/sections/FAQSection';
+import JsonLd from '@/components/seo/JsonLd';
+import { getClinicSchema, getFaqSchema } from '@/lib/seoSchemas';
+
 import dynamic from 'next/dynamic';
+
 
 const AboutClinicSection = dynamic(
   () => import('@/components/sections/AboutClinicSection'),
@@ -71,10 +75,15 @@ export default async function HomePage() {
     : FALLBACK_EVENTS;
 
   const firstFacilityPhoto = facilities.length > 0 ? facilities[0].imageUrl : undefined;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const clinicSchema = getClinicSchema(baseUrl);
+  const faqSchema = getFaqSchema(FAQ_ITEMS);
 
   return (
     <div className="relative pb-12">
+      <JsonLd data={[clinicSchema, faqSchema]} />
       <HeroSection banners={banners} />
+
 
       {/* Section Tentang Klinik & Jam Operasional dengan Foto */}
       <ScrollReveal>

@@ -1,15 +1,28 @@
 import { MetadataRoute } from 'next';
 import { getPublishedArticles } from '@/core/services/articleService';
 import { getPublishedEvents } from '@/core/services/eventService';
+import { getActiveServices } from '@/core/services/serviceService';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
   // Fetch dynamic content
-  const articles = await getPublishedArticles().catch(() => []);
-  const events = await getPublishedEvents().catch(() => []);
+  const [articles, events, services] = await Promise.all([
+    getPublishedArticles().catch(() => []),
+    getPublishedEvents().catch(() => []),
+    getActiveServices().catch(() => []),
+  ]);
 
-  // Map dynamic routes
+  // Map dynamic services routes
+  const serviceUrls = (services as any[]).map((service: any) => ({
+    url: `${baseUrl}/services/${service.slug}`,
+    lastModified: service.updatedAt || service.createdAt || new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.9,
+  }));
+
+
+  // Map dynamic articles routes
   const articleUrls = articles.map((article) => ({
     url: `${baseUrl}/articles/${article.slug}`,
     lastModified: article.updatedAt || article.createdAt,
@@ -17,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  // Map dynamic events routes
   const eventUrls = events.map((event) => ({
     url: `${baseUrl}/events/${event.slug}`,
     lastModified: event.updatedAt || event.createdAt || new Date(),
@@ -24,20 +38,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // Map static routes
+  // Map static public routes
   const staticRoutes = [
-    '',
-    '/articles',
-    '/events',
-    '/facilities',
-    '/contact',
-    '/login'
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
+    { route: '', priority: 1.0, freq: 'daily' as const },
+    { route: '/services', priority: 0.9, freq: 'daily' as const },
+    { route: '/articles', priority: 0.8, freq: 'daily' as const },
+    { route: '/events', priority: 0.8, freq: 'daily' as const },
+    { route: '/contact', priority: 0.8, freq: 'monthly' as const },
+  ].map((item) => ({
+    url: `${baseUrl}${item.route}`,
     lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : 0.9,
+    changeFrequency: item.freq,
+    priority: item.priority,
   }));
 
-  return [...staticRoutes, ...articleUrls, ...eventUrls];
+  return [...staticRoutes, ...serviceUrls, ...articleUrls, ...eventUrls];
 }
+

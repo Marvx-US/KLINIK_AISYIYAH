@@ -90,3 +90,36 @@ export const FALLBACK_EVENTS = [
     createdAt: new Date(),
   },
 ];
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export const FAQ_ITEMS: FAQItem[] = [
+  {
+    question: 'Bagaimana cara mendaftar layanan?',
+    answer: 'Anda dapat mendaftar langsung dengan datang ke meja pendaftaran klinik, atau menghubungi kami terlebih dahulu via WhatsApp untuk pendaftaran awal guna mempercepat proses administrasi di lokasi.',
+  },
+  {
+    question: 'Apakah menerima BPJS?',
+    answer: 'Saat ini Klinik Aisyiyah Pangkajene melayani pasien umum mandiri serta beberapa asuransi kemitraan korporasi. Kami sedang dalam proses integrasi sistem dengan BPJS Kesehatan untuk melayani Anda lebih luas di masa depan.',
+  },
+  {
+    question: 'Bagaimana cara membuat janji?',
+    answer: 'Membuat janji temu dengan dokter spesialis atau dokter gigi sangat mudah. Silakan klik tombol "Hubungi Kami" atau hubungi WhatsApp resmi kami, pilih dokter dan jadwal yang Anda inginkan, dan admin kami akan memberikan konfirmasi jadwal.',
+  },
+  {
+    question: 'Bagaimana jam praktek pelayanan poliklinik?',
+    answer: 'Jam praktek pelayanan poliklinik di Klinik Aisyiyah Pangkajene yaitu Poli Umum pukul 13.00 - 20.00 WITA, serta Poli KIA dan Poli Gigi pukul 16.00 - 18.00 WITA. Layanan Instalasi Gawat Darurat (IGD) tetap siaga 24 Jam Nonstop.',
+  },
+  {
+    question: 'Apakah tersedia konsultasi online?',
+    answer: 'Ya, kami menyediakan layanan telekonsultasi kesehatan dasar terbatas melalui layanan chat WhatsApp terpadu dokter kami untuk memantau keluhan ringan atau konsultasi hasil laboratorium pasca pemeriksaan fisik.',
+  },
+  {
+    question: 'Bagaimana cara menghubungi klinik?',
+    answer: 'Anda dapat menghubungi pusat kontak kami melalui Telepon/WhatsApp di 0878-3117-7100, email di klinikaisyiyahpangkajene@gmail.com, atau klik ikon chat WhatsApp yang melayang di pojok layar untuk berkomunikasi secara langsung dengan staf medis kami.',
+  },
+];
+

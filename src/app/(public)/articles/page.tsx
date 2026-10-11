@@ -1,16 +1,34 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { getPublishedArticles } from '@/core/services/articleService';
-import { FALLBACK_ARTICLES, ARTICLE_CATEGORIES_FILTER } from '@/lib/constants';
+import { FALLBACK_ARTICLES, ARTICLE_CATEGORIES_FILTER, KLINIK_INFO } from '@/lib/constants';
 import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
 import EmptyState from '@/components/ui/EmptyState';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
+export const metadata: Metadata = {
+  title: 'Artikel & Edukasi Kesehatan',
+  description: 'Kumpulan artikel medis terpercaya, tips gaya hidup sehat, panduan imunisasi anak, dan edukasi kesehatan dari tenaga medis Klinik Aisyiyah Pangkajene.',
+  alternates: {
+    canonical: '/articles',
+  },
+  openGraph: {
+    title: 'Artikel & Edukasi Kesehatan | Klinik Aisyiyah Pangkajene',
+    description: 'Kumpulan artikel medis terpercaya, tips gaya hidup sehat, dan edukasi kesehatan dari tenaga medis Klinik Aisyiyah Pangkajene.',
+    url: '/articles',
+    siteName: KLINIK_INFO.name,
+    locale: 'id_ID',
+    type: 'website',
+  },
+};
+
 interface PageProps {
   searchParams: Promise<{ q?: string; category?: string }>;
 }
+
 
 /** Mengambil artikel dari DB via Service, fallback jika DB kosong */
 async function getFilteredArticles(
