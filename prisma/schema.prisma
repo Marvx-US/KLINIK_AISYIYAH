@@ -81,6 +81,13 @@ model Partner {
   updatedAt   DateTime @updatedAt
 }
 
+model SiteSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
 model Service {
   id               Int      @id @default(autoincrement())
   name             String

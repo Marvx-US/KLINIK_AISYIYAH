@@ -5,6 +5,7 @@ import { getActivePartners } from '@/core/services/partnerService';
 import { getPublishedArticles } from '@/core/services/articleService';
 import { getPublishedEvents } from '@/core/services/eventService';
 import { getActiveServices } from '@/core/services/serviceService';
+import { getAboutImageUrl } from '@/core/services/siteSettingService';
 import { FALLBACK_ARTICLES, FALLBACK_EVENTS, FAQ_ITEMS } from '@/lib/constants';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
@@ -40,13 +41,14 @@ export const revalidate = 60; // ISR: re-generate tiap 1 menit
  */
 export default async function HomePage() {
 
-  const [rawArticles, rawEvents, banners, facilities, partners, services] = await Promise.all([
+  const [rawArticles, rawEvents, banners, facilities, partners, services, aboutImageSetting] = await Promise.all([
     getPublishedArticles().catch(() => []),
     getPublishedEvents().catch(() => []),
     getActiveBanners().catch(() => []),
     getActiveFacilities().catch(() => []),
     getActivePartners().catch(() => []),
     getActiveServices().catch(() => []),
+    getAboutImageUrl().catch(() => null),
   ]);
 
   // Fallback jika database kosong
@@ -74,7 +76,8 @@ export default async function HomePage() {
     }))
     : FALLBACK_EVENTS;
 
-  const firstFacilityPhoto = facilities.length > 0 ? facilities[0].imageUrl : undefined;
+  // Foto Tentang Klinik: prioritaskan dari SiteSetting, fallback ke foto fasilitas pertama
+  const heroPhoto = aboutImageSetting || (facilities.length > 0 ? facilities[0].imageUrl : undefined);
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const clinicSchema = getClinicSchema(baseUrl);
   const faqSchema = getFaqSchema(FAQ_ITEMS);
@@ -87,7 +90,7 @@ export default async function HomePage() {
 
       {/* Section Tentang Klinik & Jam Operasional dengan Foto */}
       <ScrollReveal>
-        <AboutClinicSection heroPhoto={firstFacilityPhoto} />
+        <AboutClinicSection heroPhoto={heroPhoto} />
       </ScrollReveal>
 
       <ScrollReveal>

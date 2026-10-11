@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { getSession, logout } from '@/lib/auth';
 import { KLINIK_INFO } from '@/lib/constants';
-import { LayoutDashboard, FileText, CalendarRange, LogOut, Heart, User, Users, Activity } from 'lucide-react';
+import { LayoutDashboard, FileText, CalendarRange, LogOut, Heart, User, Users, Activity, ImageIcon } from 'lucide-react';
 
 export const revalidate = 0;
 
@@ -100,6 +100,13 @@ export default async function AdminLayout({
             {/* Menggunakan ImageIcon dari lucide-react jika di-import, atau cukup pakai FileText/Heart */}
             <FileText className="h-4.5 w-4.5" />
             Kelola Banner Latar
+          </Link>
+          <Link
+            href="/admin/clinic-profile"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-text-muted hover:text-primary hover:bg-primary-light transition-all"
+          >
+            <ImageIcon className="h-4.5 w-4.5" />
+            Foto Utama Klinik
           </Link>
           <Link
             href="/admin/facilities"
