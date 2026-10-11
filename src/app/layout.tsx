@@ -69,6 +69,9 @@ export const metadata: Metadata = {
     title: "Klinik Aisyiyah Pangkajene",
     description: "Layanan kesehatan terpercaya dan informasi medis terkini di Pangkajene, Sidrap.",
   },
+  verification: {
+    google: "YNs5CgRxs2f_rYAzf3Kd-7WkO4gH-c-lLDrYHuh2zas",
+  },
 };
 
 
