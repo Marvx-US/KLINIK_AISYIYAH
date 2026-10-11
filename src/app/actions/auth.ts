@@ -112,9 +112,9 @@ export async function loginAction(prevState: LoginResult | null, formData: FormD
     return { error: 'Password terlalu panjang.' };
   }
 
-  // 3. Validasi karakter username — hanya alfanumerik dan underscore
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-    return { error: 'Username hanya boleh mengandung huruf, angka, dan underscore.' };
+  // 3. Validasi karakter username — alfanumerik, underscore, dan karakter email (@ . -)
+  if (!/^[a-zA-Z0-9_.@-]+$/.test(username)) {
+    return { error: 'Username hanya boleh mengandung huruf, angka, underscore, titik, @ atau tanda hubung.' };
   }
 
   try {
