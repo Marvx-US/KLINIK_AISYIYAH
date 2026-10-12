@@ -39,14 +39,19 @@ export default function HeroSection({
           key={banner.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
         >
-          {/* Main Crisp Banner Image - FULL COVER on Mobile & Desktop */}
+          {/* 
+            sizes responsif: browser memilih resolusi yang tepat per breakpoint.
+            Ini mencegah download gambar full-1920px di layar mobile 375px.
+            Kombinasi dengan WebP output dari sharp = LCP turun drastis.
+          */}
           <Image 
             src={banner.imageUrl} 
             alt={banner.title} 
             fill
             priority={idx === 0}
             fetchPriority={idx === 0 ? 'high' : 'low'}
-            sizes="100vw"
+            loading={idx === 0 ? 'eager' : 'lazy'}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
             className="object-cover object-center opacity-85" 
           />
           {/* Overlay gradien gelap agar teks tetap terbaca tajam di mobile maupun desktop */}

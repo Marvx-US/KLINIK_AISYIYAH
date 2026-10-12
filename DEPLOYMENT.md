@@ -116,11 +116,17 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    # Optimasi untuk folder /public/uploads/ agar file statis langsung diserve Nginx
+    # Optimasi untuk folder /public/uploads/ agar file statis langsung diserve Nginx.
+    # Catatan: Semua gambar yang diunggah admin sudah dikompresi ke format WebP
+    # oleh sharp di src/lib/upload.ts — Nginx hanya perlu serve file WebP yang sudah optimal.
     location /uploads/ {
         alias /var/www/KLINIK_AISYIYAH/public/uploads/;
         access_log off;
-        expires max;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, stale-while-revalidate=86400";
+        add_header Vary "Accept-Encoding";
+        # Aktifkan gzip untuk file yang belum dikompresi (fallback)
+        gzip_static on;
     }
 }
 ```

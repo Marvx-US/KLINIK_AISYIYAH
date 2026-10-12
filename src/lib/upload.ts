@@ -18,8 +18,11 @@ const ALLOWED_MIME_TYPES = new Set([
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 /**
- * Menyimpan objek File ke folder public/uploads.
- * Mengembalikan URL string yang bisa disimpan ke database (misal: /uploads/nama-file.jpg).
+ * Menyimpan objek File ke folder public/uploads dengan kompresi otomatis.
+ * Semua gambar (kecuali GIF) dikonversi ke WebP (max 1920px lebar, quality 82)
+ * menggunakan sharp — ini adalah kunci performa LCP yang optimal di semua device.
+ *
+ * Mengembalikan URL string yang bisa disimpan ke database (misal: /uploads/nama-file.webp).
  *
  * @throws {Error} Jika tipe file, ekstensi, atau ukuran tidak valid.
  */
@@ -49,9 +52,6 @@ export async function uploadFile(file: File | null): Promise<string | null> {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Gunakan nama unik bersertifikasi
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${rawExtension}`;
-
     // Tentukan direktori penyimpanan
     const uploadDir = join(process.cwd(), 'public', 'uploads');
 
@@ -60,13 +60,50 @@ export async function uploadFile(file: File | null): Promise<string | null> {
       mkdirSync(uploadDir, { recursive: true });
     }
 
+    // ============================================================
+    // KOMPRESI OTOMATIS — Konversi ke WebP via sharp
+    // GIF dikecualikan agar animasi tetap terjaga.
+    // WebP q82 + resize 1920px = ~80-90% pengurangan ukuran file
+    // dibanding JPEG/PNG resolusi penuh → FIX utama untuk LCP.
+    // ============================================================
+    let finalBuffer: Buffer;
+    let finalExtension: string;
+
+    if (file.type === 'image/gif') {
+      // GIF: simpan apa adanya agar animasi tidak rusak
+      finalBuffer = buffer;
+      finalExtension = 'gif';
+    } else {
+      // Semua format lain → konversi ke WebP untuk performa maksimal
+      const sharp = (await import('sharp')).default;
+      finalBuffer = await sharp(buffer)
+        .rotate()                    // Auto-rotate berdasarkan EXIF orientation (fix foto dari HP)
+        .resize({
+          width: 1920,              // Max lebar 1920px — cukup untuk layar 4K, retina, dan desktop
+          withoutEnlargement: true, // Jangan perbesar gambar yang sudah lebih kecil dari 1920px
+          fit: 'inside',            // Pertahankan aspect ratio asli
+        })
+        .webp({ quality: 82 })      // quality 82 — sweet spot: tidak ada beda visual, ukuran ~3-5x lebih kecil
+        .toBuffer();
+      finalExtension = 'webp';
+    }
+
+    // Gunakan nama unik bersertifikasi (timestamp + random)
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${finalExtension}`;
     const filePath = join(uploadDir, uniqueName);
 
     // Tulis file ke sistem
-    await writeFile(filePath, buffer);
+    await writeFile(filePath, finalBuffer);
     const publicUrl = `/uploads/${uniqueName}`;
 
-    console.log(`[UPLOAD SUCCESS] File ${file.name} berhasil disimpan ke ${publicUrl}`);
+    const originalKB = (buffer.length / 1024).toFixed(0);
+    const finalKB = (finalBuffer.length / 1024).toFixed(0);
+    const saved = ((1 - finalBuffer.length / buffer.length) * 100).toFixed(1);
+    console.log(
+      `[UPLOAD SUCCESS] ${file.name} → ${publicUrl} | ` +
+      `${originalKB} KB → ${finalKB} KB (hemat ${saved}%)`
+    );
+
     return publicUrl;
   } catch (error) {
     if (error instanceof Error) throw error;
@@ -81,7 +118,7 @@ export async function uploadFile(file: File | null): Promise<string | null> {
  */
 export async function deleteFile(relativePath: string | null | undefined): Promise<boolean> {
   if (!relativePath || typeof relativePath !== 'string') return false;
-  
+
   // Abaikan URL eksternal (Unsplash, HTTP, dsb)
   if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
     return false;

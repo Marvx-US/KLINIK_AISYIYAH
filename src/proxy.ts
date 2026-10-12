@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { decrypt } from '@/lib/auth';
 
-export async function middleware(request: NextRequest) {
+/**
+ * Proxy (formerly middleware) — Next.js 16+
+ * Menggantikan convention middleware.ts yang deprecated.
+ * Fungsi: Proteksi route /admin dan redirect user yang sudah login dari /login.
+ */
+export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Protect admin paths
