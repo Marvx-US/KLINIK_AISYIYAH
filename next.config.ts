@@ -62,10 +62,12 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     // Cache gambar yang di-optimasi Next.js selama 30 hari
     minimumCacheTTL: 2592000,
-    // Pipeline /_next/image DIAKTIFKAN kembali.
-    // Sebelumnya dimatikan karena gambar /uploads/ perlu disajikan langsung Nginx.
-    // Sekarang semua gambar yang diupload admin SUDAH dikompresi ke WebP via sharp
-    // di src/lib/upload.ts, sehingga unoptimized tidak lagi diperlukan.
+    // unoptimized: true WAJIB dipertahankan karena arsitektur deployment menggunakan Nginx
+    // yang meng-intercept route /uploads/ langsung ke disk SEBELUM request sampai ke Next.js.
+    // Jika dinonaktifkan, pipeline /_next/image akan gagal fetch /uploads/ dan
+    // mengembalikan error 400 Bad Request.
+    // ✅ Gambar tetap optimal karena sudah dikompresi ke WebP via sharp di src/lib/upload.ts.
+    unoptimized: true,
   },
   experimental: {
     serverActions: {
