@@ -50,7 +50,14 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
           height: 630,
           alt: article.title,
         }
-      ] : [],
+      ] : [
+        {
+          url: '/og-image.jpg',
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        }
+      ],
       locale: 'id_ID',
       type: 'article',
       publishedTime: new Date(article.createdAt).toISOString(),
@@ -60,7 +67,7 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
       card: 'summary_large_image',
       title: article.title,
       description: article.summary || '',
-      images: article.coverImage ? [article.coverImage] : [],
+      images: article.coverImage ? [article.coverImage] : ['/og-image.jpg'],
     },
   };
 }

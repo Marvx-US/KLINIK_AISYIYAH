@@ -4,7 +4,9 @@ import { getPublishedEvents } from '@/core/services/eventService';
 import { getActiveServices } from '@/core/services/serviceService';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const defaultSiteUrl = 'https://www.klinikaisyiyahpangkajene.marvx.my.id';
+  const rawUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  const baseUrl = rawUrl && !rawUrl.includes('localhost') ? rawUrl : defaultSiteUrl;
 
   // Fetch dynamic content
   const [articles, events, services] = await Promise.all([

@@ -18,13 +18,19 @@ const inter = Inter({
   preload: true,
 });
 
+const defaultSiteUrl = "https://www.klinikaisyiyahpangkajene.marvx.my.id";
+const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+const siteUrl = rawAppUrl && !rawAppUrl.includes("localhost")
+  ? rawAppUrl
+  : defaultSiteUrl;
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  metadataBase: new URL(siteUrl),
   title: {
     template: "%s | Klinik Aisyiyah Pangkajene",
     default: "Klinik Aisyiyah Pangkajene | Layanan Kesehatan Terpadu & Terpercaya",
   },
-  description: "Portal resmi Klinik Aisyiyah Pangkajene, Kab. Sidrap. Menyediakan layanan IGD 24 Jam, Poli Umum, Poli Gigi, Poli KIA/Bersalin, Vaksinasi Haji & Umrah, artikel edukasi medis, dan jadwal dokter.",
+  description: "Portal resmi Klinik Pratama Aisyiyah Pangkajene, Kab. Sidrap. Menyediakan layanan IGD 24 Jam, Poli Umum, Poli Gigi, Poli KIA/Bersalin, Vaksinasi Haji & Umrah, artikel edukasi medis, dan jadwal dokter.",
   keywords: [
     "klinik aisyiyah",
     "klinik aisyiyah pangkajene",
@@ -63,11 +69,38 @@ export const metadata: Metadata = {
     siteName: "Klinik Aisyiyah Pangkajene",
     locale: "id_ID",
     type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Klinik Pratama Aisyiyah Pangkajene - Layanan Kesehatan Terpadu, Islami & Terpercaya",
+        type: "image/jpeg",
+      },
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Logo Resmi Klinik Pratama Aisyiyah Pangkajene",
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Klinik Aisyiyah Pangkajene",
+    title: "Klinik Aisyiyah Pangkajene | Layanan Kesehatan Terpadu & Terpercaya",
     description: "Layanan kesehatan terpercaya dan informasi medis terkini di Pangkajene, Sidrap.",
+    images: ["/og-image.jpg"],
+  },
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/logo.png" },
+    ],
+    shortcut: "/logo.png",
   },
   verification: {
     google: "YNs5CgRxs2f_rYAzf3Kd-7WkO4gH-c-lLDrYHuh2zas",

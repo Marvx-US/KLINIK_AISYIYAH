@@ -27,6 +27,7 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
       iconName: z.maxLength(z.string(formData.get('iconName'), 'Nama Ikon'), 50, 'Nama Ikon'),
       isActive: z.boolean(formData.get('isActive')),
       imageFile: z.file(formData.get('roomImage'), 'Foto Utama Layanan', false),
+      bannerImageFile: z.file(formData.get('bannerImage'), 'Foto Banner Layanan', false),
       priceList: formData.get('priceList') as string | null,
       purpose: formData.get('purpose') as string | null,
       benefits: formData.get('benefits') as string | null,
@@ -40,8 +41,9 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
 
   if (!validation.success) return { error: validation.error };
 
-  const { id, name, description, iconName, isActive, imageFile, priceList, purpose, benefits, facilities, operationalHours, preparation, procedures, faq } = validation.data;
+  const { id, name, description, iconName, isActive, imageFile, bannerImageFile, priceList, purpose, benefits, facilities, operationalHours, preparation, procedures, faq } = validation.data;
   const removeRoomImage = formData.get('removeRoomImage') === 'true';
+  const removeBannerImage = formData.get('removeBannerImage') === 'true';
 
   // --- Validasi File Foto Utama ---
   if (imageFile && imageFile.size > 0) {
@@ -50,6 +52,16 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
     }
     if (imageFile.size > 5 * 1024 * 1024) {
       return { error: 'Ukuran foto utama melebihi batas maksimum 5 MB.' };
+    }
+  }
+
+  // --- Validasi File Foto Banner ---
+  if (bannerImageFile && bannerImageFile.size > 0) {
+    if (!ALLOWED_MIME_TYPES.has(bannerImageFile.type)) {
+      return { error: 'Format foto banner tidak didukung. Gunakan format JPG, PNG, atau WebP.' };
+    }
+    if (bannerImageFile.size > 5 * 1024 * 1024) {
+      return { error: 'Ukuran foto banner melebihi batas maksimum 5 MB.' };
     }
   }
 
@@ -81,6 +93,8 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
         isActive, 
         imageFile, 
         removeRoomImage,
+        bannerImageFile,
+        removeBannerImage,
         galleryFiles, 
         existingGallery, 
         priceList,
@@ -99,6 +113,7 @@ export async function saveServiceAction(formData: FormData): Promise<ActionResul
         iconName, 
         isActive, 
         imageFile, 
+        bannerImageFile,
         galleryFiles, 
         priceList,
         purpose,

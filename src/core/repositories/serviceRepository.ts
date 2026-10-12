@@ -43,6 +43,7 @@ export async function createService(data: {
   iconName: string;
   isActive: boolean;
   roomImage?: string | null;
+  bannerImage?: string | null;
   gallery?: string | null;
   priceList?: string | null;
   purpose?: string | null;
@@ -65,6 +66,7 @@ export async function updateService(
     iconName?: string;
     isActive?: boolean;
     roomImage?: string | null;
+    bannerImage?: string | null;
     gallery?: string | null;
     priceList?: string | null;
     purpose?: string | null;

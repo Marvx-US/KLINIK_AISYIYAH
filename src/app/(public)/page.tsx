@@ -76,8 +76,8 @@ export default async function HomePage() {
     }))
     : FALLBACK_EVENTS;
 
-  // Foto Tentang Klinik: prioritaskan dari SiteSetting, fallback ke foto fasilitas pertama
-  const heroPhoto = aboutImageSetting || (facilities.length > 0 ? facilities[0].imageUrl : undefined);
+  // Foto Tentang Klinik: diambil dari SiteSetting (menu Foto Utama Klinik di admin)
+  const heroPhoto = aboutImageSetting || undefined;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const clinicSchema = getClinicSchema(baseUrl);
   const faqSchema = getFaqSchema(FAQ_ITEMS);

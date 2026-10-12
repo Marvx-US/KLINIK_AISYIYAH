@@ -296,9 +296,10 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     }
   }
 
-  // BANNER IMAGE: foto ruangan dari gallery → dipakai sebagai background hero banner
-  // Prioritas: gallery[0] > roomImage > static heroImage
-  const finalBannerImage = (dbGallery && dbGallery.length > 0 ? dbGallery[0] : null)
+  // BANNER IMAGE: dipakai sebagai background hero banner
+  // Prioritas: bannerImage (slot khusus admin) > gallery[0] > roomImage > static heroImage
+  const finalBannerImage = dbService?.bannerImage
+    || (dbGallery && dbGallery.length > 0 ? dbGallery[0] : null)
     || dbService?.roomImage
     || resolvedStatic.heroImage;
 

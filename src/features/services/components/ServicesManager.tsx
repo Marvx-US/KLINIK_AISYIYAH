@@ -6,7 +6,7 @@ import { saveServiceAction, deleteServiceAction, toggleServiceStatusAction } fro
 import { 
   Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Power, X, ImageIcon, Check, Upload,
   HeartPulse, Smile, Baby, Syringe, Activity, ShieldAlert, Stethoscope, Heart, Award, ShieldCheck, HelpCircle,
-  FileText, CheckCircle2
+  FileText, CheckCircle2, Info, Code2, Sparkles
 } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import { SERVICES_DATA } from '@/data/services';
@@ -80,6 +80,114 @@ function getInitialFormValues(service: Service) {
   };
 }
 
+export interface ProcedureItem {
+  id: string;
+  title: string;
+  description: string;
+}
+
+export interface FaqItemState {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export interface PriceItemState {
+  id: string;
+  name: string;
+  price: string;
+}
+
+function parseProceduresToItems(raw: string): ProcedureItem[] {
+  if (!raw || !raw.trim()) return [];
+  return raw
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line, idx) => {
+      const parts = line.split('|');
+      return {
+        id: `proc-${idx}-${Math.random().toString(36).slice(2, 7)}`,
+        title: parts[0]?.trim() || '',
+        description: parts.slice(1).join('|').trim() || '',
+      };
+    });
+}
+
+function serializeProcedures(items: ProcedureItem[]): string {
+  return items
+    .filter((item) => item.title.trim() || item.description.trim())
+    .map((item) => `${item.title.trim()} | ${item.description.trim()}`)
+    .join('\n');
+}
+
+function parseFaqToItems(raw: string): FaqItemState[] {
+  if (!raw || !raw.trim()) return [];
+  return raw
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line, idx) => {
+      const parts = line.split('|');
+      return {
+        id: `faq-${idx}-${Math.random().toString(36).slice(2, 7)}`,
+        question: parts[0]?.trim() || '',
+        answer: parts.slice(1).join('|').trim() || '',
+      };
+    });
+}
+
+function serializeFaq(items: FaqItemState[]): string {
+  return items
+    .filter((item) => item.question.trim() || item.answer.trim())
+    .map((item) => `${item.question.trim()} | ${item.answer.trim()}`)
+    .join('\n');
+}
+
+function parsePriceListToItems(raw: string): PriceItemState[] {
+  if (!raw || !raw.trim()) return [];
+  const items: PriceItemState[] = [];
+  const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.toLowerCase().startsWith('format:')) continue;
+
+    if (line.includes(':')) {
+      const colonIdx = line.lastIndexOf(':');
+      const name = line.substring(0, colonIdx).trim();
+      const price = line.substring(colonIdx + 1).replace(/[^0-9]/g, '').trim();
+      if (name) {
+        items.push({ id: `price-${i}-${Math.random().toString(36).slice(2, 7)}`, name, price });
+        continue;
+      }
+    }
+
+    const rpMatch = line.match(/^(.+?)\s+Rp\.?\s*([\d.,]+)\s*$/i);
+    if (rpMatch) {
+      items.push({
+        id: `price-${i}-${Math.random().toString(36).slice(2, 7)}`,
+        name: rpMatch[1].trim(),
+        price: rpMatch[2].replace(/[^0-9]/g, ''),
+      });
+      continue;
+    }
+
+    items.push({ id: `price-${i}-${Math.random().toString(36).slice(2, 7)}`, name: line, price: '' });
+  }
+  return items;
+}
+
+function serializePriceList(items: PriceItemState[]): string {
+  return items
+    .filter((item) => item.name.trim())
+    .map((item) => {
+      const cleanPrice = item.price.replace(/[^0-9]/g, '').trim();
+      return `${item.name.trim()}: ${cleanPrice || '0'}`;
+    })
+    .join('\n');
+}
+
 // Ikon yang tersedia untuk dipilih admin
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
   HeartPulse,
@@ -115,6 +223,7 @@ export interface Service {
   iconName: string;
   isActive: boolean;
   roomImage?: string | null;
+  bannerImage?: string | null;
   gallery?: string | null;
   priceList?: string | null;
   purpose?: string | null;
@@ -150,8 +259,23 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
   // Image States
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [removeRoomImage, setRemoveRoomImage] = useState(false);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [removeBannerImage, setRemoveBannerImage] = useState(false);
   const [existingGallery, setExistingGallery] = useState<string[]>([]);
   const [newGalleryPreviews, setNewGalleryPreviews] = useState<string[]>([]);
+
+  // Section 5 Interactive List States
+  const [proceduresList, setProceduresList] = useState<ProcedureItem[]>([]);
+  const [proceduresMode, setProceduresMode] = useState<'cards' | 'raw'>('cards');
+  const [rawProcedures, setRawProcedures] = useState('');
+
+  const [faqList, setFaqList] = useState<FaqItemState[]>([]);
+  const [faqMode, setFaqMode] = useState<'cards' | 'raw'>('cards');
+  const [rawFaq, setRawFaq] = useState('');
+
+  const [priceItemsList, setPriceItemsList] = useState<PriceItemState[]>([]);
+  const [priceListMode, setPriceListMode] = useState<'cards' | 'raw'>('cards');
+  const [rawPriceList, setRawPriceList] = useState('');
 
   // Action states for inline toggle status
   const [togglePendingId, setTogglePendingId] = useState<number | null>(null);
@@ -167,6 +291,8 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
       setSelectedIcon(editingService.iconName || 'Activity');
       setImagePreview(editingService.roomImage || null);
       setRemoveRoomImage(false);
+      setBannerPreview(editingService.bannerImage || null);
+      setRemoveBannerImage(false);
 
       if (editingService.gallery) {
         try {
@@ -183,13 +309,120 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
         setExistingGallery([]);
       }
       setNewGalleryPreviews([]);
+
+      // Initialize Section 5 Structured Items
+      const initVals = getInitialFormValues(editingService);
+
+      const parsedProcedures = parseProceduresToItems(initVals.procedures);
+      setProceduresList(parsedProcedures);
+      setRawProcedures(initVals.procedures);
+      setProceduresMode('cards');
+
+      const parsedFaq = parseFaqToItems(initVals.faq);
+      setFaqList(parsedFaq);
+      setRawFaq(initVals.faq);
+      setFaqMode('cards');
+
+      const parsedPrices = parsePriceListToItems(initVals.priceList);
+      setPriceItemsList(parsedPrices);
+      setRawPriceList(initVals.priceList);
+      setPriceListMode('cards');
     } else {
       setImagePreview(null);
       setRemoveRoomImage(false);
+      setBannerPreview(null);
+      setRemoveBannerImage(false);
       setExistingGallery([]);
       setNewGalleryPreviews([]);
+      setProceduresList([]);
+      setRawProcedures('');
+      setFaqList([]);
+      setRawFaq('');
+      setPriceItemsList([]);
+      setRawPriceList('');
     }
   }, [editingService]);
+
+  // Procedures item handlers
+  const addProcedure = () => {
+    setProceduresList((prev) => [
+      ...prev,
+      { id: `proc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, title: '', description: '' },
+    ]);
+  };
+  const updateProcedure = (index: number, field: 'title' | 'description', value: string) => {
+    setProceduresList((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+  const removeProcedure = (index: number) => {
+    setProceduresList((prev) => prev.filter((_, i) => i !== index));
+  };
+  const toggleProceduresMode = () => {
+    if (proceduresMode === 'cards') {
+      setRawProcedures(serializeProcedures(proceduresList));
+      setProceduresMode('raw');
+    } else {
+      setProceduresList(parseProceduresToItems(rawProcedures));
+      setProceduresMode('cards');
+    }
+  };
+
+  // FAQ item handlers
+  const addFaq = () => {
+    setFaqList((prev) => [
+      ...prev,
+      { id: `faq-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, question: '', answer: '' },
+    ]);
+  };
+  const updateFaq = (index: number, field: 'question' | 'answer', value: string) => {
+    setFaqList((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+  const removeFaq = (index: number) => {
+    setFaqList((prev) => prev.filter((_, i) => i !== index));
+  };
+  const toggleFaqMode = () => {
+    if (faqMode === 'cards') {
+      setRawFaq(serializeFaq(faqList));
+      setFaqMode('raw');
+    } else {
+      setFaqList(parseFaqToItems(rawFaq));
+      setFaqMode('cards');
+    }
+  };
+
+  // Price List item handlers
+  const addPriceItem = () => {
+    setPriceItemsList((prev) => [
+      ...prev,
+      { id: `price-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, name: '', price: '' },
+    ]);
+  };
+  const updatePriceItem = (index: number, field: 'name' | 'price', value: string) => {
+    setPriceItemsList((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+  const removePriceItem = (index: number) => {
+    setPriceItemsList((prev) => prev.filter((_, i) => i !== index));
+  };
+  const togglePriceListMode = () => {
+    if (priceListMode === 'cards') {
+      setRawPriceList(serializePriceList(priceItemsList));
+      setPriceListMode('raw');
+    } else {
+      setPriceItemsList(parsePriceListToItems(rawPriceList));
+      setPriceListMode('cards');
+    }
+  };
 
   // Auto-adjust all textarea heights to fit exact text content without excess empty space
   useEffect(() => {
@@ -440,17 +673,107 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
             </div>
           </div>
 
-          {/* BAGIAN 2: FOTO UTAMA & GALERI RUANGAN */}
+          {/* BAGIAN 2: FOTO & MEDIA LAYANAN */}
           <div className="border-b border-border-fine pb-8">
-            <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
-              <ImageIcon className="w-5 h-5" /> 2. Foto Utama & Galeri Ruangan
+            <h4 className="text-base md:text-lg font-bold text-primary mb-4 flex items-center gap-2.5">
+              <ImageIcon className="w-5 h-5" /> 2. Foto Banner, Kartu Utama & Galeri Ruangan
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 items-start">
-              {/* Room Image Field — Foto Dokter */}
-              <div className="flex flex-col gap-2.5">
-                <label htmlFor="roomImage" className="text-sm font-bold text-text-dark flex items-center justify-between">
-                  <span>Foto Dokter / Tenaga Medis</span>
+            {/* Info Panduan Penempatan Foto */}
+            <div className="mb-6 p-4 bg-teal-50/80 border border-teal-200/80 rounded-2xl flex items-start gap-3.5 text-xs text-teal-900 leading-relaxed">
+              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-bold text-sm text-teal-950">Panduan Penempatan Gambar pada Halaman Layanan:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-2">
+                  <div className="p-2.5 bg-white/80 rounded-xl border border-teal-100">
+                    <span className="font-bold text-primary block">1. Banner Latar Atas</span>
+                    <span className="text-text-muted text-[11px]">Latar belakang gelap (Hero Banner) di paling atas halaman layanan.</span>
+                  </div>
+                  <div className="p-2.5 bg-white/80 rounded-xl border border-teal-100">
+                    <span className="font-bold text-primary block">2. Foto Kartu Utama / Dokter</span>
+                    <span className="text-text-muted text-[11px]">Tampil di kartu samping judul & deskripsi (&ldquo;Deskripsi Lengkap & Tujuan Medis&rdquo;).</span>
+                  </div>
+                  <div className="p-2.5 bg-white/80 rounded-xl border border-teal-100">
+                    <span className="font-bold text-primary block">3. Galeri Foto Ruangan</span>
+                    <span className="text-text-muted text-[11px]">Kumpulan foto di bagian &ldquo;Galeri Foto Ruangan & Fasilitas&rdquo; (bisa diklik/di-zoom).</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              {/* SLOT 1: Banner Image (Hero Background) */}
+              <div className="flex flex-col gap-2.5 bg-bg-snow/60 p-5 rounded-2xl border border-border-fine">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label htmlFor="bannerImage" className="text-sm font-bold text-text-dark flex items-center gap-2">
+                      <span>1. Foto Banner Latar Atas</span>
+                      <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">Hero Banner</span>
+                    </label>
+                    <p className="text-xs text-text-muted mt-0.5">Latar belakang header atas halaman (Rasio lanskap disarankan 16:9 atau 21:9)</p>
+                  </div>
+                  {bannerPreview && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBannerPreview(null);
+                        setRemoveBannerImage(true);
+                      }}
+                      className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1 shrink-0"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Hapus
+                    </button>
+                  )}
+                </div>
+
+                {bannerPreview ? (
+                  <div className="relative w-full h-44 rounded-xl overflow-hidden border border-border-fine shadow-sm bg-slate-950 flex items-center justify-center group">
+                    <img 
+                      src={bannerPreview} 
+                      alt="Preview Banner Atas" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-white text-xs font-semibold px-3 py-1 bg-black/60 rounded-full">Preview Hero Banner</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-36 rounded-xl border-2 border-dashed border-border-fine bg-white flex flex-col items-center justify-center gap-1.5 text-text-muted">
+                    <ImageIcon className="w-7 h-7 text-border-fine" />
+                    <p className="text-xs font-semibold">Belum ada banner latar kustom</p>
+                    <p className="text-[10px] text-text-muted">(Jika kosong, sistem akan otomatis memakai foto pertama dari galeri)</p>
+                  </div>
+                )}
+
+                {removeBannerImage && <input type="hidden" name="removeBannerImage" value="true" />}
+
+                <input
+                  id="bannerImage"
+                  name="bannerImage"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setBannerPreview(URL.createObjectURL(file));
+                      setRemoveBannerImage(false);
+                    }
+                  }}
+                  className="px-4 py-2.5 bg-white border border-border-fine rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
+                />
+              </div>
+
+              {/* SLOT 2: Room Image (Kartu Utama / Dokter) */}
+              <div className="flex flex-col gap-2.5 bg-bg-snow/60 p-5 rounded-2xl border border-border-fine">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label htmlFor="roomImage" className="text-sm font-bold text-text-dark flex items-center gap-2">
+                      <span>2. Foto Kartu Utama / Dokter</span>
+                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Kartu Deskripsi</span>
+                    </label>
+                    <p className="text-xs text-text-muted mt-0.5">Tampil di kartu samping deskripsi & tujuan medis (Rasio disarankan 4:3)</p>
+                  </div>
                   {imagePreview && (
                     <button
                       type="button"
@@ -458,16 +781,16 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                         setImagePreview(null);
                         setRemoveRoomImage(true);
                       }}
-                      className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1"
+                      className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1 shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      Hapus Foto Dokter
+                      Hapus
                     </button>
                   )}
-                </label>
+                </div>
 
                 {imagePreview ? (
-                  <div className="relative w-full h-44 rounded-2xl overflow-hidden border border-border-fine shadow-sm bg-slate-900/5 flex items-center justify-center p-2 group">
+                  <div className="relative w-full h-44 rounded-xl overflow-hidden border border-border-fine shadow-sm bg-white flex items-center justify-center p-2 group">
                     <img 
                       src={imagePreview} 
                       alt="Preview Foto Utama" 
@@ -475,11 +798,14 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                     />
                   </div>
                 ) : (
-                  <div className="w-full h-32 rounded-2xl border-2 border-dashed border-border-fine bg-bg-snow flex flex-col items-center justify-center gap-1.5 text-text-muted">
+                  <div className="w-full h-36 rounded-xl border-2 border-dashed border-border-fine bg-white flex flex-col items-center justify-center gap-1.5 text-text-muted">
                     <ImageIcon className="w-7 h-7 text-border-fine" />
-                    <p className="text-xs font-semibold">Belum ada foto dokter yang dipilih</p>
+                    <p className="text-xs font-semibold">Belum ada foto kartu utama/dokter</p>
+                    <p className="text-[10px] text-text-muted">(Jika kosong, sistem menggunakan foto bawaan layanan)</p>
                   </div>
                 )}
+
+                {removeRoomImage && <input type="hidden" name="removeRoomImage" value="true" />}
 
                 <input
                   id="roomImage"
@@ -493,72 +819,78 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
                       setRemoveRoomImage(false);
                     }
                   }}
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
+                  className="px-4 py-2.5 bg-white border border-border-fine rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
                 />
               </div>
+            </div>
 
-              {/* Gallery Photos Field — Foto Ruangan (dipakai sebagai banner) */}
-              <div className="flex flex-col gap-3">
-                <label className="text-sm font-bold text-text-dark flex items-center justify-between">
-                  <span>Galeri Foto Ruangan <span className="text-primary text-[10px] font-semibold">(dipakai sebagai banner halaman)</span></span>
-                  <span className="text-xs font-normal text-text-muted">Multiple upload</span>
-                </label>
+            {/* SLOT 3: Gallery Photos Field — Foto Ruangan & Fasilitas (Multiple Upload) */}
+            <div className="mt-6 flex flex-col gap-3 bg-bg-snow/60 p-5 rounded-2xl border border-border-fine">
+              <label className="text-sm font-bold text-text-dark flex items-center justify-between">
+                <div>
+                  <span className="flex items-center gap-2">
+                    <span>3. Galeri Foto Ruangan & Fasilitas</span>
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold rounded-full">Grid Galeri Bawah</span>
+                  </span>
+                  <p className="text-xs text-text-muted font-normal mt-0.5">Unggah beberapa foto dokumentasi ruangan medis sekaligus untuk galeri di bagian bawah halaman.</p>
+                </div>
+                <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full shrink-0">Multiple upload</span>
+              </label>
 
-                {/* Existing Gallery */}
-                {existingGallery.length > 0 && (
-                  <div className="flex flex-col gap-2.5">
-                    <p className="text-xs font-bold text-text-dark">Foto Galeri Aktif ({existingGallery.length}):</p>
-                    <div className="grid grid-cols-4 gap-2.5">
-                      {existingGallery.map((url, idx) => (
-                        <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-1">
-                          <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-contain" />
-                          <button
-                            type="button"
-                            onClick={() => setExistingGallery(prev => prev.filter((_, i) => i !== idx))}
-                            className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 hover:scale-110 transition-all shadow-md z-10"
-                            title="Hapus foto dari galeri"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                          <input type="hidden" name="existingGallery" value={url} />
-                        </div>
-                      ))}
-                    </div>
+              {/* Existing Gallery */}
+              {existingGallery.length > 0 && (
+                <div className="flex flex-col gap-2.5 mt-2">
+                  <p className="text-xs font-bold text-text-dark">Foto Galeri Aktif ({existingGallery.length}):</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    {existingGallery.map((url, idx) => (
+                      <div key={idx} className="relative group aspect-[4/3] rounded-xl overflow-hidden border border-border-fine bg-slate-900/5 flex items-center justify-center p-1 shadow-xs">
+                        <img src={url} alt={`Galeri ${idx + 1}`} className="w-full h-full object-contain" />
+                        <button
+                          type="button"
+                          onClick={() => setExistingGallery(prev => prev.filter((_, i) => i !== idx))}
+                          className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 hover:scale-110 transition-all shadow-md z-10"
+                          title="Hapus foto dari galeri"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        <input type="hidden" name="existingGallery" value={url} />
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* New Previews */}
-                {newGalleryPreviews.length > 0 && (
-                  <div className="flex flex-col gap-2.5">
-                    <p className="text-xs font-bold text-primary">Foto Baru yang Akan Diunggah ({newGalleryPreviews.length}):</p>
-                    <div className="grid grid-cols-4 gap-2.5">
-                      {newGalleryPreviews.map((url, idx) => (
-                        <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/50 bg-slate-900/5 flex items-center justify-center p-1">
-                          <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-contain" />
-                        </div>
-                      ))}
-                    </div>
+              {/* New Previews */}
+              {newGalleryPreviews.length > 0 && (
+                <div className="flex flex-col gap-2.5 mt-2">
+                  <p className="text-xs font-bold text-primary">Foto Baru yang Akan Diunggah ({newGalleryPreviews.length}):</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    {newGalleryPreviews.map((url, idx) => (
+                      <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/50 bg-slate-900/5 flex items-center justify-center p-1 shadow-xs">
+                        <img src={url} alt={`Preview Baru ${idx + 1}`} className="w-full h-full object-contain" />
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
 
-                <input
-                  id="galleryFiles"
-                  name="galleryFiles"
-                  type="file"
-                  multiple
-                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
-                  onChange={(e) => {
-                    const files = e.target.files;
-                    if (files && files.length > 0) {
-                      const urls = Array.from(files).map(f => URL.createObjectURL(f));
-                      setNewGalleryPreviews(urls);
-                    } else {
-                      setNewGalleryPreviews([]);
-                    }
-                  }}
-                  className="px-4 py-3 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
-                />
-              </div>
+              <input
+                id="galleryFiles"
+                name="galleryFiles"
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    const urls = Array.from(files).map(f => URL.createObjectURL(f));
+                    setNewGalleryPreviews(urls);
+                  } else {
+                    setNewGalleryPreviews([]);
+                  }
+                }}
+                className="mt-1 px-4 py-3 bg-white border border-border-fine rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs font-medium cursor-pointer"
+              />
             </div>
           </div>
 
@@ -656,74 +988,352 @@ export default function ServicesManager({ initialServices }: ServicesManagerProp
             </div>
           </div>
 
-          {/* BAGIAN 5: TINDAKAN MEDIS, FAQ, DAN HARGA */}
+          {/* BAGIAN 5: TINDAKAN MEDIS, FAQ, DAN HARGA (INTERACTIVE CARD BUILDER) */}
           <div className="pb-6">
             <h4 className="text-base md:text-lg font-bold text-primary mb-6 flex items-center gap-2.5">
               <CheckCircle2 className="w-5 h-5" /> 5. Pelayanan & Tindakan Medis, FAQ, & Daftar Harga
             </h4>
 
-            <div className="flex flex-col gap-8">
-              {/* Procedures - FULL WIDTH */}
-              <div className="flex flex-col gap-2.5">
-                <label htmlFor="procedures" className="text-sm font-bold text-text-dark">
-                  Pelayanan & Tindakan Medis
-                </label>
-                <textarea
-                  id="procedures"
+            <div className="flex flex-col gap-10">
+              {/* 1. PROCEDURES BUILDER */}
+              <div className="flex flex-col gap-3.5 bg-bg-snow/60 p-5 md:p-6 rounded-3xl border border-border-fine">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-fine/60 pb-3">
+                  <div>
+                    <label className="text-sm font-bold text-text-dark flex items-center gap-2">
+                      <span>Pelayanan & Tindakan Medis</span>
+                      <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">
+                        {proceduresList.length} Tindakan
+                      </span>
+                    </label>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      Daftar tindakan/prosedur yang ditangani pada layanan ini (muncul di kartu &ldquo;Pelayanan & Tindakan Medis&rdquo;).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={toggleProceduresMode}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-border-fine hover:bg-white text-text-muted hover:text-text-dark flex items-center gap-1.5 transition-colors shrink-0 self-start sm:self-auto cursor-pointer"
+                  >
+                    {proceduresMode === 'cards' ? (
+                      <>
+                        <Code2 className="w-3.5 h-3.5 text-primary" />
+                        <span>Mode Teks Cepat</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-primary" />
+                        <span>Mode Kartu Mudah</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <input
+                  type="hidden"
                   name="procedures"
-                  rows={3}
-                  defaultValue={initialForm.procedures}
-                  onFocus={handleAutoResize}
-                  onInput={handleAutoResize}
-                  placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka..."
-                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
+                  value={proceduresMode === 'cards' ? serializeProcedures(proceduresList) : rawProcedures}
                 />
-                <p className="text-xs text-text-muted font-medium mt-1">Tulis `Judul | Deskripsi` 1 tindakan per baris.</p>
+
+                {proceduresMode === 'cards' ? (
+                  <div className="flex flex-col gap-3">
+                    {proceduresList.length === 0 ? (
+                      <div className="py-8 text-center bg-white rounded-2xl border border-dashed border-border-fine text-text-muted text-xs flex flex-col items-center justify-center gap-2">
+                        <Activity className="w-6 h-6 text-border-fine" />
+                        <p>Belum ada tindakan medis yang ditambahkan.</p>
+                      </div>
+                    ) : (
+                      proceduresList.map((item, index) => (
+                        <div
+                          key={item.id}
+                          className="p-4 bg-white rounded-2xl border border-border-fine shadow-xs hover:border-primary/40 transition-all flex flex-col gap-3 group"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
+                              Tindakan #{index + 1}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeProcedure(index)}
+                              className="text-text-muted hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                              title="Hapus Tindakan"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="md:col-span-1">
+                              <label className="text-[11px] font-bold text-text-dark mb-1 block">Nama Tindakan / Judul</label>
+                              <input
+                                type="text"
+                                value={item.title}
+                                onChange={(e) => updateProcedure(index, 'title', e.target.value)}
+                                placeholder="Contoh: Resusitasi Jantung Paru (RJP)"
+                                className="w-full px-3.5 py-2.5 bg-bg-snow border border-border-fine rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                              />
+                            </div>
+                            <div className="md:col-span-2">
+                              <label className="text-[11px] font-bold text-text-dark mb-1 block">Deskripsi Tindakan Medis</label>
+                              <input
+                                type="text"
+                                value={item.description}
+                                onChange={(e) => updateProcedure(index, 'description', e.target.value)}
+                                placeholder="Contoh: Tindakan penyelamatan jiwa untuk mengembalikan sirkulasi darah dan fungsi napas..."
+                                className="w-full px-3.5 py-2.5 bg-bg-snow border border-border-fine rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={addProcedure}
+                      className="w-full py-3.5 border-2 border-dashed border-primary/30 hover:border-primary text-primary hover:bg-primary/5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer mt-1"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Tambah Tindakan Medis Baru
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <textarea
+                      rows={5}
+                      value={rawProcedures}
+                      onChange={(e) => setRawProcedures(e.target.value)}
+                      placeholder="Format per baris: Judul | Deskripsi&#10;Resusitasi Jantung Paru | Penyelamatan jiwa...&#10;Bedah Minor | Penjahitan luka..."
+                      className="w-full px-5 py-3.5 bg-white border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs font-medium leading-relaxed font-mono resize-y min-h-[120px]"
+                    />
+                    <p className="text-[11px] text-text-muted font-medium">Format teks cepat: <code>Judul | Deskripsi</code> (1 tindakan per baris).</p>
+                  </div>
+                )}
               </div>
 
-              {/* FAQ - FULL WIDTH */}
-              <div className="flex flex-col gap-2.5">
-                <label htmlFor="faq" className="text-sm font-bold text-text-dark">
-                  Tanya Jawab Layanan (FAQ)
-                </label>
-                <textarea
-                  id="faq"
+              {/* 2. FAQ BUILDER */}
+              <div className="flex flex-col gap-3.5 bg-bg-snow/60 p-5 md:p-6 rounded-3xl border border-border-fine">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-fine/60 pb-3">
+                  <div>
+                    <label className="text-sm font-bold text-text-dark flex items-center gap-2">
+                      <span>Tanya Jawab Layanan (FAQ)</span>
+                      <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">
+                        {faqList.length} FAQ
+                      </span>
+                    </label>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      Pertanyaan umum dan jawaban seputar layanan ini untuk mempermudah calon pasien.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={toggleFaqMode}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-border-fine hover:bg-white text-text-muted hover:text-text-dark flex items-center gap-1.5 transition-colors shrink-0 self-start sm:self-auto cursor-pointer"
+                  >
+                    {faqMode === 'cards' ? (
+                      <>
+                        <Code2 className="w-3.5 h-3.5 text-primary" />
+                        <span>Mode Teks Cepat</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-primary" />
+                        <span>Mode Kartu Mudah</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <input
+                  type="hidden"
                   name="faq"
-                  rows={3}
-                  defaultValue={initialForm.faq}
-                  onFocus={handleAutoResize}
-                  onInput={handleAutoResize}
-                  placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
-                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
+                  value={faqMode === 'cards' ? serializeFaq(faqList) : rawFaq}
                 />
-                <p className="text-xs text-text-muted font-medium mt-1">Tulis `Pertanyaan | Jawaban` 1 FAQ per baris.</p>
+
+                {faqMode === 'cards' ? (
+                  <div className="flex flex-col gap-3">
+                    {faqList.length === 0 ? (
+                      <div className="py-8 text-center bg-white rounded-2xl border border-dashed border-border-fine text-text-muted text-xs flex flex-col items-center justify-center gap-2">
+                        <HelpCircle className="w-6 h-6 text-border-fine" />
+                        <p>Belum ada pertanyaan FAQ yang ditambahkan.</p>
+                      </div>
+                    ) : (
+                      faqList.map((item, index) => (
+                        <div
+                          key={item.id}
+                          className="p-4 bg-white rounded-2xl border border-border-fine shadow-xs hover:border-primary/40 transition-all flex flex-col gap-3 group"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
+                              Pertanyaan #{index + 1}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeFaq(index)}
+                              className="text-text-muted hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                              title="Hapus FAQ"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <div className="flex flex-col gap-2.5">
+                            <div>
+                              <label className="text-[11px] font-bold text-text-dark mb-1 block">Pertanyaan (Question)</label>
+                              <input
+                                type="text"
+                                value={item.question}
+                                onChange={(e) => updateFaq(index, 'question', e.target.value)}
+                                placeholder="Contoh: Apakah IGD melayani pasien non-darurat?"
+                                className="w-full px-3.5 py-2.5 bg-bg-snow border border-border-fine rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[11px] font-bold text-text-dark mb-1 block">Jawaban (Answer)</label>
+                              <textarea
+                                rows={2}
+                                value={item.answer}
+                                onChange={(e) => updateFaq(index, 'answer', e.target.value)}
+                                placeholder="Contoh: IGD memprioritaskan kondisi gawat darurat medis. Untuk kasus non-darurat, disarankan periksa ke poli umum..."
+                                className="w-full px-3.5 py-2.5 bg-bg-snow border border-border-fine rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-y"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={addFaq}
+                      className="w-full py-3.5 border-2 border-dashed border-primary/30 hover:border-primary text-primary hover:bg-primary/5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer mt-1"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Tambah Pertanyaan FAQ Baru
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <textarea
+                      rows={5}
+                      value={rawFaq}
+                      onChange={(e) => setRawFaq(e.target.value)}
+                      placeholder="Format per baris: Pertanyaan | Jawaban&#10;Apakah IGD 24 jam? | Ya, IGD 24 jam nonstop."
+                      className="w-full px-5 py-3.5 bg-white border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs font-medium leading-relaxed font-mono resize-y min-h-[120px]"
+                    />
+                    <p className="text-[11px] text-text-muted font-medium">Format teks cepat: <code>Pertanyaan | Jawaban</code> (1 FAQ per baris).</p>
+                  </div>
+                )}
               </div>
 
-              {/* Price List Field - FULL WIDTH */}
-              <div className="flex flex-col gap-2.5">
-                <label htmlFor="priceList" className="text-sm font-bold text-text-dark">
-                  Daftar Harga Layanan (Vaksin, Gigi, atau Tindakan Terkait)
-                </label>
-                <textarea
-                  id="priceList"
+              {/* 3. PRICE LIST BUILDER */}
+              <div className="flex flex-col gap-3.5 bg-bg-snow/60 p-5 md:p-6 rounded-3xl border border-border-fine">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-fine/60 pb-3">
+                  <div>
+                    <label className="text-sm font-bold text-text-dark flex items-center gap-2">
+                      <span>Daftar Estimasi Tarif & Harga</span>
+                      <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">
+                        {priceItemsList.length} Item Tarif
+                      </span>
+                    </label>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      Daftar biaya paket tindakan, vaksinasi, atau pemeriksaan (otomatis ditampilkan tabel harga di halaman layanan).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={togglePriceListMode}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-border-fine hover:bg-white text-text-muted hover:text-text-dark flex items-center gap-1.5 transition-colors shrink-0 self-start sm:self-auto cursor-pointer"
+                  >
+                    {priceListMode === 'cards' ? (
+                      <>
+                        <Code2 className="w-3.5 h-3.5 text-primary" />
+                        <span>Mode Teks Cepat</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-primary" />
+                        <span>Mode Kartu Mudah</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <input
+                  type="hidden"
                   name="priceList"
-                  rows={3}
-                  defaultValue={initialForm.priceList}
-                  onFocus={handleAutoResize}
-                  onInput={handleAutoResize}
-                  placeholder={
-                    editingService.slug?.toLowerCase().includes('gigi')
-                      ? "Format: Nama Tindakan: Harga\nKonsultasi & Check-up Gigi: 50000\nScaling / Pembersihan Karang Gigi: 200000\nPencabutan Gigi Sederhana: 150000"
-                      : "Format: Nama: Harga\nVaksin Influenza: 250000\nVaksin Meningitis: 350000"
-                  }
-                  className="w-full px-5 py-3.5 bg-bg-snow border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium leading-relaxed resize-y overflow-hidden min-h-[90px]"
+                  value={priceListMode === 'cards' ? serializePriceList(priceItemsList) : rawPriceList}
                 />
-                <p className="text-xs text-text-muted font-medium mt-1 leading-relaxed">
-                  Didukung 3 format (pilih salah satu): <br/>
-                  <code className="bg-bg-snow px-1 rounded">Nama: Harga</code> &nbsp;·&nbsp;
-                  <code className="bg-bg-snow px-1 rounded">Nama Rp 100.000</code> &nbsp;·&nbsp;
-                  Nama di baris pertama, harga di baris kedua. Harga otomatis diurutkan dari terendah.
-                </p>
+
+                {priceListMode === 'cards' ? (
+                  <div className="flex flex-col gap-2.5">
+                    {priceItemsList.length === 0 ? (
+                      <div className="py-8 text-center bg-white rounded-2xl border border-dashed border-border-fine text-text-muted text-xs flex flex-col items-center justify-center gap-2">
+                        <Activity className="w-6 h-6 text-border-fine" />
+                        <p>Belum ada item tarif / harga yang ditambahkan.</p>
+                      </div>
+                    ) : (
+                      priceItemsList.map((item, index) => (
+                        <div
+                          key={item.id}
+                          className="p-3.5 bg-white rounded-2xl border border-border-fine shadow-xs hover:border-primary/40 transition-all flex items-center gap-3 group"
+                        >
+                          <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full shrink-0">
+                            #{index + 1}
+                          </span>
+                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => updatePriceItem(index, 'name', e.target.value)}
+                                placeholder="Nama Tindakan / Vaksin (Contoh: Vaksin Influenza)"
+                                className="w-full px-3.5 py-2.5 bg-bg-snow border border-border-fine rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                              />
+                            </div>
+                            <div className="relative flex items-center">
+                              <span className="absolute left-3.5 text-xs font-bold text-primary">Rp</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1000"
+                                value={item.price}
+                                onChange={(e) => updatePriceItem(index, 'price', e.target.value)}
+                                placeholder="Nominal Angka (Contoh: 250000)"
+                                className="w-full pl-10 pr-3.5 py-2.5 bg-bg-snow border border-border-fine rounded-xl text-xs font-bold text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removePriceItem(index)}
+                            className="text-text-muted hover:text-red-600 p-2 rounded-xl hover:bg-red-50 transition-colors shrink-0 cursor-pointer"
+                            title="Hapus Tarif Ini"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={addPriceItem}
+                      className="w-full py-3.5 border-2 border-dashed border-primary/30 hover:border-primary text-primary hover:bg-primary/5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer mt-1"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Tambah Item Tarif / Harga Baru
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <textarea
+                      rows={5}
+                      value={rawPriceList}
+                      onChange={(e) => setRawPriceList(e.target.value)}
+                      placeholder="Format: Nama: Harga&#10;Vaksin Influenza: 250000&#10;Vaksin Meningitis: 350000"
+                      className="w-full px-5 py-3.5 bg-white border border-border-fine rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs font-medium leading-relaxed font-mono resize-y min-h-[120px]"
+                    />
+                    <p className="text-[11px] text-text-muted font-medium">Format teks cepat: <code>Nama Tindakan: Harga</code> (1 item per baris).</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

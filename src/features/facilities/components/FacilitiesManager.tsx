@@ -3,7 +3,7 @@
 import React, { useState, useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveFacilityAction, deleteFacilityAction, toggleFacilityStatusAction } from '@/app/actions/facilities';
-import { Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Image as ImageIcon, Power, Info, Star } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowLeft, Loader2, AlertCircle, Image as ImageIcon, Power } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 
 // Sementara menggunakan interface lokal sampai prisma tergenerate
@@ -280,18 +280,6 @@ export default function FacilitiesManager({ initialFacilities }: FacilitiesManag
           </button>
         </div>
 
-        {/* Info Banner: Foto Pertama = Foto Utama Beranda */}
-        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-sm">
-          <Star className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold text-amber-800">Foto Pertama = Foto Utama Section &ldquo;Tentang Klinik&rdquo;</p>
-            <p className="text-amber-700 mt-0.5">
-              Foto fasilitas yang berada di urutan <strong>paling atas (nomor 1)</strong> dan berstatus <strong>Aktif</strong> akan otomatis ditampilkan sebagai foto utama di bagian &ldquo;Tentang Klinik&rdquo; pada halaman beranda.
-              Untuk mengganti fotonya, edit atau tambahkan fasilitas baru, lalu pastikan foto yang diinginkan berada di posisi pertama.
-            </p>
-          </div>
-        </div>
-
         <div className="bg-white rounded-3xl border border-border-fine shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -314,28 +302,17 @@ export default function FacilitiesManager({ initialFacilities }: FacilitiesManag
                     </td>
                   </tr>
                 ) : (
-                  facilities.map((facility, index) => (
+                  facilities.map((facility) => (
                     <tr key={facility.id} className="hover:bg-bg-snow/50 transition-colors group">
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-4">
                           <div className="relative w-20 h-20 rounded-2xl overflow-hidden shadow-sm shrink-0 border border-border-fine">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={facility.imageUrl} alt={facility.name} className="w-full h-full object-cover" />
-                            {index === 0 && facility.isActive && (
-                              <div className="absolute bottom-0 inset-x-0 bg-amber-500/90 text-white text-[9px] font-bold text-center py-1 leading-none">
-                                ★ Foto Utama
-                              </div>
-                            )}
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
                               <p className="font-bold text-text-dark text-sm">{facility.name}</p>
-                              {index === 0 && facility.isActive && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full border border-amber-200">
-                                  <Star className="w-2.5 h-2.5" />
-                                  Beranda
-                                </span>
-                              )}
                             </div>
                             <p className="text-xs text-text-muted mt-1">Ditambahkan: {new Date(facility.createdAt).toLocaleDateString('id-ID')}</p>
                           </div>

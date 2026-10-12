@@ -23,6 +23,7 @@ export async function createService(data: {
   iconName: string;
   isActive: boolean;
   imageFile?: File | null;
+  bannerImageFile?: File | null;
   galleryFiles?: File[] | null;
   priceList?: string | null;
   purpose?: string | null;
@@ -43,11 +44,18 @@ export async function createService(data: {
     finalSlug = `${slug}-${Date.now().toString().slice(-4)}`;
   }
 
-  // Upload foto utama
+  // Upload foto utama (kartu deskripsi)
   let roomImage = null;
   if (data.imageFile && data.imageFile.size > 0) {
     const uploaded = await uploadFile(data.imageFile);
     if (uploaded) roomImage = uploaded;
+  }
+
+  // Upload foto banner latar atas
+  let bannerImage = null;
+  if (data.bannerImageFile && data.bannerImageFile.size > 0) {
+    const uploaded = await uploadFile(data.bannerImageFile);
+    if (uploaded) bannerImage = uploaded;
   }
 
   // Upload foto-foto galeri
@@ -68,6 +76,7 @@ export async function createService(data: {
     iconName: data.iconName,
     isActive: data.isActive,
     roomImage,
+    bannerImage,
     gallery: galleryList.length > 0 ? JSON.stringify(galleryList) : null,
     priceList: data.priceList,
     purpose: data.purpose,
@@ -89,6 +98,8 @@ export async function updateService(
     isActive: boolean;
     imageFile?: File | null;
     removeRoomImage?: boolean;
+    bannerImageFile?: File | null;
+    removeBannerImage?: boolean;
     galleryFiles?: File[] | null;
     existingGallery?: string[] | null;
     priceList?: string | null;
@@ -135,7 +146,27 @@ export async function updateService(
     }
   }
 
-  // --- 2. Penanganan Galeri Foto (gallery) ---
+  // --- 2. Penanganan Foto Banner Latar Atas (bannerImage) ---
+  let bannerImage = existing.bannerImage;
+
+  if (data.removeBannerImage) {
+    if (existing.bannerImage) {
+      console.log(`[SERVICE LOG] Hapus banner lama dari disk: ${existing.bannerImage}`);
+      await deleteFile(existing.bannerImage);
+    }
+    bannerImage = null;
+  } else if (data.bannerImageFile && data.bannerImageFile.size > 0) {
+    const uploaded = await uploadFile(data.bannerImageFile);
+    if (uploaded) {
+      if (existing.bannerImage && existing.bannerImage !== uploaded) {
+        console.log(`[SERVICE LOG] Ganti banner: Hapus file lama ${existing.bannerImage}`);
+        await deleteFile(existing.bannerImage);
+      }
+      bannerImage = uploaded;
+    }
+  }
+
+  // --- 3. Penanganan Galeri Foto (gallery) ---
   // Dapatkan daftar galeri foto yang tersimpan sebelumnya
   let oldGalleryList: string[] = [];
   if (existing.gallery) {
@@ -175,6 +206,7 @@ export async function updateService(
     iconName: data.iconName,
     isActive: data.isActive,
     roomImage,
+    bannerImage,
     gallery: JSON.stringify(finalGalleryList),
     priceList: data.priceList,
     purpose: data.purpose,
@@ -196,6 +228,12 @@ export async function deleteService(id: number) {
   if (existing.roomImage) {
     console.log(`[SERVICE LOG] Hapus foto utama saat hapus layanan: ${existing.roomImage}`);
     await deleteFile(existing.roomImage);
+  }
+
+  // Hapus file foto banner dari disk jika ada
+  if (existing.bannerImage) {
+    console.log(`[SERVICE LOG] Hapus foto banner saat hapus layanan: ${existing.bannerImage}`);
+    await deleteFile(existing.bannerImage);
   }
 
   // Hapus seluruh foto galeri dari disk jika ada
