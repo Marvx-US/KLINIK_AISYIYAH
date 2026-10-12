@@ -78,7 +78,9 @@ export default async function HomePage() {
 
   // Foto Tentang Klinik: diambil dari SiteSetting (menu Foto Utama Klinik di admin)
   const heroPhoto = aboutImageSetting || undefined;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const defaultSiteUrl = 'https://www.klinikaisyiyahpangkajene.marvx.my.id';
+  const rawUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  const baseUrl = rawUrl && !rawUrl.includes('localhost') ? rawUrl : defaultSiteUrl;
   const clinicSchema = getClinicSchema(baseUrl);
   const faqSchema = getFaqSchema(FAQ_ITEMS);
 

@@ -29,21 +29,17 @@ export default function HeroSection({
   const hasBanners = banners.length > 0;
 
   return (
-    <section suppressHydrationWarning className="relative pt-36 pb-32 md:pt-48 md:pb-44 lg:pt-52 lg:pb-48 min-h-[620px] md:min-h-[720px] lg:min-h-[820px] flex items-center overflow-hidden border-fine-b bg-slate-950">
+    <section 
+      suppressHydrationWarning 
+      className="relative w-full min-h-screen min-h-[100dvh] flex items-center justify-center overflow-hidden border-fine-b bg-slate-950 pt-24 pb-16 md:pt-28 md:pb-20"
+    >
       {/* Background Banners */}
       {hasBanners && banners.map((banner, idx) => (
         <div 
           key={banner.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
         >
-          {/* Ambient Blurred Background to soften edges */}
-          <Image 
-            src={banner.imageUrl} 
-            alt="" 
-            fill
-            className="object-cover object-center blur-2xl opacity-40 scale-105 pointer-events-none" 
-          />
-          {/* Main Crisp Banner Image - Proportioned Fit */}
+          {/* Main Crisp Banner Image - FULL COVER on Mobile & Desktop */}
           <Image 
             src={banner.imageUrl} 
             alt={banner.title} 
@@ -51,27 +47,28 @@ export default function HeroSection({
             priority={idx === 0}
             fetchPriority={idx === 0 ? 'high' : 'low'}
             sizes="100vw"
-            className="object-contain md:object-cover object-center opacity-85" 
+            className="object-cover object-center opacity-85" 
           />
-          {/* Overlay gradien gelap agar teks tetap terbaca */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/75 to-slate-950/45" />
+          {/* Overlay gradien gelap agar teks tetap terbaca tajam di mobile maupun desktop */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/65 to-slate-950/40 md:bg-gradient-to-r md:from-slate-950/95 md:via-slate-950/70 md:to-slate-950/35" />
         </div>
       ))}
 
       {/* Default glow ambient jika tidak ada banner */}
       {!hasBanners && <div className="glow-ambient" />}
 
-      <div className="w-full px-6 sm:px-8 lg:px-12 relative z-10">
-        <div className="flex flex-col items-start text-left">
+      {/* Hero Content */}
+      <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10 my-auto">
+        <div className="flex flex-col items-start text-left max-w-3xl">
 
           {/* Heading & CTA */}
-          <h1 className={`font-heading font-extrabold text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.05] tracking-tighter mb-8 font-editorial-serif ${
+          <h1 className={`font-heading font-extrabold text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1.08] tracking-tight mb-5 md:mb-6 font-editorial-serif ${
             hasBanners ? 'text-white' : 'text-text-dark'
           }`}>
             Pelayanan Medis <span className="text-primary italic">Profesional</span> dengan
             Sentuhan Kasih.
           </h1>
-          <p className={`text-lg sm:text-xl leading-relaxed max-w-2xl mb-10 ${
+          <p className={`text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mb-8 md:mb-10 ${
             hasBanners ? 'text-gray-200 font-medium' : 'text-text-muted'
           }`}>
             Klinik Aisyiyah berkomitmen memberikan layanan kesehatan bermutu tinggi, mudah
@@ -97,23 +94,23 @@ export default function HeroSection({
             </Link>
           </div>
         </div>
-        
-        {/* Banner Navigasi (Dots) */}
-        {banners.length > 1 && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
-            {banners.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIdx(idx)}
-                className={`transition-all duration-300 rounded-full shadow-sm ${
-                  idx === currentIdx ? 'w-8 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-white/50 hover:bg-white/80'
-                }`}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
+        
+      {/* Banner Navigasi (Dots) - Posisikan di paling bawah layar hero */}
+      {banners.length > 1 && (
+        <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20">
+          {banners.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIdx(idx)}
+              className={`transition-all duration-300 rounded-full shadow-sm ${
+                idx === currentIdx ? 'w-8 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-white/50 hover:bg-white/80'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
