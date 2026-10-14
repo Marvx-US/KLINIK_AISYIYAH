@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { getEventBySlug, getPublishedEvents } from '@/core/services/eventService';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
 import { ArrowLeft, Calendar, MapPin, Tag, Share2, Info } from 'lucide-react';
+import ShareButtons from '@/components/ui/ShareButtons';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
@@ -71,6 +72,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   if (!event) notFound();
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const eventUrl = `${baseUrl}/events/${slug}`;
 
   // Event rekomendasi lainnya
   const upcomingEvents = await getPublishedEvents()
@@ -139,6 +141,15 @@ export default async function EventDetailPage({ params }: PageProps) {
               prose-li:text-text-muted"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.content ?? '') }}
           />
+
+          {/* Bagikan Kegiatan Section */}
+          <div className="mt-12 pt-8 border-t border-border-fine">
+            <ShareButtons
+              variant="inline"
+              title={event.title}
+              url={eventUrl}
+            />
+          </div>
         </article>
 
         {/* Sidebar Info Summary */}
@@ -178,6 +189,19 @@ export default async function EventDetailPage({ params }: PageProps) {
                   Tanyakan via WhatsApp
                 </a>
               </div>
+
+              {/* Bagikan Agenda di Sidebar */}
+              <div className="border-t border-border-fine pt-5 mt-2">
+                <p className="text-xs uppercase text-text-muted tracking-wider font-semibold mb-3 flex items-center gap-1.5">
+                  <Share2 className="h-3.5 w-3.5 text-primary" />
+                  Bagikan Kegiatan
+                </p>
+                <ShareButtons
+                  variant="sidebar"
+                  title={event.title}
+                  url={eventUrl}
+                />
+              </div>
             </div>
           </div>
 
@@ -185,7 +209,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           {upcomingEvents.length > 0 && (
             <div className="bg-white p-8 rounded-2xl border-fine shadow-sm">
               <h3 className="font-heading font-bold text-sm tracking-widest uppercase text-text-dark mb-6 flex items-center gap-2">
-                <Share2 className="h-4.5 w-4.5 text-primary" />
+                <Calendar className="h-4.5 w-4.5 text-primary" />
                 Agenda Lainnya
               </h3>
               <div className="flex flex-col gap-6">
