@@ -8,10 +8,13 @@ import { KLINIK_INFO, KLINIK_HOURS } from '@/lib/constants';
 
 interface AboutClinicSectionProps {
   heroPhoto?: string;
+  description?: string;
 }
 
-export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProps) {
+export default function AboutClinicSection({ heroPhoto, description }: AboutClinicSectionProps) {
   const displayPhoto = heroPhoto || '/uploads/1786371427727-896528188.jpg';
+  const displayDescription = description ||
+    `${KLINIK_INFO.name} hadir memberikan layanan kesehatan komprehensif, mudah diakses, serta mengutamakan pendekatan medis yang hangat bagi seluruh masyarakat Sidenreng Rappang. Didukung oleh tim dokter, bidan, dan staf medis profesional yang berdedikasi.`;
   const [todayStatus, setTodayStatus] = useState('Hari Ini — Klinik Sedang Buka');
 
   useEffect(() => {
@@ -94,7 +97,7 @@ export default function AboutClinicSection({ heroPhoto }: AboutClinicSectionProp
 
             {/* Narasi Ringkas Tentang Klinik */}
             <p className="text-text-muted text-base leading-relaxed mb-6">
-              {KLINIK_INFO.name} hadir memberikan layanan kesehatan komprehensif, mudah diakses, serta mengutamakan pendekatan medis yang hangat bagi seluruh masyarakat Sidenreng Rappang. Didukung oleh tim dokter, bidan, dan staf medis profesional yang berdedikasi.
+              {displayDescription}
             </p>
 
             {/* Poin Keunggulan Utama */}

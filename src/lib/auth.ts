@@ -31,7 +31,7 @@ export async function decrypt(input: string): Promise<SessionUser | null> {
       algorithms: ['HS256'],
     });
     return payload as unknown as SessionUser;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

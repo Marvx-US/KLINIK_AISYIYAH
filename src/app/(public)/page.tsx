@@ -5,7 +5,12 @@ import { getActivePartners } from '@/core/services/partnerService';
 import { getPublishedArticles } from '@/core/services/articleService';
 import { getPublishedEvents } from '@/core/services/eventService';
 import { getActiveServices } from '@/core/services/serviceService';
-import { getAboutImageUrl } from '@/core/services/siteSettingService';
+import {
+  getAboutImageUrl,
+  getAboutDescription,
+  getClinicVision,
+  getClinicMission,
+} from '@/core/services/siteSettingService';
 import { FALLBACK_ARTICLES, FALLBACK_EVENTS, FAQ_ITEMS } from '@/lib/constants';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
@@ -22,6 +27,10 @@ import dynamic from 'next/dynamic';
 
 const AboutClinicSection = dynamic(
   () => import('@/components/sections/AboutClinicSection'),
+  { ssr: true }
+);
+const VisionMissionSection = dynamic(
+  () => import('@/components/sections/VisionMissionSection'),
   { ssr: true }
 );
 const FacilityGallerySection = dynamic(
@@ -41,7 +50,7 @@ export const revalidate = 60; // ISR: re-generate tiap 1 menit
  */
 export default async function HomePage() {
 
-  const [rawArticles, rawEvents, banners, facilities, partners, services, aboutImageSetting] = await Promise.all([
+  const [rawArticles, rawEvents, banners, facilities, partners, services, aboutImageSetting, aboutDescSetting, visionSetting, missionSetting] = await Promise.all([
     getPublishedArticles().catch(() => []),
     getPublishedEvents().catch(() => []),
     getActiveBanners().catch(() => []),
@@ -49,6 +58,9 @@ export default async function HomePage() {
     getActivePartners().catch(() => []),
     getActiveServices().catch(() => []),
     getAboutImageUrl().catch(() => null),
+    getAboutDescription().catch(() => null),
+    getClinicVision().catch(() => null),
+    getClinicMission().catch(() => null),
   ]);
 
   // Fallback jika database kosong
@@ -92,7 +104,12 @@ export default async function HomePage() {
 
       {/* Section Tentang Klinik & Jam Operasional dengan Foto */}
       <ScrollReveal>
-        <AboutClinicSection heroPhoto={heroPhoto} />
+        <AboutClinicSection heroPhoto={heroPhoto} description={aboutDescSetting ?? undefined} />
+      </ScrollReveal>
+
+      {/* Section Visi & Misi */}
+      <ScrollReveal delay={50}>
+        <VisionMissionSection vision={visionSetting} mission={missionSetting} />
       </ScrollReveal>
 
       <ScrollReveal>
