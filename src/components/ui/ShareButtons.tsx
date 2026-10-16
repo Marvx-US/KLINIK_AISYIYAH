@@ -8,6 +8,7 @@ export interface ShareButtonsProps {
   url?: string;
   description?: string;
   variant?: 'inline' | 'sidebar' | 'compact';
+  contentType?: 'article' | 'event' | 'general';
   className?: string;
 }
 
@@ -16,6 +17,7 @@ export default function ShareButtons({
   url,
   description,
   variant = 'inline',
+  contentType = 'event',
   className = '',
 }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
@@ -33,6 +35,39 @@ export default function ShareButtons({
       setCanNativeShare(true);
     }
   }, [url]);
+
+  const isArticle = contentType === 'article';
+  const isEvent = contentType === 'event';
+
+  const copyLabel = isArticle
+    ? 'Salin Link Artikel'
+    : isEvent
+      ? 'Salin Link Kegiatan'
+      : 'Salin Link';
+
+  const defaultShareText = isArticle
+    ? `Halo! Simak artikel kesehatan "${title}" dari Klinik Aisyiyah.\nInformasi selengkapnya dapat dibaca di:`
+    : `Halo! Ikuti kegiatan "${title}" di Klinik Aisyiyah.\nInformasi lengkapnya dapat dilihat di:`;
+
+  const defaultNativeText =
+    description ||
+    (isArticle
+      ? `Baca artikel "${title}" di Klinik Aisyiyah`
+      : `Ikuti kegiatan ${title} di Klinik Aisyiyah`);
+
+  const socialTitle = isArticle
+    ? `Artikel "${title}" di Klinik Aisyiyah`
+    : `Kegiatan "${title}" di Klinik Aisyiyah`;
+
+  const headingTitle = isArticle
+    ? 'Bagikan Artikel Ini'
+    : isEvent
+      ? 'Bagikan Informasi Kegiatan Ini'
+      : 'Bagikan Informasi Ini';
+
+  const headingDesc = isArticle
+    ? 'Bantu sebarkan informasi dan tips kesehatan bermanfaat ini kepada keluarga dan teman terdekat.'
+    : 'Bantu sebarkan agenda dan kegiatan bermanfaat ini kepada keluarga dan teman terdekat.';
 
   const handleCopy = async () => {
     const targetUrl = currentUrl || (typeof window !== 'undefined' ? window.location.href : '');
@@ -63,7 +98,7 @@ export default function ShareButtons({
     try {
       await navigator.share({
         title,
-        text: description || `Ikuti kegiatan ${title} di Klinik Aisyiyah`,
+        text: defaultNativeText,
         url: currentUrl,
       });
     } catch {
@@ -71,15 +106,14 @@ export default function ShareButtons({
     }
   };
 
-  const shareText = `Halo! Ikuti kegiatan "${title}" di Klinik Aisyiyah.\nInformasi lengkapnya dapat dilihat di:`;
-  const encodedText = encodeURIComponent(shareText);
+  const encodedText = encodeURIComponent(defaultShareText);
   const encodedUrl = encodeURIComponent(currentUrl);
 
   const shareLinks = {
     whatsapp: `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Kegiatan "${title}" di Klinik Aisyiyah`)}&url=${encodedUrl}`,
-    telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(`Kegiatan "${title}" di Klinik Aisyiyah`)}`,
+    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(socialTitle)}&url=${encodedUrl}`,
+    telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(socialTitle)}`,
   };
 
   // SVGs for clean branded social icons
@@ -107,6 +141,88 @@ export default function ShareButtons({
     </svg>
   );
 
+  if (variant === 'compact') {
+    return (
+      <div className={`flex items-center gap-1.5 ${className}`}>
+        {/* Tombol Salin Link */}
+        <button
+          onClick={handleCopy}
+          type="button"
+          aria-label={copyLabel}
+          title={copied ? 'Link Tersalin!' : copyLabel}
+          className={`p-2 rounded-xl text-xs font-bold inline-flex items-center justify-center border transition-all duration-200 cursor-pointer ${
+            copied
+              ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-xs'
+              : 'bg-white border-border-fine text-text-muted hover:text-primary hover:border-primary/40 active:scale-95'
+          }`}
+        >
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+        </button>
+
+        {/* WhatsApp */}
+        <a
+          href={shareLinks.whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Bagikan ke WhatsApp"
+          title="Bagikan ke WhatsApp"
+          className="p-2 rounded-xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white border border-[#25D366]/20 transition-all duration-200"
+        >
+          <WhatsAppIcon />
+        </a>
+
+        {/* Facebook */}
+        <a
+          href={shareLinks.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Bagikan ke Facebook"
+          title="Bagikan ke Facebook"
+          className="p-2 rounded-xl bg-[#1877F2]/10 text-[#1877F2] hover:bg-[#1877F2] hover:text-white border border-[#1877F2]/20 transition-all duration-200"
+        >
+          <FacebookIcon />
+        </a>
+
+        {/* Telegram */}
+        <a
+          href={shareLinks.telegram}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Bagikan ke Telegram"
+          title="Bagikan ke Telegram"
+          className="p-2 rounded-xl bg-[#229ED9]/10 text-[#229ED9] hover:bg-[#229ED9] hover:text-white border border-[#229ED9]/20 transition-all duration-200"
+        >
+          <TelegramIcon />
+        </a>
+
+        {/* X (Twitter) */}
+        <a
+          href={shareLinks.x}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Bagikan ke X"
+          title="Bagikan ke X"
+          className="p-2 rounded-xl bg-text-dark/5 text-text-dark hover:bg-text-dark hover:text-white border border-border-fine transition-all duration-200"
+        >
+          <XIcon />
+        </a>
+
+        {/* Web Share (HP) */}
+        {canNativeShare && (
+          <button
+            onClick={handleNativeShare}
+            type="button"
+            aria-label="Bagikan via Menu HP"
+            title="Bagikan via Menu HP"
+            className="p-2 rounded-xl bg-primary-light text-primary hover:bg-primary hover:text-white border border-primary/20 transition-all duration-200 cursor-pointer"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
   if (variant === 'sidebar') {
     return (
       <div className={`flex flex-col gap-3 ${className}`}>
@@ -114,7 +230,7 @@ export default function ShareButtons({
         <button
           onClick={handleCopy}
           type="button"
-          aria-label="Salin link kegiatan"
+          aria-label={copyLabel}
           className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all duration-200 cursor-pointer ${
             copied
               ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-xs'
@@ -129,7 +245,7 @@ export default function ShareButtons({
           ) : (
             <>
               <Copy className="w-4 h-4 text-text-muted" />
-              <span>Salin Link Kegiatan</span>
+              <span>{copyLabel}</span>
             </>
           )}
         </button>
@@ -203,10 +319,10 @@ export default function ShareButtons({
         <div>
           <h4 className="font-heading font-bold text-text-dark text-base flex items-center gap-2">
             <Share2 className="w-4 h-4 text-primary" />
-            Bagikan Informasi Kegiatan Ini
+            {headingTitle}
           </h4>
           <p className="text-xs text-text-muted mt-1">
-            Bantu sebarkan agenda dan kegiatan bermanfaat ini kepada keluarga dan teman terdekat.
+            {headingDesc}
           </p>
         </div>
 

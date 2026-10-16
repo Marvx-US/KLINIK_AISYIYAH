@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getArticleBySlug, getPublishedArticles } from '@/core/services/articleService';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
-import { ArrowLeft, Calendar, User, Tag, Heart } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Tag, Heart, Share2 } from 'lucide-react';
+import ShareButtons from '@/components/ui/ShareButtons';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
@@ -79,6 +80,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   if (!article) notFound();
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const articleUrl = `${baseUrl}/articles/${slug}`;
 
   // Artikel rekomendasi lainnya
   const recentArticles = await getPublishedArticles()
@@ -111,15 +113,26 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             {article.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 text-text-muted text-sm mb-12">
-            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
-              <Calendar className="h-4 w-4 text-primary" />
-              <span className="font-medium">{new Date(article.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-12">
+            <div className="flex flex-wrap items-center gap-4 text-text-muted text-sm">
+              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
+                <Calendar className="h-4 w-4 text-primary" />
+                <span className="font-medium">{new Date(article.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
+                <User className="h-4 w-4 text-primary" />
+                <span className="font-medium">Tim Medis Klinik Aisyiyah</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
-              <User className="h-4 w-4 text-primary" />
-              <span className="font-medium">Tim Medis Klinik Aisyiyah</span>
-            </div>
+
+            {/* Quick Share Buttons Bar */}
+            <ShareButtons
+              variant="compact"
+              title={article.title}
+              url={articleUrl}
+              description={article.summary || undefined}
+              contentType="article"
+            />
           </div>
 
           {/* Article Cover Image */}
@@ -147,10 +160,39 @@ export default async function ArticleDetailPage({ params }: PageProps) {
               prose-li:text-text-muted"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content ?? '') }}
           />
+
+          {/* Bagikan Artikel Section */}
+          <div className="mt-12 pt-8 border-t border-border-fine">
+            <ShareButtons
+              variant="inline"
+              title={article.title}
+              url={articleUrl}
+              description={article.summary || undefined}
+              contentType="article"
+            />
+          </div>
         </article>
 
         {/* Sidebar recommendations */}
         <aside className="lg:col-span-4 flex flex-col gap-12">
+          {/* Box Bagikan Artikel di Sidebar */}
+          <div className="bg-white p-8 rounded-2xl border-fine shadow-sm">
+            <h3 className="font-heading font-bold text-sm tracking-widest uppercase text-text-dark mb-4 flex items-center gap-2">
+              <Share2 className="h-4.5 w-4.5 text-primary" />
+              Bagikan Artikel
+            </h3>
+            <p className="text-xs text-text-muted leading-relaxed mb-5">
+              Bagikan artikel dan edukasi kesehatan ini kepada keluarga atau rekan terdekat Anda.
+            </p>
+            <ShareButtons
+              variant="sidebar"
+              title={article.title}
+              url={articleUrl}
+              description={article.summary || undefined}
+              contentType="article"
+            />
+          </div>
+
           <div className="bg-white p-8 rounded-2xl border-fine shadow-sm">
             <h3 className="font-heading font-bold text-sm tracking-widest uppercase text-text-dark mb-6 flex items-center gap-2">
               <Heart className="h-4.5 w-4.5 text-primary" />

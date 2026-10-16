@@ -105,15 +105,25 @@ export default async function EventDetailPage({ params }: PageProps) {
             {event.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 text-text-muted text-sm mb-12">
-            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
-              <Calendar className="h-4 w-4 text-primary" />
-              <span className="font-medium">{event.eventDate ? new Date(event.eventDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Segera Hadir'}</span>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-12">
+            <div className="flex flex-wrap items-center gap-4 text-text-muted text-sm">
+              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
+                <Calendar className="h-4 w-4 text-primary" />
+                <span className="font-medium">{event.eventDate ? new Date(event.eventDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Segera Hadir'}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span className="font-medium">{event.location || 'Klinik Aisyiyah'}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-border-fine shadow-sm hover:shadow-md transition-shadow">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span className="font-medium">{event.location || 'Klinik Aisyiyah'}</span>
-            </div>
+
+            {/* Quick Share Buttons Bar */}
+            <ShareButtons
+              variant="compact"
+              title={event.title}
+              url={eventUrl}
+              contentType="event"
+            />
           </div>
 
           {/* Event Cover Image */}
@@ -148,6 +158,7 @@ export default async function EventDetailPage({ params }: PageProps) {
               variant="inline"
               title={event.title}
               url={eventUrl}
+              contentType="event"
             />
           </div>
         </article>
@@ -200,6 +211,7 @@ export default async function EventDetailPage({ params }: PageProps) {
                   variant="sidebar"
                   title={event.title}
                   url={eventUrl}
+                  contentType="event"
                 />
               </div>
             </div>
