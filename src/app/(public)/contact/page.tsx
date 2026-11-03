@@ -4,8 +4,9 @@ import { type LucideIcon } from 'lucide-react';
 import { KLINIK_INFO, KLINIK_HOURS } from '@/lib/constants';
 
 import type { Metadata } from 'next';
-import JsonLd from '@/components/seo/JsonLd';
-import { getClinicSchema } from '@/lib/seoSchemas';
+import JsonLd from '@/components/seo/json-ld';
+import { getClinicSchema } from '@/lib/seo-schemas';
+import { env } from '@/lib/env';
 
 export const metadata: Metadata = {
   title: 'Kontak & Lokasi Klinik',
@@ -64,7 +65,7 @@ const CONTACT_ITEMS: ContactItem[] = [
  * Data kontak bersumber dari constants.ts.
  */
 export default function ContactPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const clinicSchema = getClinicSchema(baseUrl);
 
   return (

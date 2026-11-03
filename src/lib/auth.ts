@@ -1,14 +1,8 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/lib/env';
 
-const rawSecret = process.env.NEXTAUTH_SECRET;
-if (!rawSecret) {
-  throw new Error(
-    'NEXTAUTH_SECRET belum diset di .env! Jangan jalankan server tanpa konfigurasi ini.'
-  );
-}
-const JWT_SECRET = new TextEncoder().encode(rawSecret);
+const JWT_SECRET = new TextEncoder().encode(env.NEXTAUTH_SECRET);
 
 export interface SessionUser {
   id: string;
@@ -48,7 +42,7 @@ export async function login(user: SessionUser) {
   const cookieStore = await cookies();
   cookieStore.set('session', encryptedSession, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: env.NODE_ENV === 'production',
     sameSite: 'strict', // 'strict' mencegah CSRF via top-level navigation
     path: '/',
     maxAge: 2 * 60 * 60, // 2 hours

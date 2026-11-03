@@ -1,10 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { Search } from 'lucide-react';
-import { getPublishedEvents } from '@/core/services/eventService';
+import { getPublishedEvents } from '@/features/events/queries/event-queries';
 import { FALLBACK_EVENTS, KLINIK_INFO } from '@/lib/constants';
-import EventCard, { type EventCardData } from '@/components/ui/EventCard';
-import EmptyState from '@/components/ui/EmptyState';
+import EventCard, { type EventCardData } from '@/components/ui/event-card';
+import EmptyState from '@/components/ui/empty-state';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 

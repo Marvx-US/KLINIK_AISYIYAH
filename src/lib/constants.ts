@@ -123,3 +123,26 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
 ];
 
+
+// ============================================================
+// KONSTANTA STATUS KONTEN — Mencegah magic strings (Bab 3.2)
+// Prisma schema menggunakan String (bukan Enum), sehingga
+// konstanta ini menjadi single source of truth untuk nilai status.
+// ============================================================
+
+export const CONTENT_STATUS = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+} as const;
+
+export type ContentStatus = (typeof CONTENT_STATUS)[keyof typeof CONTENT_STATUS];
+
+// ============================================================
+// KONSTANTA ROLE PENGGUNA — Mencegah magic strings (Bab 3.2)
+// ============================================================
+
+export const USER_ROLE = {
+  ADMIN: 'ADMIN',
+} as const;
+
+export type UserRole = (typeof USER_ROLE)[keyof typeof USER_ROLE];

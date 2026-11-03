@@ -1,14 +1,15 @@
 import { MetadataRoute } from 'next';
-import { getPublishedArticles } from '@/core/services/articleService';
-import { getPublishedEvents } from '@/core/services/eventService';
-import { getActiveServices } from '@/core/services/serviceService';
+import { env } from '@/lib/env';
+import { getPublishedArticles } from '@/features/articles/queries/article-queries';
+import { getPublishedEvents } from '@/features/events/queries/event-queries';
+import { getActiveServices } from '@/features/services/queries/service-queries';
 
 // ISR: regenerasi sitemap setiap 1 jam agar konten terbaru selalu terindex
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const defaultSiteUrl = 'https://www.klinikaisyiyahpangkajene.marvx.my.id';
-  const rawUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  const rawUrl = env.NEXT_PUBLIC_APP_URL?.trim();
   const baseUrl = (rawUrl && !rawUrl.includes('localhost') ? rawUrl : defaultSiteUrl)
     .toLowerCase()
     .replace(/\/+$/, '');
@@ -30,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       getActiveServices().catch(() => []),
     ]);
 
-    const serviceUrls: MetadataRoute.Sitemap = (services as any[]).map((service: any) => ({
+    const serviceUrls: MetadataRoute.Sitemap = services.map((service) => ({
       url: `${baseUrl}/services/${service.slug}`,
       lastModified: service.updatedAt || service.createdAt || new Date(),
       changeFrequency: 'weekly' as const,
@@ -53,8 +54,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticRoutes, ...serviceUrls, ...articleUrls, ...eventUrls];
   } catch (error) {
-    // Jika terjadi error tak terduga, kembalikan rute statis saja.
-    // Ini mencegah Google mendapat error 500 dan sitemap tetap valid.
     console.error('[SITEMAP ERROR] Gagal memuat data dinamis, mengembalikan rute statis:', error);
     return staticRoutes;
   }

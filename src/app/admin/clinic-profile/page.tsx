@@ -5,9 +5,9 @@ import {
   getAboutDescription,
   getClinicVision,
   getClinicMission,
-} from '@/core/services/siteSettingService';
-import ClinicPhotoManager from '@/features/settings/components/ClinicPhotoManager';
-import ClinicProfileTextEditor from '@/features/settings/components/ClinicProfileTextEditor';
+} from '@/features/settings/queries/setting-queries';
+import ClinicPhotoManager from '@/features/settings/components/clinic-photo-manager';
+import ClinicProfileTextEditor from '@/features/settings/components/clinic-profile-text-editor';
 
 export const dynamic = 'force-dynamic';
 

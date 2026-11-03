@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { getAllPartners } from '@/core/services/partnerService';
-import PartnersManager from '@/features/partners/components/PartnersManager';
+import { getAllPartners } from '@/features/partners/queries/partner-queries';
+import PartnersManager from '@/features/partners/components/partners-manager';
 
 export const metadata: Metadata = {
   title: 'Kelola Mitra Kerjasama | Admin',

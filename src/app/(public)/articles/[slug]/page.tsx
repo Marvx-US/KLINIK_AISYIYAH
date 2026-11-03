@@ -2,10 +2,10 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getArticleBySlug, getPublishedArticles } from '@/core/services/articleService';
-import { sanitizeHtml } from '@/lib/sanitizeHtml';
+import { getArticleBySlug, getPublishedArticles } from '@/features/articles/queries/article-queries';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { ArrowLeft, Calendar, User, Tag, Heart, Share2 } from 'lucide-react';
-import ShareButtons from '@/components/ui/ShareButtons';
+import ShareButtons from '@/components/ui/share-buttons';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
@@ -22,12 +22,13 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-import type { Metadata, ResolvingMetadata } from 'next';
+import type { Metadata } from 'next';
 import { KLINIK_INFO } from '@/lib/constants';
-import JsonLd from '@/components/seo/JsonLd';
-import { getArticleSchema } from '@/lib/seoSchemas';
+import JsonLd from '@/components/seo/json-ld';
+import { getArticleSchema } from '@/lib/seo-schemas';
+import { env } from '@/lib/env';
 
-export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug).catch(() => null);
   
@@ -79,7 +80,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const article = await getArticleBySlug(slug).catch(() => null);
   if (!article) notFound();
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const articleUrl = `${baseUrl}/articles/${slug}`;
 
   // Artikel rekomendasi lainnya

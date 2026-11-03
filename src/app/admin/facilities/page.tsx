@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { getAllFacilities } from '@/core/services/facilityService';
-import FacilitiesManager from '@/features/facilities/components/FacilitiesManager';
+import { getAllFacilities } from '@/features/facilities/queries/facility-queries';
+import FacilitiesManager from '@/features/facilities/components/facilities-manager';
 
 export const metadata: Metadata = {
   title: 'Kelola Fasilitas | Admin',

@@ -1,8 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
-import { db } from '@/lib/db';
 import { type Article, type Event } from '@prisma/client';
 import { FileText, CalendarRange, Plus, ArrowRight, Activity, Users } from 'lucide-react';
+import { getArticleCount, getLatestArticles } from '@/features/articles/queries/article-queries';
+import { getEventCount, getLatestEvents } from '@/features/events/queries/event-queries';
+import { cn } from '@/lib/utils';
+import { CONTENT_STATUS } from '@/lib/constants';
 
 export const revalidate = 0;
 
@@ -13,20 +16,14 @@ export default async function AdminDashboardPage() {
   let latestEvents: Event[] = [];
 
   try {
-    articleCount = await db.article.count();
-    eventCount = await db.event.count();
-    
-    latestArticles = await db.article.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-    });
-
-    latestEvents = await db.event.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-    });
-  } catch (error) {
-    // If db is not ready, keep defaults
+    [articleCount, eventCount, latestArticles, latestEvents] = await Promise.all([
+      getArticleCount(),
+      getEventCount(),
+      getLatestArticles(5),
+      getLatestEvents(5),
+    ]);
+  } catch {
+    // Jika DB belum siap, gunakan nilai default di atas
   }
 
   return (
@@ -125,9 +122,14 @@ export default async function AdminDashboardPage() {
                       {art.category}
                     </span>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shrink-0 ${
-                    art.status === 'PUBLISHED' ? 'bg-primary-light text-primary border border-primary/10' : 'bg-gray-100 text-gray-500'
-                  }`}>
+                  <span
+                    className={cn(
+                      'px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shrink-0',
+                      art.status === CONTENT_STATUS.PUBLISHED
+                        ? 'bg-primary-light text-primary border border-primary/10'
+                        : 'bg-gray-100 text-gray-500'
+                    )}
+                  >
                     {art.status}
                   </span>
                 </div>
@@ -152,9 +154,14 @@ export default async function AdminDashboardPage() {
                     <p className="font-heading font-bold text-sm text-text-dark truncate">{evt.title}</p>
                     <p className="text-xs text-text-muted mt-1 truncate">{evt.location || 'Klinik Aisyiyah'}</p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shrink-0 ${
-                    evt.status === 'PUBLISHED' ? 'bg-primary-light text-primary border border-primary/10' : 'bg-gray-100 text-gray-500'
-                  }`}>
+                  <span
+                    className={cn(
+                      'px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shrink-0',
+                      evt.status === CONTENT_STATUS.PUBLISHED
+                        ? 'bg-primary-light text-primary border border-primary/10'
+                        : 'bg-gray-100 text-gray-500'
+                    )}
+                  >
                     {evt.status}
                   </span>
                 </div>

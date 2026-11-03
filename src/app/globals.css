@@ -10,6 +10,21 @@
   --color-text-muted: #57534E; /* Warm muted stone */
   --color-border-fine: #E7E5E4; /* Warm light border */
   --color-accent-gold: #D97706;
+
+  /* Footer gradient — warna tema utama klinik */
+  --color-footer-from: #0E7490;
+  --color-footer-via: #0F766E;
+  --color-footer-to: #115E59;
+  --color-footer-text: #FDFBF7;
+  --color-footer-accent: #38BDF8;
+
+  /* Brand colors social media — design tokens (Bab 9.2 HANDBOOK_CLEANCODE.md) */
+  --color-brand-whatsapp: #25D366;
+  --color-brand-facebook: #1877F2;
+  --color-brand-telegram: #229ED9;
+  --color-brand-twitter: #000000;
+  --color-brand-youtube: #FF0000;
+  --color-brand-instagram: #E1306C;
 }
 
 :root {

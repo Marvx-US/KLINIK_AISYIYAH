@@ -1,6 +1,6 @@
 import React from 'react';
-import { getAllSchedules } from '@/core/services/scheduleService';
-import SchedulesManager from '@/features/schedules/components/SchedulesManager';
+import { getAllSchedules } from '@/features/schedules/queries/schedule-queries';
+import SchedulesManager from '@/features/schedules/components/schedules-manager';
 
 export const metadata = {
   title: 'Kelola Jadwal Dokter | Admin Klinik Aisyiyah',

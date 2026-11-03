@@ -1,14 +1,14 @@
 import React from 'react';
-import { getAllArticles } from '@/core/services/articleService';
-import ArticlesManager from '@/features/articles/components/ArticlesManager';
+import { getArticles } from '@/features/articles/queries/article-queries';
+import ArticlesManager from '@/features/articles/components/articles-manager';
 
 export const revalidate = 0;
 
 export default async function AdminArticlesPage() {
-  let articles: Awaited<ReturnType<typeof getAllArticles>> = [];
+  let articles: Awaited<ReturnType<typeof getArticles>> = [];
 
   try {
-    articles = await getAllArticles();
+    articles = await getArticles();
   } catch (error) {
     console.error('Error fetching articles for admin:', error);
   }

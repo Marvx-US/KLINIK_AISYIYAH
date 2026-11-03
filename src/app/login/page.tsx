@@ -4,7 +4,7 @@ import React, { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { loginAction } from '../actions/auth';
+import { loginAction } from '@/features/auth/actions/login';
 import { KLINIK_INFO } from '@/lib/constants';
 import { Lock, User, AlertCircle, Loader2 } from 'lucide-react';
 

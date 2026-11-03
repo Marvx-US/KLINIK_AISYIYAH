@@ -2,10 +2,10 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getEventBySlug, getPublishedEvents } from '@/core/services/eventService';
-import { sanitizeHtml } from '@/lib/sanitizeHtml';
+import { getEventBySlug, getPublishedEvents } from '@/features/events/queries/event-queries';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { ArrowLeft, Calendar, MapPin, Tag, Share2, Info } from 'lucide-react';
-import ShareButtons from '@/components/ui/ShareButtons';
+import ShareButtons from '@/components/ui/share-buttons';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 
@@ -22,12 +22,13 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-import type { Metadata, ResolvingMetadata } from 'next';
+import type { Metadata } from 'next';
 import { KLINIK_INFO } from '@/lib/constants';
-import JsonLd from '@/components/seo/JsonLd';
-import { getEventSchema } from '@/lib/seoSchemas';
+import JsonLd from '@/components/seo/json-ld';
+import { getEventSchema } from '@/lib/seo-schemas';
+import { env } from '@/lib/env';
 
-export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const event = await getEventBySlug(slug).catch(() => null);
   
@@ -71,7 +72,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   const event = await getEventBySlug(slug).catch(() => null);
   if (!event) notFound();
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const eventUrl = `${baseUrl}/events/${slug}`;
 
   // Event rekomendasi lainnya

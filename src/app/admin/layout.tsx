@@ -2,8 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
-import { getSession, logout } from '@/lib/auth';
+import { getSession } from '@/lib/auth';
 import { KLINIK_INFO } from '@/lib/constants';
+import { logoutAction } from '@/features/auth/actions/logout';
 import { LayoutDashboard, FileText, CalendarRange, LogOut, Heart, User, Users, Activity, Building2 } from 'lucide-react';
 
 export const revalidate = 0;
@@ -21,13 +22,6 @@ export default async function AdminLayout({
 
   // TypeScript: session adalah non-null setelah guard redirect di atas
   const currentSession = session!;
-
-  // Handle logout via form action (Server Action)
-  async function handleLogout() {
-    'use server';
-    await logout();
-    redirect('/login');
-  }
 
   return (
     <div className="min-h-screen flex bg-bg-snow">
@@ -133,7 +127,7 @@ export default async function AdminLayout({
 
         {/* Sidebar Footer (Logout) */}
         <div className="p-6 border-fine-t mt-auto">
-          <form action={handleLogout}>
+          <form action={logoutAction}>
             <button
               type="submit"
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide text-red-600 hover:bg-red-50 transition-all text-left"

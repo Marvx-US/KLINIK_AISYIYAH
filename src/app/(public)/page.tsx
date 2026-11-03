@@ -1,44 +1,46 @@
 import React from 'react';
-import { getActiveBanners } from '@/core/services/bannerService';
-import { getActiveFacilities } from '@/core/services/facilityService';
-import { getActivePartners } from '@/core/services/partnerService';
-import { getPublishedArticles } from '@/core/services/articleService';
-import { getPublishedEvents } from '@/core/services/eventService';
-import { getActiveServices } from '@/core/services/serviceService';
+import { getActiveBanners } from '@/features/banners/queries/banner-queries';
+import { getActiveFacilities } from '@/features/facilities/queries/facility-queries';
+import { getActivePartners } from '@/features/partners/queries/partner-queries';
+import { getPublishedArticles } from '@/features/articles/queries/article-queries';
+import { getPublishedEvents } from '@/features/events/queries/event-queries';
+import { getActiveServices } from '@/features/services/queries/service-queries';
 import {
   getAboutImageUrl,
   getAboutDescription,
   getClinicVision,
   getClinicMission,
-} from '@/core/services/siteSettingService';
+} from '@/features/settings/queries/setting-queries';
+
 import { FALLBACK_ARTICLES, FALLBACK_EVENTS, FAQ_ITEMS } from '@/lib/constants';
-import HeroSection from '@/components/sections/HeroSection';
-import ServicesSection from '@/components/sections/ServicesSection';
-import SectionHeader from '@/components/ui/SectionHeader';
-import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
-import EventCard, { type EventCardData } from '@/components/ui/EventCard';
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import FAQSection from '@/components/sections/FAQSection';
-import JsonLd from '@/components/seo/JsonLd';
-import { getClinicSchema, getFaqSchema } from '@/lib/seoSchemas';
+import HeroSection from '@/components/sections/hero-section';
+import ServicesSection from '@/components/sections/services-section';
+import SectionHeader from '@/components/ui/section-header';
+import ArticleCard, { type ArticleCardData } from '@/components/ui/article-card';
+import EventCard, { type EventCardData } from '@/components/ui/event-card';
+import ScrollReveal from '@/components/ui/scroll-reveal';
+import FAQSection from '@/components/sections/faq-section';
+import JsonLd from '@/components/seo/json-ld';
+import { getClinicSchema, getFaqSchema } from '@/lib/seo-schemas';
+import { env } from '@/lib/env';
 
 import dynamic from 'next/dynamic';
 
 
 const AboutClinicSection = dynamic(
-  () => import('@/components/sections/AboutClinicSection'),
+  () => import('@/components/sections/about-clinic-section'),
   { ssr: true }
 );
 const VisionMissionSection = dynamic(
-  () => import('@/components/sections/VisionMissionSection'),
+  () => import('@/components/sections/vision-mission-section'),
   { ssr: true }
 );
 const FacilityGallerySection = dynamic(
-  () => import('@/components/sections/FacilityGallerySection'),
+  () => import('@/components/sections/facility-gallery-section'),
   { ssr: true }
 );
 const PartnersCarouselSection = dynamic(
-  () => import('@/components/sections/PartnersCarouselSection'),
+  () => import('@/components/sections/partners-carousel-section'),
   { ssr: true }
 );
 
@@ -91,7 +93,7 @@ export default async function HomePage() {
   // Foto Tentang Klinik: diambil dari SiteSetting (menu Foto Utama Klinik di admin)
   const heroPhoto = aboutImageSetting || undefined;
   const defaultSiteUrl = 'https://www.klinikaisyiyahpangkajene.marvx.my.id';
-  const rawUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  const rawUrl = env.NEXT_PUBLIC_APP_URL?.trim();
   const baseUrl = rawUrl && !rawUrl.includes('localhost') ? rawUrl : defaultSiteUrl;
   const clinicSchema = getClinicSchema(baseUrl);
   const faqSchema = getFaqSchema(FAQ_ITEMS);

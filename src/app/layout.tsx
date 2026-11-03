@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { env } from "@/lib/env";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -19,7 +20,7 @@ const inter = Inter({
 });
 
 const defaultSiteUrl = "https://www.klinikaisyiyahpangkajene.marvx.my.id";
-const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+const rawAppUrl = env.NEXT_PUBLIC_APP_URL?.trim();
 const siteUrl = rawAppUrl && !rawAppUrl.includes("localhost")
   ? rawAppUrl
   : defaultSiteUrl;

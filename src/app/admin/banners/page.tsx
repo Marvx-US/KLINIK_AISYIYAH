@@ -1,6 +1,5 @@
-import React from 'react';
-import { getAllBanners } from '@/core/services/bannerService';
-import BannersManager from '@/features/banners/components/BannersManager';
+import { getAllBanners } from '@/features/banners/queries/banner-queries';
+import BannersManager from '@/features/banners/components/banners-manager';
 
 export const metadata = {
   title: 'Kelola Banner - Admin Klinik Aisyiyah',

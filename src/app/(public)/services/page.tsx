@@ -1,10 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { Search } from 'lucide-react';
-import { getActiveServices } from '@/core/services/serviceService';
-import ServiceCard, { type ServiceCardData } from '@/components/ui/ServiceCard';
-import EmptyState from '@/components/ui/EmptyState';
-import { STATIC_SERVICES } from '@/components/sections/ServicesSection';
+import { getActiveServices } from '@/features/services/queries/service-queries';
+import ServiceCard from '@/components/ui/service-card';
+import EmptyState from '@/components/ui/empty-state';
+import { STATIC_SERVICES } from '@/components/sections/services-section';
 import { KLINIK_INFO } from '@/lib/constants';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
@@ -30,13 +30,26 @@ interface PageProps {
 }
 
 
-async function getFilteredServices(searchQuery: string) {
+import { type LucideIcon } from 'lucide-react';
+
+type ServiceItem = {
+  id?: number;
+  name?: string;
+  title?: string;
+  slug?: string;
+  description?: string;
+  desc?: string;
+  iconName?: string;
+  icon?: LucideIcon;
+};
+
+async function getFilteredServices(searchQuery: string): Promise<ServiceItem[]> {
   try {
     const all = await getActiveServices();
-    const filtered = all.filter((svc: any) =>
+    const filtered = all.filter((svc) =>
       searchQuery
         ? svc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        svc.description.toLowerCase().includes(searchQuery.toLowerCase())
+          svc.description.toLowerCase().includes(searchQuery.toLowerCase())
         : true
     );
     return filtered;
@@ -50,11 +63,11 @@ export default async function ServicesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const searchQuery = params.q ?? '';
 
-  let services = await getFilteredServices(searchQuery);
+  let services: ServiceItem[] = await getFilteredServices(searchQuery);
   const isFallbackUsed = services.length === 0 && !searchQuery;
 
   if (isFallbackUsed) {
-    services = STATIC_SERVICES as any[];
+    services = STATIC_SERVICES as ServiceItem[];
   }
 
   return (
@@ -97,13 +110,13 @@ export default async function ServicesPage({ searchParams }: PageProps) {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((svc: any) => (
+          {services.map((svc) => (
             <ServiceCard
-              key={svc.id || svc.title}
+              key={svc.id || svc.title || svc.slug}
               service={{
-                title: svc.name || svc.title,
+                title: svc.name || svc.title || 'Layanan Medis',
                 slug: svc.slug,
-                desc: svc.description || svc.desc,
+                desc: svc.description || svc.desc || '',
                 iconName: svc.iconName,
                 icon: svc.icon,
               }}

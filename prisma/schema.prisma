@@ -28,6 +28,10 @@ model Article {
   status      String   @default("DRAFT") // DRAFT, PUBLISHED
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
 }
 
 model Event {
@@ -41,6 +45,10 @@ model Event {
   status      String   @default("DRAFT") // DRAFT, PUBLISHED
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([eventDate])
+  @@index([createdAt])
 }
 
 model Banner {
@@ -50,6 +58,9 @@ model Banner {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([createdAt])
 }
 
 model DoctorSchedule {
@@ -60,6 +71,9 @@ model DoctorSchedule {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([poli])
+  @@index([isActive])
 }
 
 model Facility {
@@ -70,6 +84,8 @@ model Facility {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
 }
 
 model Partner {
@@ -79,6 +95,8 @@ model Partner {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
 }
 
 model SiteSetting {
@@ -108,5 +126,23 @@ model Service {
   faq              String?  @db.Text
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+
+  @@index([isActive])
 }
 
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  oldValue   Json?
+  newValue   Json?
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}

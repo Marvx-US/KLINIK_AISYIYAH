@@ -2,10 +2,10 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
-import { getPublishedArticles } from '@/core/services/articleService';
+import { getPublishedArticles } from '@/features/articles/queries/article-queries';
 import { FALLBACK_ARTICLES, ARTICLE_CATEGORIES_FILTER, KLINIK_INFO } from '@/lib/constants';
-import ArticleCard, { type ArticleCardData } from '@/components/ui/ArticleCard';
-import EmptyState from '@/components/ui/EmptyState';
+import ArticleCard, { type ArticleCardData } from '@/components/ui/article-card';
+import EmptyState from '@/components/ui/empty-state';
 
 export const revalidate = 60; // ISR: re-generate tiap 1 menit
 

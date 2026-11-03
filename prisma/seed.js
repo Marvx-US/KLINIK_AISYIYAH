@@ -6,9 +6,25 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Memulai proses seeding...');
 
-  // 1. Buat User Admin Default (Bisa dikonfigurasi via Environment Variables)
-  const adminUsername = process.env.DEFAULT_ADMIN_USERNAME || 'aisyiyah@admin.com';
-  const adminPasswordPlain = process.env.DEFAULT_ADMIN_PASSWORD || 'Aisyiyah25';
+  // 1. Buat User Admin Default — dikonfigurasi WAJIB via Environment Variables
+  // Pastikan DEFAULT_ADMIN_USERNAME dan DEFAULT_ADMIN_PASSWORD sudah diisi di .env
+  // sebelum menjalankan: npx prisma db seed
+  const adminUsername = process.env.DEFAULT_ADMIN_USERNAME;
+  const adminPasswordPlain = process.env.DEFAULT_ADMIN_PASSWORD;
+
+  if (!adminUsername || !adminPasswordPlain) {
+    throw new Error(
+      '[SEED ERROR] DEFAULT_ADMIN_USERNAME dan DEFAULT_ADMIN_PASSWORD wajib diisi di .env sebelum seeding. ' +
+      'Salin .env.example ke .env dan isi nilainya.'
+    );
+  }
+
+  if (adminPasswordPlain.length < 16) {
+    throw new Error(
+      '[SEED ERROR] DEFAULT_ADMIN_PASSWORD minimal 16 karakter untuk keamanan production.'
+    );
+  }
+
   const hashedPassword = bcrypt.hashSync(adminPasswordPlain, 10);
 
   const existingAdmin = await prisma.user.findUnique({

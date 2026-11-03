@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
+import { env } from '@/lib/env';
 
 export default function robots(): MetadataRoute.Robots {
   const defaultSiteUrl = 'https://www.klinikaisyiyahpangkajene.marvx.my.id';
-  const rawUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  const rawUrl = env.NEXT_PUBLIC_APP_URL?.trim();
   const baseUrl = (rawUrl && !rawUrl.includes('localhost') ? rawUrl : defaultSiteUrl).toLowerCase().replace(/\/+$/, '');
 
   return {

@@ -4,6 +4,9 @@ import type { NextConfig } from "next";
 // HTTP Security Headers
 // Diterapkan ke semua route di aplikasi.
 // ============================================================
+
+const isDev = process.env.NODE_ENV === 'development';
+
 const securityHeaders = [
   // Cegah Clickjacking: halaman tidak boleh di-embed dalam iframe dari origin lain
   {
@@ -32,18 +35,19 @@ const securityHeaders = [
   },
   // Content Security Policy
   // 'unsafe-inline' diperlukan untuk Tailwind CSS & rich-text editor.
-  // Sesuaikan jika menggunakan CDN atau library pihak ketiga tambahan.
+  // 'unsafe-eval' hanya diaktifkan di development (diperlukan Next.js HMR & webpack).
+  // Di production, 'unsafe-eval' DINONAKTIFKAN untuk menutup vektor XSS via eval().
   {
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // unsafe-eval diperlukan oleh Next.js dev mode
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://images.unsplash.com https://*.google.com https://*.gstatic.com https://*.googleapis.com",
-      "connect-src 'self' https://*.google.com https://*.googleapis.com",
+      "connect-src 'self' https://*.google.com https://*.googleapis.com ws: wss:",
       "frame-src 'self' https://www.google.com https://maps.google.com",
-      "frame-ancestors 'self'", // Sama seperti X-Frame-Options SAMEORIGIN
+      "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
     ].join('; '),
@@ -84,38 +88,42 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
       // --------------------------------------------------------
-      // HTTP Cache Headers untuk asset statis
+      // HTTP Cache Headers untuk asset statis (khusus Production)
       // --------------------------------------------------------
-      {
-        // JS & CSS build artifacts (selalu punya hash unik — aman di-cache permanen)
-        source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        // Gambar yang di-upload admin (path /uploads/...)
-        source: '/uploads/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=2592000, stale-while-revalidate=86400',
-          },
-        ],
-      },
-      {
-        // Favicon dan file statis publik lainnya
-        source: '/:path*.{ico,svg,png,jpg,jpeg,webp,avif,woff,woff2}',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, stale-while-revalidate=3600',
-          },
-        ],
-      },
+      ...(!isDev
+        ? [
+            {
+              // JS & CSS build artifacts (selalu punya hash unik — aman di-cache permanen)
+              source: '/_next/static/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              // Gambar yang di-upload admin (path /uploads/...)
+              source: '/uploads/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=2592000, stale-while-revalidate=86400',
+                },
+              ],
+            },
+            {
+              // Favicon dan file statis publik lainnya
+              source: '/:path*.{ico,svg,png,jpg,jpeg,webp,avif,woff,woff2}',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=86400, stale-while-revalidate=3600',
+                },
+              ],
+            },
+          ]
+        : []),
     ];
   },
 };

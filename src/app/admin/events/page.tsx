@@ -1,14 +1,14 @@
 import React from 'react';
-import { getAllEvents } from '@/core/services/eventService';
-import EventsManager from '@/features/events/components/EventsManager';
+import { getEvents } from '@/features/events/queries/event-queries';
+import EventsManager from '@/features/events/components/events-manager';
 
 export const revalidate = 0;
 
 export default async function AdminEventsPage() {
-  let events: Awaited<ReturnType<typeof getAllEvents>> = [];
+  let events: Awaited<ReturnType<typeof getEvents>> = [];
 
   try {
-    events = await getAllEvents();
+    events = await getEvents();
   } catch (error) {
     console.error('Error fetching events for admin:', error);
   }
