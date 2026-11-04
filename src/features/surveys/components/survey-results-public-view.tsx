@@ -265,3 +265,4 @@ export default function SurveyResultsPublicView({ initialData }: SurveyResultsPu
     </div>
   );
 }
+
