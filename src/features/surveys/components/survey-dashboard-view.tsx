@@ -9,10 +9,13 @@ import {
   Calendar,
   Loader2,
   FileSpreadsheet,
+  Download,
+  Filter,
 } from 'lucide-react';
 import type { SurveyAnalyticsSummary, SurveyResponseItem } from '../types';
 import SurveyQrModal from './survey-qr-modal';
 import { deleteSurvey } from '../actions/delete-survey';
+import { exportSurveysToExcel } from '../utils/export-excel';
 
 interface SurveyDashboardViewProps {
   analytics: SurveyAnalyticsSummary;
@@ -27,6 +30,8 @@ export default function SurveyDashboardView({
 }: SurveyDashboardViewProps) {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [filterService, setFilterService] = useState<string>('ALL');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   const handleDelete = async (id: number, name: string) => {
     if (!confirm(`Hapus data survei dari responden "${name}"?`)) return;
@@ -40,12 +45,45 @@ export default function SurveyDashboardView({
     }
   };
 
+  // Filter berdasarkan Tanggal Pengisian & Jenis Layanan
   const filteredResponses = responses.filter((r) => {
-    if (filterService === 'ALL') return true;
-    return r.serviceReceived === filterService;
+    // 1. Filter Layanan
+    if (filterService !== 'ALL' && r.serviceReceived !== filterService) {
+      return false;
+    }
+
+    // 2. Filter Rentang Tanggal
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      if (new Date(r.createdAt) < start) return false;
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      if (new Date(r.createdAt) > end) return false;
+    }
+
+    return true;
   });
 
   const uniqueServices = Array.from(new Set(responses.map((r) => r.serviceReceived)));
+
+  const handleExport = () => {
+    exportSurveysToExcel({
+      responses: filteredResponses,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      serviceFilter: filterService,
+    });
+  };
+
+  const handleResetFilter = () => {
+    setStartDate('');
+    setEndDate('');
+    setFilterService('ALL');
+  };
 
   return (
     <div className="space-y-8">
@@ -60,9 +98,74 @@ export default function SurveyDashboardView({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleExport}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs hover:shadow-sm"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export Rekap Excel ({filteredResponses.length})</span>
+          </button>
           <SurveyQrModal surveyUrl={surveyUrl} />
         </div>
+      </div>
+
+      {/* Filter Rentang Tanggal & Layanan */}
+      <div className="bg-white p-5 rounded-3xl border border-border-fine shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2 text-xs font-bold text-text-dark shrink-0">
+            <Filter className="w-4 h-4 text-primary" />
+            <span>Rentang Waktu:</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="px-3 py-1.5 rounded-xl border border-border-fine bg-bg-snow text-xs text-text-dark focus:outline-none focus:border-primary"
+              title="Dari Tanggal"
+            />
+            <span className="text-xs text-text-muted">s/d</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="px-3 py-1.5 rounded-xl border border-border-fine bg-bg-snow text-xs text-text-dark focus:outline-none focus:border-primary"
+              title="Sampai Tanggal"
+            />
+          </div>
+
+          {uniqueServices.length > 0 && (
+            <select
+              value={filterService}
+              onChange={(e) => setFilterService(e.target.value)}
+              className="px-3 py-1.5 rounded-xl border border-border-fine bg-bg-snow text-xs font-bold text-text-dark focus:outline-none focus:border-primary"
+            >
+              <option value="ALL">Semua Layanan</option>
+              {uniqueServices.map((srv) => (
+                <option key={srv} value={srv}>
+                  {srv}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {(startDate || endDate || filterService !== 'ALL') && (
+            <button
+              type="button"
+              onClick={handleResetFilter}
+              className="text-xs font-bold text-red-600 hover:underline px-2 py-1 cursor-pointer"
+            >
+              Reset Filter
+            </button>
+          )}
+        </div>
+
+        <p className="text-xs text-text-muted">
+          Menampilkan <span className="font-bold text-text-dark">{filteredResponses.length}</span> dari {responses.length} total responden
+        </p>
       </div>
 
       {/* Metric Cards */}
@@ -172,36 +275,21 @@ export default function SurveyDashboardView({
               Daftar Tanggapan Pasien
             </h2>
             <p className="text-xs text-text-muted mt-0.5">
-              Data responden beserta kontak untuk keperluan follow-up.
+              Data responden beserta tanggal pengisian & kontak untuk keperluan follow-up.
             </p>
           </div>
-
-          {uniqueServices.length > 0 && (
-            <select
-              value={filterService}
-              onChange={(e) => setFilterService(e.target.value)}
-              className="px-3.5 py-2 rounded-xl border border-border-fine bg-bg-snow text-xs font-bold text-text-dark focus:outline-none"
-            >
-              <option value="ALL">Semua Layanan ({responses.length})</option>
-              {uniqueServices.map((srv) => (
-                <option key={srv} value={srv}>
-                  {srv}
-                </option>
-              ))}
-            </select>
-          )}
         </div>
 
         {filteredResponses.length === 0 ? (
           <div className="py-16 text-center text-text-muted text-sm">
-            Belum ada tanggapan survei yang masuk.
+            Tidak ada tanggapan survei pada filter ini.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-bg-snow/70 text-text-dark font-bold border-b border-border-fine">
                 <tr>
-                  <th className="py-3 px-4">Tanggal</th>
+                  <th className="py-3 px-4">Tanggal & Jam</th>
                   <th className="py-3 px-4">Nama Pasien</th>
                   <th className="py-3 px-4">Kontak (WA)</th>
                   <th className="py-3 px-4">Profil</th>
@@ -224,12 +312,14 @@ export default function SurveyDashboardView({
                   return (
                     <tr key={r.id} className="hover:bg-bg-snow/40 transition-colors">
                       <td className="py-3.5 px-4 text-text-muted whitespace-nowrap">
-                        <span className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-text-muted" />
-                          {new Date(r.createdAt).toLocaleDateString('id-ID', {
-                            day: 'numeric',
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <Calendar className="w-3.5 h-3.5 text-primary" />
+                          {new Date(r.createdAt).toLocaleString('id-ID', {
+                            day: '2-digit',
                             month: 'short',
                             year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
                           })}
                         </span>
                       </td>
@@ -303,4 +393,3 @@ export default function SurveyDashboardView({
     </div>
   );
 }
-
