@@ -13,8 +13,10 @@ import {
   ClipboardList,
   BarChart3,
   CheckCircle,
+  Share2,
 } from 'lucide-react';
 import type { PublicSurveyResultsPayload } from '../types';
+import SurveyShareModal from './survey-share-modal';
 
 interface SurveyResultsPublicViewProps {
   initialData: PublicSurveyResultsPayload;
@@ -25,6 +27,7 @@ export default function SurveyResultsPublicView({ initialData }: SurveyResultsPu
   const [selectedMonth, setSelectedMonth] = useState<string>(
     initialData.selectedMonth || (availableMonths[0]?.monthKey ?? '')
   );
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const currentStat = monthlyStats[selectedMonth];
   const hasData = availableMonths.length > 0 && !!currentStat;
@@ -59,6 +62,10 @@ export default function SurveyResultsPublicView({ initialData }: SurveyResultsPu
   };
 
   const theme = getGradeTheme(currentStat?.ikmGrade || 'B');
+  const pageUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/survei/hasil`
+      : '/survei/hasil';
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -161,11 +168,24 @@ export default function SurveyResultsPublicView({ initialData }: SurveyResultsPu
                   </p>
                 </div>
 
-                <div className="flex items-baseline gap-2 bg-white/80 backdrop-blur-xs px-6 py-4 rounded-2xl border border-border-fine shrink-0 shadow-xs">
-                  <span className="font-heading font-black text-4xl sm:text-5xl text-primary tracking-tight">
-                    {currentStat.ikmScore.toFixed(2)}
-                  </span>
-                  <span className="text-xs font-bold text-text-muted">/ 100</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-baseline gap-2 bg-white/80 backdrop-blur-xs px-6 py-4 rounded-2xl border border-border-fine shrink-0 shadow-xs">
+                    <span className="font-heading font-black text-4xl sm:text-5xl text-primary tracking-tight">
+                      {currentStat.ikmScore.toFixed(2)}
+                    </span>
+                    <span className="text-xs font-bold text-text-muted">/ 100</span>
+                  </div>
+
+                  {/* Tombol Bagikan Infografis */}
+                  <button
+                    type="button"
+                    onClick={() => setIsShareOpen(true)}
+                    className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/90 border border-border-fine shadow-xs text-xs font-bold text-text-dark hover:bg-white hover:shadow-sm transition-all cursor-pointer shrink-0"
+                    title="Bagikan infografis ke sosial media"
+                  >
+                    <Share2 className="w-4 h-4 text-primary" />
+                    <span className="hidden sm:inline">Bagikan</span>
+                  </button>
                 </div>
               </div>
 
@@ -229,7 +249,6 @@ export default function SurveyResultsPublicView({ initialData }: SurveyResultsPu
                       </div>
                     </div>
 
-                    {/* Progress Bar Horizontal */}
                     <div className="w-full bg-white h-2.5 rounded-full overflow-hidden border border-border-fine/40">
                       <motion.div
                         className={`h-full rounded-full ${theme.bar}`}
@@ -243,7 +262,7 @@ export default function SurveyResultsPublicView({ initialData }: SurveyResultsPu
               </div>
             </div>
 
-            {/* Referensi Kategori PermenPAN-RB & CTA */}
+            {/* CTA */}
             <div className="p-6 rounded-3xl bg-primary/5 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 text-primary shrink-0" />
@@ -251,18 +270,37 @@ export default function SurveyResultsPublicView({ initialData }: SurveyResultsPu
                   Penilaian ini diperbarui secara real-time berdasarkan suara pasien. Masukan Anda sangat berharga bagi peningkatan mutu layanan kami.
                 </p>
               </div>
-              <Link
-                href="/survei"
-                className="shrink-0 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold hover:bg-primary-dark transition-all inline-flex items-center gap-2 shadow-2xs"
-              >
-                <span>Beri Penilaian Anda</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsShareOpen(true)}
+                  className="px-4 py-2.5 rounded-full bg-white border border-border-fine text-xs font-bold text-text-dark hover:bg-bg-snow transition-all inline-flex items-center gap-2 shadow-2xs cursor-pointer"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-primary" />
+                  <span>Bagikan</span>
+                </button>
+                <Link
+                  href="/survei"
+                  className="px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold hover:bg-primary-dark transition-all inline-flex items-center gap-2 shadow-2xs"
+                >
+                  <span>Beri Penilaian</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
       )}
+
+      {/* Share Modal */}
+      {hasData && (
+        <SurveyShareModal
+          stat={currentStat}
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          pageUrl={pageUrl}
+        />
+      )}
     </div>
   );
 }
-
