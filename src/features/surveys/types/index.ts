@@ -21,6 +21,16 @@ export interface SurveyResponseItem {
   createdAt: Date;
 }
 
+export interface QuestionAverageItem {
+  questionId: string;
+  title: string;
+  shortLabel: string;
+  unsurCode: string;
+  averageScore: number; // 1.00 - 4.00
+  percentage: number;   // 25 - 100%
+  grade: 'A' | 'B' | 'C' | 'D';
+}
+
 export interface SurveyAnalyticsSummary {
   totalRespondents: number;
   ikmScore: number; // Nilai IKM (Skala 25 - 100)
@@ -33,3 +43,22 @@ export interface SurveyAnalyticsSummary {
   }[];
 }
 
+export interface MonthlySurveyStat {
+  monthKey: string;      // e.g. "2026-11"
+  monthLabel: string;    // e.g. "November 2026"
+  year: number;
+  month: number;
+  totalRespondents: number;
+  ikmScore: number;
+  ikmGrade: 'A' | 'B' | 'C' | 'D';
+  ikmCategory: string;
+  nrrTertimbang: number;
+  questionAverages: QuestionAverageItem[];
+}
+
+export interface PublicSurveyResultsPayload {
+  availableMonths: { monthKey: string; monthLabel: string }[];
+  selectedMonth: string;
+  monthlyStats: Record<string, MonthlySurveyStat>;
+  allTimeSummary: SurveyAnalyticsSummary;
+}

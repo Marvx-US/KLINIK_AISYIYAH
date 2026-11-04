@@ -35,6 +35,8 @@ export const SERVICE_OPTIONS = [
 
 export interface SurveyQuestionItem {
   id: 'q1' | 'q2' | 'q3' | 'q4' | 'q5' | 'q6' | 'q7' | 'q8' | 'q9';
+  unsurCode: string;
+  shortLabel: string;
   title: string;
   options: {
     label: string;
@@ -45,6 +47,8 @@ export interface SurveyQuestionItem {
 export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   {
     id: 'q1',
+    unsurCode: 'U1',
+    shortLabel: 'Persyaratan Pelayanan',
     title: 'Bagaimana pendapat Saudara tentang kesesuaian persyaratan pelayanan dengan jenis pelayanan?',
     options: [
       { label: 'Tidak Sesuai', score: 1 },
@@ -55,6 +59,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q2',
+    unsurCode: 'U2',
+    shortLabel: 'Prosedur Pelayanan',
     title: 'Bagaimana pemahaman saudara tentang kemudahan prosedur pelayanan di unit ini?',
     options: [
       { label: 'Tidak Mudah', score: 1 },
@@ -65,6 +71,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q3',
+    unsurCode: 'U3',
+    shortLabel: 'Kecepatan Pelayanan',
     title: 'Bagaimana pendapat saudara tentang kecepatan waktu dalam memberikan pelayanan?',
     options: [
       { label: 'Tidak Cepat', score: 1 },
@@ -75,6 +83,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q4',
+    unsurCode: 'U4',
+    shortLabel: 'Kewajaran Biaya / Tarif',
     title: 'Bagaimana pendapat Saudara tentang kewajaran biaya/tarif dalam pelayanan?',
     options: [
       { label: 'Sangat Mahal', score: 1 },
@@ -85,6 +95,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q5',
+    unsurCode: 'U5',
+    shortLabel: 'Kesesuaian Produk Layanan',
     title: 'Bagaimana pendapat saudara tentang kesesuaian produk pelayanan antara yang tercantum dalam standar pelayanan dengan hasil yang diberikan?',
     options: [
       { label: 'Tidak Sesuai', score: 1 },
@@ -95,6 +107,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q6',
+    unsurCode: 'U6',
+    shortLabel: 'Kompetensi Petugas',
     title: 'Bagaimana pendapat saudara tentang kompetensi/kemampuan petugas dalam pelayanan?',
     options: [
       { label: 'Tidak Kompeten', score: 1 },
@@ -105,6 +119,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q7',
+    unsurCode: 'U7',
+    shortLabel: 'Kesopanan & Keramahan',
     title: 'Bagaimana pendapat saudara perilaku petugas dalam pelayanan terkait kesopanan dan keramahan?',
     options: [
       { label: 'Tidak Sopan dan Ramah', score: 1 },
@@ -115,6 +131,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q8',
+    unsurCode: 'U8',
+    shortLabel: 'Kualitas Sarana & Prasarana',
     title: 'Bagaimana pendapat saudara tentang kualitas sarana dan prasarana?',
     options: [
       { label: 'Buruk', score: 1 },
@@ -125,6 +143,8 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
   },
   {
     id: 'q9',
+    unsurCode: 'U9',
+    shortLabel: 'Penanganan Pengaduan',
     title: 'Bagaimana pendapat saudara tentang penanganan pengaduan penggunaan pelayanan?',
     options: [
       { label: 'Tidak Ada', score: 1 },
@@ -134,4 +154,3 @@ export const SURVEY_QUESTIONS: SurveyQuestionItem[] = [
     ],
   },
 ];
-

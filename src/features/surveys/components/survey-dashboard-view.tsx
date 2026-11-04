@@ -105,7 +105,7 @@ export default function SurveyDashboardView({
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs hover:shadow-sm"
           >
             <Download className="w-4 h-4" />
-            <span>Export Rekap Excel ({filteredResponses.length})</span>
+            <span>Ekspor Rekap Excel (.xlsx)</span>
           </button>
           <SurveyQrModal surveyUrl={surveyUrl} />
         </div>
