@@ -1,0 +1,306 @@
+'use client';
+
+import React, { useState } from 'react';
+import {
+  Users,
+  Award,
+  Trash2,
+  Phone,
+  Calendar,
+  Loader2,
+  FileSpreadsheet,
+} from 'lucide-react';
+import type { SurveyAnalyticsSummary, SurveyResponseItem } from '../types';
+import SurveyQrModal from './survey-qr-modal';
+import { deleteSurvey } from '../actions/delete-survey';
+
+interface SurveyDashboardViewProps {
+  analytics: SurveyAnalyticsSummary;
+  responses: SurveyResponseItem[];
+  surveyUrl: string;
+}
+
+export default function SurveyDashboardView({
+  analytics,
+  responses,
+  surveyUrl,
+}: SurveyDashboardViewProps) {
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [filterService, setFilterService] = useState<string>('ALL');
+
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Hapus data survei dari responden "${name}"?`)) return;
+
+    setDeletingId(id);
+    const res = await deleteSurvey(id);
+    setDeletingId(null);
+
+    if (!res.success) {
+      alert(res.message);
+    }
+  };
+
+  const filteredResponses = responses.filter((r) => {
+    if (filterService === 'ALL') return true;
+    return r.serviceReceived === filterService;
+  });
+
+  const uniqueServices = Array.from(new Set(responses.map((r) => r.serviceReceived)));
+
+  return (
+    <div className="space-y-8">
+      {/* Header Halaman */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-border-fine shadow-xs">
+        <div>
+          <h1 className="font-heading font-extrabold text-2xl text-text-dark">
+            Survei Kepuasan Pasien (SKM)
+          </h1>
+          <p className="text-text-muted text-xs sm:text-sm mt-1">
+            Indeks Kepuasan Masyarakat berbasis 9 Unsur Standar PermenPAN-RB No. 14 Tahun 2017.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <SurveyQrModal surveyUrl={surveyUrl} />
+        </div>
+      </div>
+
+      {/* Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Responden */}
+        <div className="bg-white p-6 rounded-3xl border border-border-fine shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">
+              Total Responden
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <Users className="w-5 h-5" />
+            </div>
+          </div>
+          <p className="font-heading font-extrabold text-3xl text-text-dark">
+            {analytics.totalRespondents}
+          </p>
+          <p className="text-[11px] text-text-muted mt-1">Orang telah mengisi kuesioner</p>
+        </div>
+
+        {/* Nilai IKM */}
+        <div className="bg-white p-6 rounded-3xl border border-border-fine shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">
+              Nilai IKM (25 - 100)
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+              <Award className="w-5 h-5" />
+            </div>
+          </div>
+          <p className="font-heading font-extrabold text-3xl text-primary">
+            {analytics.ikmScore}
+          </p>
+          <p className="text-[11px] text-text-muted mt-1">Skor Konversi IKM Pelayanan</p>
+        </div>
+
+        {/* Mutu Pelayanan */}
+        <div className="bg-white p-6 rounded-3xl border border-border-fine shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">
+              Mutu Pelayanan
+            </span>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-extrabold ${
+                analytics.ikmGrade === 'A'
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : analytics.ikmGrade === 'B'
+                    ? 'bg-blue-100 text-blue-800'
+                    : analytics.ikmGrade === 'C'
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-red-100 text-red-800'
+              }`}
+            >
+              Grade {analytics.ikmGrade}
+            </span>
+          </div>
+          <p className="font-heading font-extrabold text-2xl text-text-dark">
+            {analytics.ikmCategory}
+          </p>
+          <p className="text-[11px] text-text-muted mt-1">Berdasarkan PermenPAN-RB</p>
+        </div>
+
+        {/* Tindak Lanjut Keluhan */}
+        <div className="bg-white p-6 rounded-3xl border border-border-fine shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">
+              Kontak Pasien
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+              <Phone className="w-5 h-5" />
+            </div>
+          </div>
+          <p className="font-heading font-extrabold text-2xl text-text-dark">100%</p>
+          <p className="text-[11px] text-text-muted mt-1">Siap untuk follow-up WA/Telepon</p>
+        </div>
+      </div>
+
+      {/* Rincian Skor per 9 Unsur */}
+      <div className="bg-white p-6 rounded-3xl border border-border-fine shadow-xs">
+        <h2 className="font-heading font-bold text-lg text-text-dark mb-4 flex items-center gap-2">
+          <FileSpreadsheet className="w-5 h-5 text-primary" />
+          Rata-rata Skor per Unsur Pelayanan (Skala 1.00 - 4.00)
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {analytics.questionAverages.map((q, idx) => (
+            <div key={q.questionId} className="p-3.5 rounded-2xl bg-bg-snow/60 border border-border-fine/60">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-bold text-primary">Unsur {idx + 1}</span>
+                <span className="text-xs font-extrabold text-text-dark px-2 py-0.5 rounded-md bg-white border border-border-fine">
+                  {q.averageScore} / 4.00
+                </span>
+              </div>
+              <p className="text-xs text-text-muted line-clamp-2 leading-relaxed">
+                {q.title}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tabel Riwayat Responden */}
+      <div className="bg-white rounded-3xl border border-border-fine shadow-xs overflow-hidden">
+        <div className="p-6 border-b border-border-fine flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="font-heading font-bold text-lg text-text-dark">
+              Daftar Tanggapan Pasien
+            </h2>
+            <p className="text-xs text-text-muted mt-0.5">
+              Data responden beserta kontak untuk keperluan follow-up.
+            </p>
+          </div>
+
+          {uniqueServices.length > 0 && (
+            <select
+              value={filterService}
+              onChange={(e) => setFilterService(e.target.value)}
+              className="px-3.5 py-2 rounded-xl border border-border-fine bg-bg-snow text-xs font-bold text-text-dark focus:outline-none"
+            >
+              <option value="ALL">Semua Layanan ({responses.length})</option>
+              {uniqueServices.map((srv) => (
+                <option key={srv} value={srv}>
+                  {srv}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {filteredResponses.length === 0 ? (
+          <div className="py-16 text-center text-text-muted text-sm">
+            Belum ada tanggapan survei yang masuk.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-bg-snow/70 text-text-dark font-bold border-b border-border-fine">
+                <tr>
+                  <th className="py-3 px-4">Tanggal</th>
+                  <th className="py-3 px-4">Nama Pasien</th>
+                  <th className="py-3 px-4">Kontak (WA)</th>
+                  <th className="py-3 px-4">Profil</th>
+                  <th className="py-3 px-4">Layanan</th>
+                  <th className="py-3 px-4 text-center">Rata-rata Skor</th>
+                  <th className="py-3 px-4">Saran / Masukan</th>
+                  <th className="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border-fine">
+                {filteredResponses.map((r) => {
+                  const avg = Number(
+                    ((r.q1 + r.q2 + r.q3 + r.q4 + r.q5 + r.q6 + r.q7 + r.q8 + r.q9) / 9).toFixed(2)
+                  );
+                  const cleanPhone = r.contactNumber.replace(/[^0-9]/g, '');
+                  const waNumber = cleanPhone.startsWith('0')
+                    ? `62${cleanPhone.slice(1)}`
+                    : cleanPhone;
+
+                  return (
+                    <tr key={r.id} className="hover:bg-bg-snow/40 transition-colors">
+                      <td className="py-3.5 px-4 text-text-muted whitespace-nowrap">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-text-muted" />
+                          {new Date(r.createdAt).toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-text-dark">
+                        {r.respondentName}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <a
+                          href={`https://wa.me/${waNumber}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-emerald-600 font-bold hover:underline"
+                        >
+                          <Phone className="w-3 h-3" />
+                          <span>{r.contactNumber}</span>
+                        </a>
+                      </td>
+                      <td className="py-3.5 px-4 text-text-muted">
+                        {r.gender === 'L' ? 'Laki-laki' : 'Perempuan'}, {r.age} th · {r.education}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold text-[10px]">
+                          {r.serviceReceived}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-bold text-text-dark">
+                        <span
+                          className={`px-2 py-1 rounded-md text-[11px] font-extrabold ${
+                            avg >= 3.5
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : avg >= 3.0
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-amber-100 text-amber-800'
+                          }`}
+                        >
+                          {avg} / 4.00
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 max-w-xs text-text-dark">
+                        {r.feedback ? (
+                          <p className="italic text-[11px] bg-bg-snow p-2 rounded-lg border border-border-fine">
+                            &ldquo;{r.feedback}&rdquo;
+                          </p>
+                        ) : (
+                          <span className="text-text-muted text-[11px]">-</span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(r.id, r.respondentName)}
+                          disabled={deletingId === r.id}
+                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                          title="Hapus tanggapan"
+                        >
+                          {deletingId === r.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+

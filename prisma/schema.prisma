@@ -146,3 +146,29 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([createdAt])
 }
+
+model SurveyResponse {
+  id          Int      @id @default(autoincrement())
+  respondentName String
+  contactNumber  String
+  gender         String   // L, P
+  age            Int
+  education      String   // SD, SMP, SMA, D3, S1, S2
+  occupation     String   // PNS, TNI, POLRI, SWASTA, WIRAUSAHA, LAINNYA
+  occupationOther String?
+  serviceReceived String
+  q1             Int      // 1-4: Kesesuaian persyaratan
+  q2             Int      // 1-4: Kemudahan prosedur
+  q3             Int      // 1-4: Kecepatan pelayanan
+  q4             Int      // 1-4: Kewajaran biaya
+  q5             Int      // 1-4: Kesesuaian produk/standar
+  q6             Int      // 1-4: Kompetensi petugas
+  q7             Int      // 1-4: Kesopanan & keramahan
+  q8             Int      // 1-4: Kualitas sarana prasarana
+  q9             Int      // 1-4: Penanganan pengaduan
+  feedback       String?  @db.Text
+  createdAt      DateTime @default(now())
+
+  @@index([serviceReceived])
+  @@index([createdAt])
+}

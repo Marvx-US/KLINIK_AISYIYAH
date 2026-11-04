@@ -25,6 +25,7 @@ export const NAVIGATION_ITEMS = [
   { name: 'Layanan', href: '/services' },
   { name: 'Artikel Kesehatan', href: '/articles' },
   { name: 'Event & Berita', href: '/events' },
+  { name: 'Survei Pasien', href: '/survei' },
   { name: 'Kontak', href: '/contact' },
 ];
 
